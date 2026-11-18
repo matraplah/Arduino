@@ -2,6 +2,11 @@
 
 Laman pembelajaran Fizik KSSM Tingkatan 4 dan 5: penerangan, visual interaktif, Fokus SPM dan latihan berbentuk permainan dengan mata, pangkat, lencana dan kedudukan kelas.
 
+## Pilihan pelayan
+
+- **Google Sheets + Apps Script (disyorkan, percuma):** ikut `gas/PANDUAN.md`. Data murid tersimpan dalam Google Sheet cikgu.
+- **Netlify Functions + Blobs:** ikut langkah di bawah dan biarkan `web/config.js` kosong.
+
 ## Memasang di Netlify
 
 1. Dalam Netlify, pilih **Add new site → Import an existing project** dan sambungkan repositori GitHub ini.

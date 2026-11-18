@@ -563,6 +563,7 @@ ol.toc{background:var(--surface);border:1px solid var(--line);border-radius:var(
 </div></header>
 <main id="app"></main>
 <nav class="nav-bawah" aria-label="Menu utama" id="nav-bawah"></nav>
+<script src="config.js"></script>
 <script>
 'use strict';
 /* ===== Fizik SPM Interaktif: enjin laman ===== */
@@ -1349,7 +1350,9 @@ async function viewGuru() {
       <li><span>Buka <code>${esc(location.origin)}/api/ping</code> dalam tab baharu. Jika betul, ia memaparkan “Pelayan Fizik SPM berfungsi”.</span></li></ol></div>` : '');
     return;
   }
-  if (!st.ada) return st.jenis === 'claude' ? guruTetap(box) : (box.innerHTML = '<p class="ralat">Kata laluan guru belum ditetapkan. Dalam Netlify, buka Site configuration → Environment variables dan tambah <b>GURU_KATA_LALUAN</b>, kemudian deploy semula.</p>');
+  if (!st.ada) return st.jenis === 'claude' ? guruTetap(box) : (box.innerHTML = st.jenis === 'gas'
+    ? '<p class="ralat">Kata laluan guru belum ditetapkan. Dalam Google Apps Script, buka Project Settings → Script properties dan tambah <b>GURU_KATA_LALUAN</b>.</p>'
+    : '<p class="ralat">Kata laluan guru belum ditetapkan. Dalam Netlify, buka Site configuration → Environment variables dan tambah <b>GURU_KATA_LALUAN</b>, kemudian deploy semula.</p>');
   if (!guruToken) return guruMasuk(box);
   guruPapan(box);
 }
@@ -1490,7 +1493,7 @@ function guruPapan(box) {
       try {
         if (b.dataset.act === 'padam') { await API.guruPadam(r); toast('Murid dipadam', 'no'); }
         else { await API.guruSifar(r); toast('Markah murid diset semula', 'no'); }
-        API.jenis().then(j => { if (j === 'netlify') segar(); });
+        API.jenis().then(j => { if (pelayan(j)) segar(); });
       } catch (e) { toast('Gagal. Cuba lagi.', 'no'); }
     });
   };
@@ -1559,11 +1562,21 @@ function susunKedudukan(rows) {
 function gelaranHtml(g) { return g ? `<span class="gelaran ${GELARAN_GAYA[g] || ''}">${g === 'Juara Kelas' ? '♛ ' : ''}${g}</span>` : ''; }
 
 let jenisSedia = null;
+const GAS_URL = String(window.FIZIK_GAS_URL || '').trim();
+const pelayan = j => j === 'netlify' || j === 'gas';
 const API = {
   jenis() {
     if (jenisSedia) return jenisSedia;
     jenisSedia = (async () => {
       if (window.claude && window.claude.use) { await dbMula(); return DB ? 'claude' : null; }
+      if (GAS_URL) {
+        try {
+          const r = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ laluan: 'ping' }) });
+          const j = await r.json(); if (j && j.ok) return 'gas';
+          API.diag = 'Pelayan Google Apps Script menjawab dengan ralat. Semak deployment web app.';
+        } catch (e) { API.diag = 'Tidak dapat menghubungi pelayan Google Apps Script. Pastikan URL dalam config.js betul (berakhir dengan /exec) dan web app dibuka kepada "Anyone".'; }
+        return null;
+      }
       if (location.protocol === 'file:') return null;
       try {
         const r = await fetch('api/ping', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
@@ -1579,9 +1592,11 @@ const API = {
   },
   async post(laluan, body) {
     try {
-      const r = await fetch('api/' + laluan, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) });
+      const gas = (await this.jenis()) === 'gas';
+      const r = gas ? await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ ...(body || {}), laluan }) })
+        : await fetch('api/' + laluan, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) });
       const j = await r.json().catch(() => ({ ok: false, salah: 'Respons pelayan tidak sah.' }));
-      if (!j.ok && r.status === 401 && laluan.startsWith('guru/') && laluan !== 'guru/masuk') { setGuru(null); }
+      if (!j.ok && (r.status === 401 || j.kod === 401) && laluan.startsWith('guru/') && laluan !== 'guru/masuk') { setGuru(null); }
       return j;
     } catch (e) { return { ok: false, salah: 'Tidak dapat menghubungi pelayan. Semak sambungan internet.' }; }
   },
@@ -1592,7 +1607,7 @@ const API = {
   async muridMasuk(icMentah) {
     const ic = icBersih(icMentah), e = icSah(ic); if (e) return { salah: e };
     const j = await this.jenis();
-    if (j === 'netlify') { const r = await this.post('murid/masuk', { ic }); return r.ok ? { token: r.token, profil: r.profil } : { salah: r.salah }; }
+    if (pelayan(j)) { const r = await this.post('murid/masuk', { ic }); return r.ok ? { token: r.token, profil: r.profil } : { salah: r.salah }; }
     if (j !== 'claude') return { salah: this.tiada };
     const hash = await icCincang(ic);
     try { const s = await DB.doc('pelajar/' + hash).get(); if (!s.exists) return { salah: 'No. IC ini belum didaftarkan. Sila minta guru mendaftarkan anda.' }; const d = s.data(); return { token: hash, profil: { ...d, ic4: String(d.ic || '').slice(-4) } }; }
@@ -1600,32 +1615,32 @@ const API = {
   },
   async muridSaya(token) {
     const j = await this.jenis();
-    if (j === 'netlify') { const r = await this.post('murid/saya', { token }); return r.ok ? r.profil : null; }
+    if (pelayan(j)) { const r = await this.post('murid/saya', { token }); return r.ok ? r.profil : null; }
     if (j !== 'claude') return null;
     try { const s = await DB.doc('pelajar/' + token).get(); if (!s.exists) return null; const d = s.data(); return { ...d, ic4: String(d.ic || '').slice(-4) }; } catch (e) { return null; }
   },
   /* pulangkan profil terkini daripada pelayan (Netlify) atau null jika tiada perubahan pelayan */
   async muridSimpan(token, body) {
     const j = await this.jenis();
-    if (j === 'netlify') { const r = await this.post('murid/simpan', { token, jaw: body.jaw, streak: body.streak, lencana: body.lencana }); if (!r.ok) throw new Error(r.salah); return r.profil; }
+    if (pelayan(j)) { const r = await this.post('murid/simpan', { token, jaw: body.jaw, streak: body.streak, lencana: body.lencana }); if (!r.ok) throw new Error(r.salah); return r.profil; }
     if (j === 'claude') { await DB.doc('pelajar/' + token).update(body); return null; }
     throw new Error(this.tiada);
   },
   async kedudukan(token, kelas) {
     const j = await this.jenis();
-    if (j === 'netlify') { const r = await this.post('kedudukan', { token }); return r.ok ? r.senarai : null; }
+    if (pelayan(j)) { const r = await this.post('kedudukan', { token }); return r.ok ? r.senarai : null; }
     if (j !== 'claude') return null;
     try {
       const snap = await DB.collection('pelajar').where('kelas', '==', kelas).get();
       return susunKedudukan(snap.docs.map(d => { const x = d.data(); return { nama: x.nama, jumlah: x.jumlah || 0, peratusMarkah: x.peratusMarkah || 0, kemajuan: x.kemajuan || 0, saya: d.id === token }; }));
     } catch (e) { return null; }
   },
-  async muridKeluar(token) { if ((await this.jenis()) === 'netlify') this.post('keluar', { token }); },
+  async muridKeluar(token) { if (pelayan(await this.jenis())) this.post('keluar', { token }); },
 
   /* ---------- guru ---------- */
   async guruStatus() {
     const j = await this.jenis();
-    if (j === 'netlify') { const r = await this.post('guru/status'); return r.ok ? { ada: r.ada, jenis: j } : { salah: r.salah }; }
+    if (pelayan(j)) { const r = await this.post('guru/status'); return r.ok ? { ada: r.ada, jenis: j } : { salah: r.salah }; }
     if (j !== 'claude') return { salah: API.diag || 'Halaman guru memerlukan pelayan laman (Netlify) atau pangkalan data claude.ai.', diag: !!API.diag };
     try { const s = await DB.doc('tetapan/guru').get(); return { ada: s.exists && !!s.data().hash, jenis: j }; } catch (e) { return { salah: 'Pangkalan data tidak dapat dihubungi. Muat semula halaman.' }; }
   },
@@ -1639,13 +1654,13 @@ const API = {
   },
   async guruMasuk(kata) {
     const j = await this.jenis();
-    if (j === 'netlify') { const r = await this.post('guru/masuk', { kata }); return r.ok ? { token: r.token } : { salah: r.salah }; }
+    if (pelayan(j)) { const r = await this.post('guru/masuk', { kata }); return r.ok ? { token: r.token } : { salah: r.salah }; }
     const t = (await DB.doc('tetapan/guru').get()).data();
     return (await kataCincang(kata, t.garam)) === t.hash ? { token: 'claude' } : { salah: 'Kata laluan salah.' };
   },
   async guruTukar(lama, baru) {
     const j = await this.jenis();
-    if (j === 'netlify') { const r = await this.post('guru/tukar', { token: guruToken, lama, baru }); return r.ok ? {} : { salah: r.salah }; }
+    if (pelayan(j)) { const r = await this.post('guru/tukar', { token: guruToken, lama, baru }); return r.ok ? {} : { salah: r.salah }; }
     const t = (await DB.doc('tetapan/guru').get()).data();
     if ((await kataCincang(lama, t.garam)) !== t.hash) return { salah: 'Kata laluan semasa salah.' };
     const garam = garamBaru();
@@ -1654,15 +1669,15 @@ const API = {
   },
   async guruDaftar(ic, nama, kelas) {
     const j = await this.jenis();
-    if (j === 'netlify') { const r = await this.post('guru/daftar', { token: guruToken, ic, nama, kelas }); if (!r.ok) throw new Error(r.salah); return r.hasil; }
+    if (pelayan(j)) { const r = await this.post('guru/daftar', { token: guruToken, ic, nama, kelas }); if (!r.ok) throw new Error(r.salah); return r.hasil; }
     return daftarMuridDb(ic, nama, kelas);
   },
   async guruPadam(row) {
-    if ((await this.jenis()) === 'netlify') { const r = await this.post('guru/padam', { token: guruToken, id: row.id }); if (!r.ok) throw new Error(r.salah); return; }
+    if (pelayan(await this.jenis())) { const r = await this.post('guru/padam', { token: guruToken, id: row.id }); if (!r.ok) throw new Error(r.salah); return; }
     await DB.doc('pelajar/' + row.id).delete();
   },
   async guruSifar(row) {
-    if ((await this.jenis()) === 'netlify') { const r = await this.post('guru/sifar', { token: guruToken, id: row.id }); if (!r.ok) throw new Error(r.salah); return; }
+    if (pelayan(await this.jenis())) { const r = await this.post('guru/sifar', { token: guruToken, id: row.id }); if (!r.ok) throw new Error(r.salah); return; }
     await DB.doc('pelajar/' + row.id).set({ ic: row.ic, nama: row.nama, kelas: row.kelas, didaftar: row.didaftar || Date.now(), jaw: {}, streak: { now: 0, best: 0 }, lencana: [], jumlah: 0, peratusMarkah: 0, kemajuan: 0, babTamat: 0, kemaskini: null });
   },
   /* senarai langsung: claude = onSnapshot; netlify = tinjau setiap 15 s */
@@ -1670,7 +1685,7 @@ const API = {
     let mati = false, stop = () => { mati = true; };
     this.jenis().then(j => {
       if (mati) return;
-      if (j === 'netlify') {
+      if (pelayan(j)) {
         const tarik = async () => { const r = await this.post('guru/senarai', { token: guruToken }); if (mati) return; if (r.ok) cb(r.senarai, false); else err(r.salah); };
         tarik(); const iv = setInterval(tarik, 15000); stop = () => { mati = true; clearInterval(iv); };
       } else {
@@ -1680,7 +1695,7 @@ const API = {
     });
     return () => stop();
   },
-  async guruKeluar() { if ((await this.jenis()) === 'netlify' && guruToken && guruToken !== 'claude') this.post('guru/keluar', { token: guruToken }); }
+  async guruKeluar() { if (pelayan(await this.jenis()) && guruToken && guruToken !== 'claude') this.post('guru/keluar', { token: guruToken }); }
 };
 
 'use strict';

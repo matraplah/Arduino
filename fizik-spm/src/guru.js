@@ -35,7 +35,9 @@ async function viewGuru() {
       <li><span>Buka <code>${esc(location.origin)}/api/ping</code> dalam tab baharu. Jika betul, ia memaparkan “Pelayan Fizik SPM berfungsi”.</span></li></ol></div>` : '');
     return;
   }
-  if (!st.ada) return st.jenis === 'claude' ? guruTetap(box) : (box.innerHTML = '<p class="ralat">Kata laluan guru belum ditetapkan. Dalam Netlify, buka Site configuration → Environment variables dan tambah <b>GURU_KATA_LALUAN</b>, kemudian deploy semula.</p>');
+  if (!st.ada) return st.jenis === 'claude' ? guruTetap(box) : (box.innerHTML = st.jenis === 'gas'
+    ? '<p class="ralat">Kata laluan guru belum ditetapkan. Dalam Google Apps Script, buka Project Settings → Script properties dan tambah <b>GURU_KATA_LALUAN</b>.</p>'
+    : '<p class="ralat">Kata laluan guru belum ditetapkan. Dalam Netlify, buka Site configuration → Environment variables dan tambah <b>GURU_KATA_LALUAN</b>, kemudian deploy semula.</p>');
   if (!guruToken) return guruMasuk(box);
   guruPapan(box);
 }
@@ -176,7 +178,7 @@ function guruPapan(box) {
       try {
         if (b.dataset.act === 'padam') { await API.guruPadam(r); toast('Murid dipadam', 'no'); }
         else { await API.guruSifar(r); toast('Markah murid diset semula', 'no'); }
-        API.jenis().then(j => { if (j === 'netlify') segar(); });
+        API.jenis().then(j => { if (pelayan(j)) segar(); });
       } catch (e) { toast('Gagal. Cuba lagi.', 'no'); }
     });
   };
