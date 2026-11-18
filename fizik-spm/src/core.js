@@ -75,18 +75,18 @@ const semuaKuiz = b => (b.kuizTambah || []).concat(b.kuiz);
 function cleanup() {
   if (stopSim) { stopSim(); stopSim = null; }
   if (stopHero) { stopHero(); stopHero = null; }
+  if (stopGuru) { stopGuru(); stopGuru = null; }
 }
-function best(id) { return store.get('skor:' + id); }
 
 /* ---------- laman utama ---------- */
 function viewHome() {
   const nq = BAB.reduce((n, b) => n + semuaKuiz(b).length + b.struktur.length + (b.reka ? 1 : 0), 0);
   const nsim = BAB.reduce((n, b) => n + (b.sim.n || 1), 0);
   const toc = ting => BAB.filter(b => b.ting === ting).map(b => {
-    const s = best(b.id);
+    const s = Game.bab(b);
     return `<li><a href="#${b.id}"><span class="no">${b.no}</span>
       <span><span class="tm">${b.tema}</span><span class="tj">${b.tajuk}</span><span class="st">${b.sub.map(x => x.n + ' ' + x.t).join(' · ')}</span></span>
-      <span class="pg${s != null && s === semuaKuiz(b).length ? ' done' : ''}"><b class="num">${s != null ? s + '/' + semuaKuiz(b).length : '–'}</b>${s != null ? 'markah terbaik' : 'belum dicuba'}</span></a></li>`;
+      <span class="pg${s.tamat ? ' done' : ''}">${bintangHtml(s.bintang)}<b class="num">${s.pts}<small>/${s.max}</small></b>${s.done ? s.done + '/' + s.total + ' dijawab' : 'belum dicuba'}</span></a></li>`;
   }).join('');
   app.innerHTML = `
   <section class="hero"><div class="wrap">
@@ -98,12 +98,14 @@ function viewHome() {
     <canvas id="hero-cv" aria-hidden="true"></canvas>
   </div></section>
   <div class="wrap">
+    ${profilHtml()}
+    <section class="sec" id="sec-guru" hidden><div class="sec-h"><h2>Untuk guru</h2><small>Hanya dipaparkan kepada pemilik dan Editor laman</small></div><div class="mix" style="grid-template-columns:minmax(0,1fr)"><a href="#guru"><b>Markah murid</b><span>Senarai semua murid, mata dan bab yang telah tamat</span></a></div></section>
     <section class="sec"><div class="sec-h"><h2>Cara guna</h2><small>Lima langkah bagi setiap bab</small></div>
       <ol class="steps">
         <li><b>Penerangan</b><span>Baca isi ringkas. Tanda <i class="chip-spm">SPM</i> = kerap ditanya.</span></li>
         <li><b>Visual</b><span>Ubah nilai dan lihat konsep berlaku.</span></li>
         <li><b>Fokus SPM</b><span>Hafal takrif, kenali corak soalan.</span></li>
-        <li><b>Latihan</b><span>Objektif, struktur dan soalan reka bentuk.</span></li>
+        <li><b>Latihan</b><span>Jawab, semak dan kumpul mata. Jawapan dikunci.</span></li>
         <li><b>Rumusan</b><span>Ulang kaji rumus dan kesilapan lazim.</span></li>
       </ol></section>
     <section class="sec" id="sec-t4"><div class="sec-h"><h2>Tingkatan 4</h2><small>6 bab · Asas Fizik, Mekanik Newton, Haba, Gelombang, Cahaya dan Optik</small></div><ol class="toc">${toc(4)}</ol></section>
@@ -135,6 +137,8 @@ function viewHome() {
   </div>
   <footer class="foot"><div class="wrap">Kandungan disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan Tingkatan 5 (KPM). Bahagian Fokus SPM dianalisis daripada Koleksi Soalan Kertas 2 Percubaan SPM 2025 (pelbagai negeri, MRSM, SBP dan SMKA). Soalan latihan ditulis semula mengikut gaya Kertas 1 dan Kertas 2; markah terbaik disimpan pada peranti ini sahaja.</div></footer>`;
   stopHero = heroAnim(document.getElementById('hero-cv'));
+  profilBind();
+  dbMula().then(() => { if (DB && PENGGUNA && PENGGUNA.canEdit() && location.hash.slice(1) !== 'guru') { const f = document.querySelector('#sec-guru'); if (f) f.hidden = false; } });
 }
 
 function heroAnim(cv) {
@@ -267,12 +271,20 @@ function tabNota(p, b) {
 }
 
 function tabLatih(p, b) {
-  const nav = el('nav', 'bhg', `<a href="#" data-k="A"><b>A</b>Objektif</a><a href="#" data-k="B"><b>B</b>Struktur</a>${b.reka ? '<a href="#" data-k="C"><b>C</b>Reka bentuk</a>' : ''}`);
+  if (!Profil) {
+    p.append(el('div', 'profil kosong', `<h2>Log masuk untuk menjawab</h2><p>Latihan bab ini memberi mata yang disimpan pada profil no. IC anda. Log masuk dahulu supaya markah anda tidak hilang.</p><div class="row"><a class="btn" href="#masuk">Log masuk dengan no. IC</a></div>`));
+    p.append(el('p', 'lede', 'Untuk latihan tanpa mata, cuba <a href="#kuiz-semua">Kuiz campuran</a>.'));
+    return;
+  }
+  p.append(el('div', null, babStatusHtml(b)));
+  p.append(el('p', 'lede', `<b>Peraturan permainan:</b> pilih jawapan, kemudian tekan <b>Semak jawapan</b>. Sistem menyemak dan mengira mata serta-merta, dan jawapan <b>tidak boleh diubah</b> lagi. Objektif betul = ${MATA_SOALAN} mata. Soalan reka bentuk = ${MATA_MARKAH_REKA} mata bagi setiap markah.`));
+  const nav = el('nav', 'bhg', `<a href="#" data-k="A"><b>A</b>Objektif</a>${b.reka ? '<a href="#" data-k="C"><b>B</b>Reka bentuk</a>' : ''}<a href="#" data-k="B"><b>C</b>Struktur</a>`);
   nav.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); document.getElementById('bhg-' + a.dataset.k).scrollIntoView({ behavior: 'smooth' }); });
   p.append(nav);
-  p.append(el('div', null, `<h2 id="bhg-A">Bahagian A: Soalan objektif</h2><p class="lede" style="margin-top:6px">Gaya Kertas 1. Penjelasan dipaparkan sebaik sahaja anda menjawab, jadi anda belajar daripada setiap kesilapan.</p>`));
-  const a = el('div'); p.append(a); mcq(a, semuaKuiz(b), b.id);
-  p.append(el('div', null, `<h2 id="bhg-B" style="margin-top:14px">Bahagian B: Soalan struktur</h2><p class="lede" style="margin-top:6px">Gaya Kertas 2. Jawab di atas kertas dahulu. Tekan “Petunjuk” jika buntu, kemudian semak skema bahagian demi bahagian.</p>`));
+  p.append(el('div', null, `<h2 id="bhg-A">Bahagian A: Soalan objektif</h2><p class="lede" style="margin-top:6px">Gaya Kertas 1. Penjelasan dipaparkan selepas setiap semakan.</p>`));
+  const a = el('div'); p.append(a); mcq(a, semuaKuiz(b), { bab: b });
+  if (b.reka) { p.append(el('div', null, `<h2 id="bhg-C" style="margin-top:14px">Bahagian B: Soalan reka bentuk (10 markah)</h2><p class="lede" style="margin-top:6px">Soalan ini muncul hampir setiap tahun dalam Kertas 2. Pilih ciri yang paling sesuai bagi setiap aspek dan reka bentuk terbaik, kemudian semak. Markah penuh = ${(b.reka.aspek.length * 2 + 2) * MATA_MARKAH_REKA} mata.</p>`)); reka(p, b); }
+  p.append(el('div', null, `<h2 id="bhg-B" style="margin-top:14px">Bahagian C: Soalan struktur (latihan bertulis)</h2><p class="lede" style="margin-top:6px">Gaya Kertas 2. Jawapan bertulis tidak dapat disemak oleh sistem, jadi bahagian ini <b>tidak diberi mata</b>. Jawab di atas kertas dahulu, kemudian bandingkan dengan skema.</p>`));
   b.struktur.forEach((s, i) => {
     const tot = s.b.reduce((n, x) => n + x.m, 0);
     const card = el('div', 'q', `<div class="qh"><span class="qn">${i + 1}</span><div>${fmt(s.t)}</div></div>
@@ -283,70 +295,6 @@ function tabLatih(p, b) {
     bt.onclick = () => { const show = bt.textContent.startsWith('Tunjuk'); card.querySelectorAll('.ans').forEach(x => x.hidden = !show); card.querySelectorAll('.lnk').forEach(x => x.textContent = show ? 'Sembunyi skema' : 'Semak skema'); bt.textContent = show ? 'Sembunyi semua skema' : 'Tunjuk semua skema'; };
     p.append(card);
   });
-  if (b.reka) { p.append(el('div', null, `<h2 id="bhg-C" style="margin-top:14px">Bahagian C: Soalan reka bentuk (10 markah)</h2><p class="lede" style="margin-top:6px">Soalan ini muncul hampir setiap tahun dalam Bahagian B dan C Kertas 2. Pilih ciri yang paling sesuai bagi setiap aspek, kemudian pilih reka bentuk terbaik.</p>`)); reka(p, b.reka); }
-}
-
-/* ---------- soalan reka bentuk interaktif ---------- */
-function reka(p, r) {
-  const card = el('div', 'reka');
-  card.innerHTML = `<p>${fmt(r.s)}</p>
-    <div class="scroll"><table class="rumus spec"><thead><tr><th>Aspek</th>${r.opsyen.map(o => `<th>${o}</th>`).join('')}</tr></thead><tbody>${r.aspek.map(x => `<tr><td>${x.a}</td>${x.v.map(v => `<td>${fmt(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
-    <h3>Langkah 1: Pilih ciri yang paling sesuai bagi setiap aspek</h3><div class="asp"></div>
-    <h3>Langkah 2: Reka bentuk yang paling sesuai ialah</h3><div class="row pilih"></div>
-    <div class="row rk-act"><button type="button" class="btn">Semak jawapan</button><button type="button" class="btn ghost">Cuba semula</button></div><div class="hasil" role="status"></div>`;
-  const asp = card.querySelector('.asp'), pilih = card.querySelector('.pilih'), [cek, sem] = card.querySelectorAll('.rk-act .btn'), hasil = card.querySelector('.hasil');
-  const jaw = r.aspek.map(() => null); let opt = null;
-  r.aspek.forEach((x, i) => {
-    const uniq = [...new Set(x.v)];
-    const row = el('div', 'asp-r', `<b>${x.a}</b><div class="row"></div><div class="sebab" hidden></div>`);
-    uniq.forEach(v => { const c = el('button', 'chip', fmt(v)); c.type = 'button'; c.setAttribute('aria-pressed', 'false'); c.onclick = () => { jaw[i] = v; row.querySelectorAll('.chip').forEach(z => z.setAttribute('aria-pressed', z === c)); }; row.querySelector('.row').append(c); });
-    asp.append(row);
-  });
-  r.opsyen.forEach((o, i) => { const c = el('button', 'chip', o); c.type = 'button'; c.setAttribute('aria-pressed', 'false'); c.onclick = () => { opt = i; pilih.querySelectorAll('.chip').forEach(z => z.setAttribute('aria-pressed', z === c)); }; pilih.append(c); });
-  cek.onclick = () => {
-    let m = 0;
-    asp.querySelectorAll('.asp-r').forEach((row, i) => {
-      const x = r.aspek[i], ok = jaw[i] === x.ok, sb = row.querySelector('.sebab');
-      row.classList.toggle('ok', ok); row.classList.toggle('no', !ok); if (ok) m += 2;
-      sb.hidden = false; sb.innerHTML = `${ok ? '✓' : '✗'} Ciri: <b>${fmt(x.ok)}</b>. Sebab: ${fmt(x.sebab)}`;
-    });
-    const okp = opt === r.jawapan; if (okp) m += 2;
-    pilih.classList.toggle('ok', okp); pilih.classList.toggle('no', !okp);
-    hasil.innerHTML = `<b class="num">Markah: ${m}/${r.aspek.length * 2 + 2}</b><p>Jawapan contoh: <b>${r.opsyen[r.jawapan]}</b> paling sesuai kerana ${r.aspek.map(x => `${x.a.charAt(0).toLowerCase() + x.a.slice(1)} ialah ${fmt(x.ok)}`).join('; ')}.</p>`;
-  };
-  sem.onclick = () => { const n = el('div'); card.replaceWith(n); reka(n, r); n.replaceWith(n.firstChild); };
-  p.append(card);
-}
-
-/* ---------- soalan objektif ---------- */
-function mcq(host, qs, key, again) {
-  host.innerHTML = ''; host.style.cssText = 'display:flex;flex-direction:column;gap:18px';
-  let done = 0, right = 0;
-  const sc = el('div', 'score', `<span>Markah <b class="num">0/${qs.length}</b></span><span class="bar"><i></i></span><button type="button" class="btn ghost">${again ? 'Soalan baharu' : 'Cuba semula'}</button>`);
-  sc.querySelector('button').onclick = () => again ? again() : mcq(host, qs, key);
-  host.append(sc);
-  const upd = () => { sc.querySelector('b').textContent = right + '/' + qs.length; sc.querySelector('i').style.width = (done / qs.length * 100) + '%'; };
-  qs.forEach((q, n) => {
-    const card = el('div', 'q', `<div class="qh"><span class="qn">${n + 1}</span><div>${q.src ? `<div class="src">${q.src}</div>` : ''}<div>${fmt(q.q)}</div></div></div><div class="opts"></div>`);
-    const box = card.querySelector('.opts');
-    shuffle([0, 1, 2, 3]).forEach((oi, k) => {
-      const bt = el('button', 'opt', `<b>${'ABCD'[k]}</b><span>${fmt(q.o[oi])}</span>`); bt.type = 'button'; bt.dataset.ok = oi === q.a ? '1' : '';
-      bt.onclick = () => {
-        const ok = oi === q.a; done++; if (ok) right++;
-        box.querySelectorAll('.opt').forEach(x => { x.disabled = true; if (x.dataset.ok) x.classList.add('ok'); });
-        if (!ok) bt.classList.add('no');
-        const fb = el('div', 'fb ' + (ok ? 'ok' : 'no'), `<strong>${ok ? 'Betul' : 'Belum tepat'}</strong>${fmt(q.e)}`); fb.setAttribute('role', 'status');
-        card.append(fb); upd();
-        if (done === qs.length) {
-          const prev = store.get('skor:' + key); if (prev == null || right > prev) store.set('skor:' + key, right);
-          const pct = right / qs.length;
-          host.append(el('div', 'done', `<b class="num">Markah akhir: ${right}/${qs.length}</b><p>${pct === 1 ? 'Semua betul. Teruskan ke soalan struktur atau bab seterusnya.' : pct >= .6 ? 'Hampir menguasai bab ini. Semak semula penjelasan bagi soalan yang salah.' : 'Baca semula tab Penerangan dan cuba visual interaktif, kemudian jawab sekali lagi.'}</p>`));
-        }
-      };
-      box.append(bt);
-    });
-    host.append(card);
-  });
 }
 
 /* ---------- kuiz campuran ---------- */
@@ -355,14 +303,14 @@ function viewKuiz(scope) {
   const name = scope === 'semua' ? 'Semua bab' : 'Tingkatan ' + scope[1];
   app.innerHTML = `<header class="ch-head"><div class="wrap" style="padding-bottom:20px">
       <a class="back" href="#utama">← Kandungan</a>
-      <div class="ch-title"><div><div class="eb">Kuiz campuran</div><h1>${name}</h1></div></div>
-      <p class="ch-intro">10 soalan objektif dipilih secara rawak. Tekan “Soalan baharu” untuk set yang lain.</p>
+      <div class="ch-title"><div><div class="eb">Kuiz campuran · latihan bebas</div><h1>${name}</h1></div></div>
+      <p class="ch-intro">10 soalan objektif dipilih secara rawak untuk ulang kaji. Latihan bebas <b>tidak menambah mata</b>; kumpul mata melalui tab Latihan dalam setiap bab.</p>
     </div></header>
     <div class="wrap"><div class="panel"><div id="kz"></div></div></div>
     <footer class="foot"><div class="wrap">Fizik SPM Interaktif · Kuiz campuran</div></footer>`;
   const draw = () => {
     const all = []; pool.forEach(b => b.kuiz.forEach(q => all.push(Object.assign({ src: `T${b.ting} Bab ${b.no} · ${b.tajuk}` }, q))));
-    mcq(document.getElementById('kz'), shuffle(all).slice(0, 10), 'kuiz-' + scope, draw);
+    mcq(document.getElementById('kz'), shuffle(all).slice(0, 10), { again: draw });
   };
   draw();
 }
@@ -371,13 +319,17 @@ function viewKuiz(scope) {
 function route() {
   cleanup();
   const h = location.hash.slice(1), b = BAB.find(x => x.id === h), k = /^kuiz-(t4|t5|semua)$/.exec(h);
-  if (b) { viewBab(b); document.title = `Bab ${b.no} ${b.tajuk} · Fizik SPM Interaktif`; }
+  if (h === 'masuk') { viewMasuk(); document.title = 'Log masuk · Fizik SPM Interaktif'; }
+  else if (h === 'guru') { viewGuru(); document.title = 'Markah murid · Fizik SPM Interaktif'; }
+  else if (b) { viewBab(b); document.title = `Bab ${b.no} ${b.tajuk} · Fizik SPM Interaktif`; }
   else if (k) { viewKuiz(k[1]); document.title = 'Kuiz campuran · Fizik SPM Interaktif'; }
   else { viewHome(); document.title = 'Fizik SPM Interaktif'; }
   document.querySelectorAll('.top nav a').forEach(a => {
     const on = a.getAttribute('href') === '#utama' ? !k : !!k;
     if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   });
+  hud();
   window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', route);
+function mula() { Akaun.pulih().then(ada => { if (ada) route(); }); }
