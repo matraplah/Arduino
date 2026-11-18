@@ -33,4 +33,4 @@ Sunting fail dalam `src/`, kemudian jalankan:
 python3 build.py
 ```
 
-Ini menghasilkan `web/index.html` (laman) dan `netlify/functions/kunci.json` (kunci jawapan untuk pelayan). Commit kedua-dua fail dan push; Netlify akan deploy semula.
+Ini menghasilkan `web/index.html` (laman) dan `netlify/functions/kunci.mjs` (kunci jawapan untuk pelayan). Commit kedua-dua fail dan push; Netlify akan deploy semula.

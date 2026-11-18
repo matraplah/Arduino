@@ -1,4 +1,4 @@
-// Jana kunci jawapan untuk pelayan (netlify/functions/kunci.json) daripada fail data dalam src/.
+// Jana kunci jawapan untuk pelayan (netlify/functions/kunci.mjs) daripada fail data dalam src/.
 // Pelayan menggunakan kunci ini untuk menyemak jawapan dan mengira mata sendiri.
 import { readFileSync, writeFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -19,5 +19,5 @@ for (const b of ctx.BAB) {
     reka: b.reka ? { ok: b.reka.aspek.map(x => x.ok), jawapan: b.reka.jawapan, n: b.reka.opsyen.length } : null
   };
 }
-writeFileSync(new URL('../netlify/functions/kunci.json', import.meta.url), JSON.stringify(kunci));
-console.log('kunci.json:', Object.keys(kunci).length, 'bab,', Object.values(kunci).reduce((n, k) => n + k.q.length, 0), 'soalan');
+writeFileSync(new URL('../netlify/functions/kunci.mjs', import.meta.url), '// Dijana oleh tools/jana-kunci.mjs. Jangan sunting secara manual.\nexport default ' + JSON.stringify(kunci) + ';\n');
+console.log('kunci.mjs:', Object.keys(kunci).length, 'bab,', Object.values(kunci).reduce((n, k) => n + k.q.length, 0), 'soalan');

@@ -27,7 +27,14 @@ function guruShell(isi, sub) {
 async function viewGuru() {
   const box = guruShell('<p class="lede">Memuatkan…</p>', 'Daftar murid, pantau markah dan kedudukan kelas.');
   const st = await API.guruStatus();
-  if (st.salah) { box.innerHTML = `<p class="ralat">${esc(st.salah)}</p>`; return; }
+  if (st.salah) {
+    box.innerHTML = `<p class="ralat">${esc(st.salah)}</p>` + (st.diag ? `<div class="kad"><h2 class="h-kecil">Semak tetapan Netlify</h2><ol class="rum">
+      <li><span>Laman mesti di-deploy daripada <b>GitHub</b> (Add new site → Import an existing project), bukan dengan seret dan lepas fail.</span></li>
+      <li><span>Site configuration → Build &amp; deploy → <b>Base directory</b> = <code>fizik-spm</code>, <b>Publish directory</b> = <code>fizik-spm/web</code>.</span></li>
+      <li><span>Dalam senarai deploy terkini, bahagian <b>Functions</b> mesti menunjukkan fungsi <code>api</code>.</span></li>
+      <li><span>Buka <code>${esc(location.origin)}/api/ping</code> dalam tab baharu. Jika betul, ia memaparkan “Pelayan Fizik SPM berfungsi”.</span></li></ol></div>` : '');
+    return;
+  }
   if (!st.ada) return st.jenis === 'claude' ? guruTetap(box) : (box.innerHTML = '<p class="ralat">Kata laluan guru belum ditetapkan. Dalam Netlify, buka Site configuration → Environment variables dan tambah <b>GURU_KATA_LALUAN</b>, kemudian deploy semula.</p>');
   if (!guruToken) return guruMasuk(box);
   guruPapan(box);

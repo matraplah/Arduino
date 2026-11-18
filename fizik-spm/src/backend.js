@@ -20,7 +20,14 @@ const API = {
     jenisSedia = (async () => {
       if (window.claude && window.claude.use) { await dbMula(); return DB ? 'claude' : null; }
       if (location.protocol === 'file:') return null;
-      try { const r = await fetch('api/ping', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }); const j = await r.json(); if (j && j.ok) return 'netlify'; } catch (e) { /* tiada pelayan */ }
+      try {
+        const r = await fetch('api/ping', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+        const teks = await r.text(); let j = null; try { j = JSON.parse(teks); } catch (e) { j = null; }
+        if (j && j.ok) return 'netlify';
+        API.diag = r.status === 404 ? 'Fungsi pelayan tidak dijumpai (ralat 404). Laman ini mungkin dimuat naik tanpa folder netlify/functions, atau "Base directory" dalam Netlify bukan fizik-spm.'
+          : r.status >= 500 ? `Fungsi pelayan wujud tetapi gagal berjalan (ralat ${r.status}). Semak Netlify → Logs → Functions untuk butiran.`
+          : `Pelayan menjawab dengan respons yang tidak dijangka (status ${r.status}).`;
+      } catch (e) { API.diag = 'Tidak dapat menghubungi pelayan. Semak sambungan internet.'; }
       return null;
     })();
     return jenisSedia;
@@ -33,7 +40,8 @@ const API = {
       return j;
     } catch (e) { return { ok: false, salah: 'Tidak dapat menghubungi pelayan. Semak sambungan internet.' }; }
   },
-  tiada: 'Sistem log masuk tidak tersedia pada paparan ini.',
+  diag: '',
+  get tiada() { return this.diag || 'Sistem log masuk tidak tersedia pada paparan ini.'; },
 
   /* ---------- murid ---------- */
   async muridMasuk(icMentah) {
@@ -73,7 +81,7 @@ const API = {
   async guruStatus() {
     const j = await this.jenis();
     if (j === 'netlify') { const r = await this.post('guru/status'); return r.ok ? { ada: r.ada, jenis: j } : { salah: r.salah }; }
-    if (j !== 'claude') return { salah: 'Halaman guru memerlukan pelayan laman (Netlify) atau pangkalan data claude.ai.' };
+    if (j !== 'claude') return { salah: API.diag || 'Halaman guru memerlukan pelayan laman (Netlify) atau pangkalan data claude.ai.', diag: !!API.diag };
     try { const s = await DB.doc('tetapan/guru').get(); return { ada: s.exists && !!s.data().hash, jenis: j }; } catch (e) { return { salah: 'Pangkalan data tidak dapat dihubungi. Muat semula halaman.' }; }
   },
   async guruTetap(kata) {

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gabungkan fail dalam src/ menjadi satu laman web.
 
-  python3 build.py            -> index.html dan web/index.html (laman lengkap) + netlify/functions/kunci.json
+  python3 build.py            -> index.html dan web/index.html (laman lengkap) + netlify/functions/kunci.mjs
   python3 build.py --fragmen F -> juga tulis versi tanpa <html>/<head>/<body> ke fail F
 """
 import pathlib, sys
