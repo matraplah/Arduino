@@ -19,6 +19,7 @@ const API = {
     if (jenisSedia) return jenisSedia;
     jenisSedia = (async () => {
       if (window.claude && window.claude.use) { await dbMula(); return DB ? 'claude' : null; }
+      if (location.protocol === 'file:') return null;
       try { const r = await fetch('api/ping', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }); const j = await r.json(); if (j && j.ok) return 'netlify'; } catch (e) { /* tiada pelayan */ }
       return null;
     })();

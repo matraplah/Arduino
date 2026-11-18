@@ -78,46 +78,126 @@ function cleanup() {
   if (stopGuru) { stopGuru(); stopGuru = null; }
 }
 
-/* ---------- laman utama ---------- */
-function viewHome() {
-  const nq = BAB.reduce((n, b) => n + semuaKuiz(b).length + b.struktur.length + (b.reka ? 1 : 0), 0);
-  const nsim = BAB.reduce((n, b) => n + (b.sim.n || 1), 0);
-  const toc = ting => BAB.filter(b => b.ting === ting).map(b => {
-    const s = Game.bab(b);
-    return `<li><a href="#${b.id}"><span class="no">${b.no}</span>
-      <span><span class="tm">${b.tema}</span><span class="tj">${b.tajuk}</span><span class="st">${b.sub.map(x => x.n + ' ' + x.t).join(' · ')}</span></span>
-      <span class="pg${s.tamat ? ' done' : ''}">${bintangHtml(s.bintang)}<b class="num">${s.pts}<small>/${s.max}</small></b>${s.done ? s.done + '/' + s.total + ' dijawab' : 'belum dicuba'}</span></a></li>`;
-  }).join('');
+/* ---------- navigasi utama ---------- */
+const NAV = [
+  ['utama', 'Utama', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H10v6H4a1 1 0 0 1-1-1z'],
+  ['bab', 'Bab', 'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11'],
+  ['kuiz', 'Kuiz', 'M9 12l2 2 4-4M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z'],
+  ['kedudukan', 'Kedudukan', 'M8 21h8M12 16v5M7 4h10v5a5 5 0 0 1-10 0zM17 6h3v1a3 3 0 0 1-3 3M7 6H4v1a3 3 0 0 0 3 3'],
+  ['profil', 'Profil', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0']
+];
+function navPasang() {
+  const ikon = d => `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}" style="fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"/></svg>`;
+  const html = NAV.map(([id, t, d]) => `<a href="#${id}" data-nav="${id}">${ikon(d)}<span>${t}</span></a>`).join('');
+  document.getElementById('nav-atas').innerHTML = html;
+  document.getElementById('nav-bawah').innerHTML = html;
+}
+function navAktif(id) {
+  document.querySelectorAll('[data-nav]').forEach(a => { if (a.dataset.nav === id) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+}
+function kepala(eb, tajuk, sub) {
+  return `<header class="pg-head"><div class="wrap"><div class="eb">${eb}</div><h1>${tajuk}</h1>${sub ? `<p>${sub}</p>` : ''}</div></header>`;
+}
+const kaki = () => `<footer class="foot"><div class="wrap">Fizik SPM Interaktif · Disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan 5 (KPM). Fokus SPM dianalisis daripada Koleksi Soalan Kertas 2 Percubaan SPM 2025.</div></footer>`;
+const ikonKecil = d => `<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}" style="fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"/></svg>`;
+
+/* ---------- Utama ---------- */
+function viewUtama() {
+  const akhir = BAB.find(b => b.id === store.get('akhir')) || BAB[0];
+  const sa = Game.bab(akhir);
+  let atas;
+  if (Profil) {
+    const t = Game.total(), pk = Game.pangkat(t), sy = Profil.ked && Profil.ked.saya;
+    let dijawab = 0, item = 0; BAB.forEach(b => { const x = Game.bab(b); dijawab += x.done; item += x.total; });
+    atas = `<div class="kad sambut">
+      <div class="sb-h"><div><div class="eb">Selamat datang</div><h2>${esc(Profil.nama)} <span id="pf-gel">${sy ? gelaranHtml(sy.gelaran) : ''}</span></h2><p class="q-hint">${esc(Profil.kelas || '')} · Pangkat: ${pk.nama}</p></div></div>
+      <dl class="tiles">
+        <div><dt>Mata</dt><dd class="num">${t}</dd></div>
+        <div><dt>Kedudukan kelas</dt><dd class="num" id="ut-ked">${sy ? '#' + sy.kedudukan : '–'}</dd></div>
+        <div><dt>Kemajuan</dt><dd class="num">${Math.round(dijawab / item * 100)}%</dd></div>
+      </dl></div>`;
+  } else atas = loginKadHtml();
   app.innerHTML = `
-  <section class="hero"><div class="wrap">
-    <div>
-      <h1>Fizik SPM <span>Interaktif</span></h1>
-      <p>Penerangan ringkas, isi yang kerap keluar SPM dan latihan bertahap untuk semua bab Fizik KSSM Tingkatan 4 dan Tingkatan 5.</p>
-      <ul class="stats"><li><b class="num">${BAB.length}</b>bab</li><li><b class="num">${nsim}</b>visual interaktif</li><li><b class="num">${nq}</b>soalan latihan</li></ul>
-    </div>
-    <canvas id="hero-cv" aria-hidden="true"></canvas>
-  </div></section>
-  <div class="wrap">
-    ${profilHtml()}
-    <section class="sec" id="sec-guru"><div class="sec-h"><h2>Untuk guru</h2><small>Memerlukan kata laluan guru</small></div><div class="mix" style="grid-template-columns:minmax(0,1fr)"><a href="#guru"><b>Halaman guru</b><span>Daftar murid, pantau markah dan peratus kemajuan setiap murid</span></a></div></section>
-    <section class="sec"><div class="sec-h"><h2>Cara guna</h2><small>Lima langkah bagi setiap bab</small></div>
+  ${kepala('Fizik KSSM Tingkatan 4 & 5', 'Belajar, berlatih, bersaing', 'Nota ringkas, visual interaktif dan latihan SPM untuk 13 bab.')}
+  <div class="wrap halaman">
+    ${atas}
+    <section><h2 class="h-kecil">Teruskan belajar</h2>
+      <a class="kad teruskan" href="#${akhir.id}"><span class="no">${akhir.no}</span><span><span class="eb">Tingkatan ${akhir.ting} · Bab ${akhir.no}</span><b>${akhir.tajuk}</b><span class="q-hint">${sa.done ? `${sa.done}/${sa.total} soalan dijawab` : 'Mula dengan Penerangan, kemudian Latihan'}</span></span><span class="pergi" aria-hidden="true">→</span></a>
+    </section>
+    <section><h2 class="h-kecil">Akses pantas</h2>
+      <div class="pantas">
+        <a href="#bab">${ikonKecil(NAV[1][2])}<b>Semua bab</b><span>13 bab T4 dan T5</span></a>
+        <a href="#kuiz">${ikonKecil(NAV[2][2])}<b>Kuiz campuran</b><span>10 soalan rawak</span></a>
+        <a href="#kedudukan">${ikonKecil(NAV[3][2])}<b>Kedudukan kelas</b><span>Siapa juara?</span></a>
+        <a href="#rujukan">${ikonKecil('M4 6h16M4 12h16M4 18h10')}<b>Pemalar fizik</b><span>Nilai rujukan</span></a>
+      </div>
+    </section>
+    <details class="kad cara"><summary>Cara guna setiap bab</summary>
       <ol class="steps">
-        <li><b>Penerangan</b><span>Baca isi ringkas. Tanda <i class="chip-spm">SPM</i> = kerap ditanya.</span></li>
-        <li><b>Visual</b><span>Ubah nilai dan lihat konsep berlaku.</span></li>
+        <li><b>Penerangan</b><span>Isi ringkas. Tanda <i class="chip-spm">SPM</i> = kerap ditanya.</span></li>
+        <li><b>Visual</b><span>Ubah nilai, lihat konsep berlaku.</span></li>
         <li><b>Fokus SPM</b><span>Hafal takrif, kenali corak soalan.</span></li>
-        <li><b>Latihan</b><span>Jawab, semak dan kumpul mata. Jawapan dikunci.</span></li>
-        <li><b>Rumusan</b><span>Ulang kaji rumus dan kesilapan lazim.</span></li>
-      </ol></section>
-    <section class="sec" id="sec-t4"><div class="sec-h"><h2>Tingkatan 4</h2><small>6 bab · Asas Fizik, Mekanik Newton, Haba, Gelombang, Cahaya dan Optik</small></div><ol class="toc">${toc(4)}</ol></section>
-    <section class="sec" id="sec-t5"><div class="sec-h"><h2>Tingkatan 5</h2><small>7 bab · Mekanik Newton, Elektrik dan Keelektromagnetan, Fizik Gunaan, Fizik Moden</small></div><ol class="toc">${toc(5)}</ol></section>
-    <section class="sec"><div class="sec-h"><h2>Kuiz campuran</h2><small>10 soalan objektif dipilih secara rawak, dengan penjelasan bagi setiap jawapan</small></div>
-      <div class="mix">
-        <a href="#kuiz-t4"><b>Tingkatan 4</b><span>Bab 1 hingga Bab 6</span></a>
-        <a href="#kuiz-t5"><b>Tingkatan 5</b><span>Bab 1 hingga Bab 7</span></a>
-        <a href="#kuiz-semua"><b>Semua bab</b><span>Ulang kaji menjelang SPM</span></a>
-      </div></section>
-    <section class="sec"><div class="sec-h"><h2>Pemalar fizik</h2><small>Nilai yang digunakan dalam buku teks dan laman ini</small></div>
-      <dl class="consts">${[
+        <li><b>Latihan</b><span>Jawab, semak, kumpul mata.</span></li>
+        <li><b>Rumusan</b><span>Rumus dan kesilapan lazim.</span></li>
+      </ol></details>
+  </div>${kaki()}`;
+  const iv = setInterval(() => { if (Profil) Akaun.kedudukan(); }, 30000);
+  stopHero = () => clearInterval(iv);
+  if (Profil) Akaun.kedudukan().then(() => { const k = document.getElementById('ut-ked'), sy = Profil && Profil.ked && Profil.ked.saya; if (k && sy) k.textContent = '#' + sy.kedudukan; });
+}
+
+/* ---------- Bab ---------- */
+function viewSenaraiBab() {
+  let ting = store.get('ting') === 5 ? 5 : 4;
+  app.innerHTML = `${kepala('Senarai bab', 'Bab', 'Pilih tingkatan, kemudian pilih bab.')}
+    <div class="wrap halaman">
+      <div class="seg" role="tablist" aria-label="Tingkatan"><button type="button" role="tab" data-t="4">Tingkatan 4</button><button type="button" role="tab" data-t="5">Tingkatan 5</button></div>
+      <ol class="toc" id="toc"></ol>
+    </div>${kaki()}`;
+  const lukis = () => {
+    app.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-selected', +b.dataset.t === ting));
+    document.getElementById('toc').innerHTML = BAB.filter(b => b.ting === ting).map(b => {
+      const s = Game.bab(b);
+      return `<li><a href="#${b.id}"><span class="no">${b.no}</span>
+        <span><span class="tm">${b.tema}</span><span class="tj">${b.tajuk}</span></span>
+        <span class="pg${s.tamat ? ' done' : ''}">${Profil ? `${bintangHtml(s.bintang)}<b class="num">${s.pts}<small>/${s.max}</small></b>` : `<span class="q-hint">${b.sub.length} subtopik</span>`}</span></a></li>`;
+    }).join('');
+  };
+  app.querySelectorAll('.seg button').forEach(b => b.onclick = () => { ting = +b.dataset.t; store.set('ting', ting); lukis(); });
+  lukis();
+}
+
+/* ---------- Kuiz ---------- */
+function viewKuizMenu() {
+  app.innerHTML = `${kepala('Latihan bebas', 'Kuiz campuran', '10 soalan objektif dipilih secara rawak untuk ulang kaji. Kuiz ini tidak menambah mata; kumpul mata melalui tab Latihan dalam setiap bab.')}
+    <div class="wrap halaman"><div class="pantas tiga">
+      <a href="#kuiz-t4"><b>Tingkatan 4</b><span>Bab 1 hingga Bab 6</span></a>
+      <a href="#kuiz-t5"><b>Tingkatan 5</b><span>Bab 1 hingga Bab 7</span></a>
+      <a href="#kuiz-semua"><b>Semua bab</b><span>Ulang kaji menjelang SPM</span></a>
+    </div></div>${kaki()}`;
+}
+
+/* ---------- Kedudukan ---------- */
+function viewKedudukan() {
+  if (!Profil) { app.innerHTML = `${kepala('Kelas anda', 'Kedudukan kelas')}<div class="wrap halaman">${loginKadHtml('Log masuk untuk melihat kedudukan anda dalam kelas dan bersaing dengan rakan sekelas.')}</div>${kaki()}`; return; }
+  app.innerHTML = `${kepala(esc(Profil.kelas || 'Kelas anda'), 'Kedudukan kelas', 'Dikemas kini setiap kali markah disimpan. Gelaran dipaparkan di sebelah nama.')}
+    <div class="wrap halaman"><div class="kad" id="ked-box">${kedHtml(true)}</div>
+    <div class="kad gel-info"><h2 class="h-kecil">Gelaran</h2><p>${gelaranHtml('Juara Kelas')} tempat pertama · ${gelaranHtml('Naib Juara')} kedua · ${gelaranHtml('Tempat Ketiga')} ketiga · ${gelaranHtml('10 Terbaik')} tempat 4 hingga 10</p></div></div>${kaki()}`;
+  const iv = setInterval(() => Akaun.kedudukan(), 30000); stopHero = () => clearInterval(iv);
+  Akaun.kedudukan();
+}
+
+/* ---------- Profil ---------- */
+function viewProfil() {
+  app.innerHTML = `${kepala('Akaun', 'Profil')}<div class="wrap halaman">${profilKadHtml()}
+    <p class="q-hint">Guru? <a href="#guru">Buka halaman guru</a>.</p></div>${kaki()}`;
+  profilBind();
+}
+
+/* ---------- Rujukan ---------- */
+function viewRujukan() {
+  app.innerHTML = `${kepala('Rujukan', 'Pemalar fizik', 'Nilai yang digunakan dalam buku teks dan laman ini.')}
+    <div class="wrap halaman"><div class="kad"><dl class="consts">${[
         ['Pecutan graviti', '$g = 9.81 "m s"^{-2}$'],
         ['Pemalar kegravitian', '$G = 6.67 × 10^{-11} "N m"^2 "kg"^{-2}$'],
         ['Jisim Bumi', '$M = 5.97 × 10^{24} "kg"$'],
@@ -133,41 +213,7 @@ function viewHome() {
         ['Pemalar Planck', '$h = 6.63 × 10^{-34} "J s"$'],
         ['Unit jisim atom', '$1 "u.j.a." = 1.66 × 10^{-27} "kg"$'],
         ['Elektron-volt', '$1 "eV" = 1.60 × 10^{-19} "J"$']
-      ].map(r => `<div><dt>${r[0]}</dt><dd>${fmt(r[1])}</dd></div>`).join('')}</dl></section>
-  </div>
-  <footer class="foot"><div class="wrap">Kandungan disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan Tingkatan 5 (KPM). Bahagian Fokus SPM dianalisis daripada Koleksi Soalan Kertas 2 Percubaan SPM 2025 (pelbagai negeri, MRSM, SBP dan SMKA). Soalan latihan ditulis semula mengikut gaya Kertas 1 dan Kertas 2; markah terbaik disimpan pada peranti ini sahaja.</div></footer>`;
-  const hentiHero = heroAnim(document.getElementById('hero-cv'));
-  const iv = setInterval(() => { if (Profil) Akaun.kedudukan(); }, 30000);
-  stopHero = () => { hentiHero(); clearInterval(iv); };
-  profilBind();
-}
-
-function heroAnim(cv) {
-  const c = cv.getContext('2d'); let raf = 0, t = 0, last = performance.now(), dead = false;
-  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function frame(ts) {
-    if (dead) return;
-    const w = cv.clientWidth, h = cv.clientHeight, d = Math.min(window.devicePixelRatio || 1, 2);
-    if (cv.width !== Math.round(w * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); }
-    c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, w, h);
-    if (!still) t += Math.min((ts - last) / 1000, .05); last = ts;
-    const K = col(), x0 = 26, y0 = h / 2, A = h * .3, lam = Math.max(110, w * .42), k = 2 * Math.PI / lam;
-    G.line(c, x0, 10, x0, h - 10, K.ink, 1.5); G.line(c, x0, y0, w - 8, y0, K.ink, 1.5);
-    const pts = []; for (let x = x0; x <= w - 8; x += 3) pts.push([x, y0 - A * Math.sin(k * (x - x0) - t * 2.2)]);
-    G.curve(c, pts, K.a, 3);
-    for (let x = x0 + 24; x <= w - 10; x += 24) G.dot(c, x, y0 - A * Math.sin(k * (x - x0) - t * 2.2), 3.4, K.c2);
-    let xc = ((Math.PI / 2 + t * 2.2) / k) % lam; if (xc < 14) xc += lam;
-    if (x0 + xc + lam < w - 6) {
-      const ya = y0 - A - 12;
-      G.arrow(c, x0 + xc + lam / 2, ya, x0 + xc, ya, K.ink, 1.4); G.arrow(c, x0 + xc + lam / 2, ya, x0 + xc + lam, ya, K.ink, 1.4);
-      G.text(c, 'λ', x0 + xc + lam / 2, ya - 9, K.ink, 'center', 15, 700);
-    }
-    G.arrow(c, x0 + xc, y0, x0 + xc, y0 - A, K.c3, 1.6); G.text(c, 'A', x0 + xc + 9, y0 - A / 2, K.c3, 'left', 14, 700);
-    G.text(c, 'sesaran', x0 + 6, 12, K.mut, 'left', 11.5, 600); G.text(c, 'jarak', w - 10, y0 + 13, K.mut, 'right', 11.5, 600);
-    raf = requestAnimationFrame(frame);
-  }
-  raf = requestAnimationFrame(frame);
-  return () => { dead = true; cancelAnimationFrame(raf); };
+      ].map(r => `<div><dt>${r[0]}</dt><dd>${fmt(r[1])}</dd></div>`).join('')}</dl></div></div>${kaki()}`;
 }
 
 /* ---------- halaman bab ---------- */
@@ -175,18 +221,19 @@ function viewBab(b) {
   const idx = BAB.indexOf(b), pv = BAB[idx - 1], nx = BAB[idx + 1];
   app.innerHTML = `
   <header class="ch-head"><div class="wrap">
-    <a class="back" href="#utama">← Kandungan</a>
+    <a class="back" href="#bab">← Senarai bab</a>
     <div class="ch-title"><span class="no">${b.no}</span><div><div class="eb">Tingkatan ${b.ting} · ${b.tema}</div><h1>${b.tajuk}</h1></div></div>
     <p class="ch-intro">${fmt(b.intro)}</p>
-    <div class="tabs" role="tablist">${TABS.map(t => `<button type="button" role="tab" id="tab-${t[0]}" data-tab="${t[0]}"><span class="lg">${t[1]}</span><span class="sm">${t[2]}</span></button>`).join('')}</div>
   </div></header>
+  <div class="tabs-bar"><div class="wrap"><div class="tabs" role="tablist">${TABS.map(t => `<button type="button" role="tab" id="tab-${t[0]}" data-tab="${t[0]}"><span class="lg">${t[1]}</span><span class="sm">${t[2]}</span></button>`).join('')}</div></div></div>
   <div class="wrap"><div class="panel" id="panel" role="tabpanel"></div>
     <nav class="pn" aria-label="Bab lain">
       ${pv ? `<a href="#${pv.id}"><small>← T${pv.ting} Bab ${pv.no}</small>${pv.tajuk}</a>` : '<span></span>'}
       ${nx ? `<a href="#${nx.id}" style="text-align:right"><small>T${nx.ting} Bab ${nx.no} →</small>${nx.tajuk}</a>` : '<span></span>'}
     </nav></div>
-  <footer class="foot"><div class="wrap">Fizik SPM Interaktif · Tingkatan ${b.ting} Bab ${b.no}: ${b.tajuk}</div></footer>`;
-  app.querySelectorAll('.tabs button').forEach(bt => bt.onclick = () => { curTab = bt.dataset.tab; store.set('tab2', curTab); showTab(b); window.scrollTo({ top: app.querySelector('.tabs').getBoundingClientRect().top + window.scrollY - 60 }); });
+  ${kaki()}`;
+  store.set('akhir', b.id);
+  app.querySelectorAll('.tabs button').forEach(bt => bt.onclick = () => { curTab = bt.dataset.tab; store.set('tab2', curTab); showTab(b); const t = app.querySelector('.tabs-bar'); if (t.getBoundingClientRect().top < 60) window.scrollTo({ top: app.querySelector('.ch-head').offsetHeight - 2 }); });
   showTab(b);
 }
 
@@ -273,7 +320,7 @@ function tabNota(p, b) {
 
 function tabLatih(p, b) {
   if (!Profil) {
-    p.append(el('div', 'profil kosong', `<h2>Log masuk untuk menjawab</h2><p>Latihan bab ini memberi mata yang disimpan pada profil no. IC anda. Log masuk dahulu supaya markah anda tidak hilang.</p><div class="row"><a class="btn" href="#masuk">Log masuk dengan no. IC</a></div>`));
+    p.append(el('div', 'kad kad-masuk', `<h2>Log masuk untuk menjawab</h2><p>Latihan bab ini memberi mata yang disimpan pada profil no. IC anda. Log masuk dahulu supaya markah anda tidak hilang.</p><div class="row"><a class="btn" href="#masuk">Log masuk dengan no. IC</a></div>`));
     p.append(el('p', 'lede', 'Untuk latihan tanpa mata, cuba <a href="#kuiz-semua">Kuiz campuran</a>.'));
     return;
   }
@@ -303,7 +350,7 @@ function viewKuiz(scope) {
   const pool = BAB.filter(b => scope === 'semua' || b.id.startsWith(scope));
   const name = scope === 'semua' ? 'Semua bab' : 'Tingkatan ' + scope[1];
   app.innerHTML = `<header class="ch-head"><div class="wrap" style="padding-bottom:20px">
-      <a class="back" href="#utama">← Kandungan</a>
+      <a class="back" href="#kuiz">← Kuiz</a>
       <div class="ch-title"><div><div class="eb">Kuiz campuran · latihan bebas</div><h1>${name}</h1></div></div>
       <p class="ch-intro">10 soalan objektif dipilih secara rawak untuk ulang kaji. Latihan bebas <b>tidak menambah mata</b>; kumpul mata melalui tab Latihan dalam setiap bab.</p>
     </div></header>
@@ -319,18 +366,23 @@ function viewKuiz(scope) {
 /* ---------- penghalaan ---------- */
 function route() {
   cleanup();
-  const h = location.hash.slice(1), b = BAB.find(x => x.id === h), k = /^kuiz-(t4|t5|semua)$/.exec(h);
-  if (h === 'masuk') { viewMasuk(); document.title = 'Log masuk · Fizik SPM Interaktif'; }
-  else if (h === 'guru') { viewGuru(); document.title = 'Halaman guru · Fizik SPM Interaktif'; }
-  else if (b) { viewBab(b); document.title = `Bab ${b.no} ${b.tajuk} · Fizik SPM Interaktif`; }
-  else if (k) { viewKuiz(k[1]); document.title = 'Kuiz campuran · Fizik SPM Interaktif'; }
-  else { viewHome(); document.title = 'Fizik SPM Interaktif'; }
-  document.querySelectorAll('.top nav a').forEach(a => {
-    const on = a.getAttribute('href') === '#utama' ? !k : !!k;
-    if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
-  });
+  const h = location.hash.slice(1) || 'utama', b = BAB.find(x => x.id === h), k = /^kuiz-(t4|t5|semua)$/.exec(h);
+  const T = t => { document.title = t ? t + ' · Fizik SPM Interaktif' : 'Fizik SPM Interaktif'; };
+  let nav = '';
+  if (h === 'masuk') { viewMasuk(); T('Log masuk'); nav = 'profil'; }
+  else if (h === 'guru') { viewGuru(); T('Halaman guru'); }
+  else if (b) { viewBab(b); T(`Bab ${b.no} ${b.tajuk}`); nav = 'bab'; }
+  else if (k) { viewKuiz(k[1]); T('Kuiz campuran'); nav = 'kuiz'; }
+  else if (h === 'bab') { viewSenaraiBab(); T('Bab'); nav = 'bab'; }
+  else if (h === 'kuiz') { viewKuizMenu(); T('Kuiz'); nav = 'kuiz'; }
+  else if (h === 'kedudukan') { viewKedudukan(); T('Kedudukan kelas'); nav = 'kedudukan'; }
+  else if (h === 'profil') { viewProfil(); T('Profil'); nav = 'profil'; }
+  else if (h === 'rujukan') { viewRujukan(); T('Pemalar fizik'); nav = 'utama'; }
+  else { viewUtama(); T(''); nav = 'utama'; }
+  navAktif(nav);
   hud();
   window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', route);
+navPasang();
 function mula() { Akaun.pulih().then(ada => { if (ada) route(); }); }

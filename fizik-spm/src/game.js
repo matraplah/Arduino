@@ -171,42 +171,43 @@ function toast(msg, kind) {
   setTimeout(() => { t.classList.add('pergi'); setTimeout(() => t.remove(), 400); }, 1900);
 }
 
-/* kad profil di laman utama */
-function profilHtml() {
-  if (!Profil) return `<section class="sec"><div class="sec-h"><h2>Profil saya</h2><small>Log masuk untuk mengumpul mata</small></div>
-    <div class="profil kosong"><p>Log masuk dengan <b>no. kad pengenalan</b> untuk menjawab latihan, mengumpul mata dan menyimpan markah pada profil anda.</p><div class="row"><a class="btn" href="#masuk">Log masuk</a></div></div></section>`;
+/* kad profil (halaman Profil) */
+function profilKadHtml() {
+  if (!Profil) return loginKadHtml();
   const t = Game.total(), mx = Game.max(), pk = Game.pangkat(t), dapat = Game.lencanaDapat(), s = Game.streak();
   const tamat = BAB.filter(b => Game.bab(b).tamat).length;
-  return `<section class="sec"><div class="sec-h"><h2>Profil saya</h2><small><span class="pf-nama">${esc(Profil.nama)}</span> <span id="pf-gel">${Profil.ked && Profil.ked.saya ? gelaranHtml(Profil.ked.saya.gelaran) : ''}</span>${Profil.kelas ? ' · ' + esc(Profil.kelas) : ''}</small></div>
-    <div class="profil">
+  return `<div class="kad">
+      <div class="pf-id"><div class="avatar" aria-hidden="true">${esc((Profil.nama || '?').trim().charAt(0).toUpperCase())}</div>
+        <div><div class="pf-nama">${esc(Profil.nama)} <span id="pf-gel">${Profil.ked && Profil.ked.saya ? gelaranHtml(Profil.ked.saya.gelaran) : ''}</span></div>
+        <div class="pf-p">${Profil.kelas ? esc(Profil.kelas) + ' · ' : ''}Pangkat ${pk.aras}: <b>${pk.nama}</b><span id="pf-ked">${kedTeks()}</span></div></div></div>
       <div class="pf-atas">
-        <div><div class="pf-n num">${t}<small> / ${mx} mata</small></div><div class="pf-p">Pangkat ${pk.aras}: <b>${pk.nama}</b><span id="pf-ked">${kedTeks()}</span></div></div>
+        <div><div class="pf-n num">${t}<small> / ${mx} mata</small></div></div>
         <dl class="pf-s"><div><dt>Bab tamat</dt><dd class="num">${tamat}/${BAB.length}</dd></div><div><dt>Rekod berturut</dt><dd class="num">${s.best}</dd></div><div><dt>Lencana</dt><dd class="num">${dapat.size}/${LENCANA.length}</dd></div></dl>
       </div>
       <div class="pf-bar"><i style="width:${Math.round(pk.frac * 100)}%"></i></div>
       <p class="pf-next">${pk.seterusnya ? `${pk.perlu} mata lagi untuk menjadi <b>${pk.seterusnya}</b>.` : 'Pangkat tertinggi dicapai. Tahniah!'}</p>
-      <ul class="lencana">${LENCANA.map(([k, n, d]) => `<li class="${dapat.has(k) ? 'ada' : ''}"><b>${n}</b><span>${d}</span></li>`).join('')}</ul>
       <p class="nota-simpan" id="simpan-nota" hidden></p>
-    </div></section>
-    <section class="sec" id="sec-ked"><div class="sec-h"><h2>Kedudukan kelas</h2><small>${esc(Profil.kelas || '')} · dikemas kini setiap kali markah disimpan</small></div>
-      <div class="profil" id="ked-box">${kedHtml()}</div>
-    </section>
-    <section class="sec"><div class="profil kosong">
-      <div class="row"><button type="button" class="btn ghost" id="keluar">Log keluar</button><span class="q-hint">Log keluar selepas selesai, terutama di komputer yang dikongsi.</span></div>
-    </div></section>`;
+    </div>
+    <h2 class="h-kecil">Lencana</h2>
+    <ul class="lencana">${LENCANA.map(([k, n, d]) => `<li class="${dapat.has(k) ? 'ada' : ''}"><b>${n}</b><span>${d}</span></li>`).join('')}</ul>
+    <div class="row"><button type="button" class="btn ghost" id="keluar">Log keluar</button><span class="q-hint">Log keluar selepas selesai, terutama di komputer yang dikongsi.</span></div>`;
+}
+function loginKadHtml(teks) {
+  return `<div class="kad kad-masuk"><h2>Log masuk murid</h2><p>${teks || 'Log masuk dengan <b>no. kad pengenalan</b> untuk menjawab latihan, mengumpul mata dan bersaing dalam kedudukan kelas.'}</p><div class="row"><a class="btn" href="#masuk">Log masuk</a><a class="lnk" href="#guru">Halaman guru</a></div></div>`;
 }
 function kedTeks() {
   const s = Profil && Profil.ked && Profil.ked.saya;
   return s ? ` · Kedudukan <b>#${s.kedudukan}</b> daripada ${Profil.ked.senarai.length} dalam kelas` : '';
 }
-function kedHtml() {
+function kedHtml(penuh) {
+  if (penuh === undefined) penuh = location.hash === '#kedudukan';
   if (!Profil || !Profil.ked) return '<p class="lede">Memuatkan kedudukan kelas…</p>';
   const L = Profil.ked.senarai, saya = Profil.ked.saya;
   if (!L.length) return '<p class="lede">Belum ada data kedudukan.</p>';
-  const atas = L.filter(x => x.kedudukan <= 10);
+  const atas = penuh ? L : L.filter(x => x.kedudukan <= 10);
   const baris = x => `<li class="${x.saya ? 'saya' : ''} k${x.kedudukan <= 3 && x.jumlah > 0 ? x.kedudukan : ''}"><span class="k-no num">${x.kedudukan}</span><span class="k-nama">${esc(x.nama)}${x.saya ? ' <small>(anda)</small>' : ''} ${gelaranHtml(x.gelaran)}</span><span class="k-mata num"><b>${x.jumlah}</b> mata</span></li>`;
   let h = `<ol class="ked">${atas.map(baris).join('')}</ol>`;
-  if (saya && saya.kedudukan > 10) h += `<p class="q-hint" style="margin:6px 0 2px">…</p><ol class="ked">${baris(saya)}</ol>`;
+  if (!penuh && saya && saya.kedudukan > 10) h += `<p class="q-hint" style="margin:6px 0 2px">…</p><ol class="ked">${baris(saya)}</ol>`;
   const depan = saya ? L.filter(x => x.jumlah > saya.jumlah).pop() : null;
   if (saya && depan) h += `<p class="k-kejar">${depan.jumlah - saya.jumlah} mata lagi untuk memintas <b>${esc(depan.nama)}</b> di tempat #${depan.kedudukan}.</p>`;
   else if (saya && saya.kedudukan === 1 && saya.jumlah > 0) h += '<p class="k-kejar">Anda mendahului kelas. Teruskan menjawab untuk kekal di tempat pertama!</p>';
