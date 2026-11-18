@@ -98,7 +98,7 @@ function navAktif(id) {
 function kepala(eb, tajuk, sub) {
   return `<header class="pg-head"><div class="wrap"><div class="eb">${eb}</div><h1>${tajuk}</h1>${sub ? `<p>${sub}</p>` : ''}</div></header>`;
 }
-const kaki = () => `<footer class="foot"><div class="wrap">Fizik SPM Interaktif · Disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan 5 (KPM). Fokus SPM dianalisis daripada Koleksi Soalan Kertas 2 Percubaan SPM 2025.</div></footer>`;
+const kaki = () => `<footer class="foot"><div class="wrap">Fizik SPM Interaktif · Disusun dan dicipta oleh Cikgu Mohd Sharafi</div></footer>`;
 const ikonKecil = d => `<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}" style="fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"/></svg>`;
 
 /* ---------- Utama ---------- */
@@ -385,4 +385,21 @@ function route() {
 }
 window.addEventListener('hashchange', route);
 navPasang();
+/* ---------- tema: auto (ikut peranti) / cerah / gelap ---------- */
+const TEMA = [['auto', 'Auto', 'M12 3a9 9 0 1 0 0 18zM12 3a9 9 0 0 1 0 18'], ['cerah', 'Cerah', 'M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4'], ['gelap', 'Gelap', 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z']];
+function temaPasang(t) {
+  const i = Math.max(0, TEMA.findIndex(x => x[0] === t)), [id, nama, d] = TEMA[i], root = document.documentElement;
+  if (id === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', id === 'gelap' ? 'dark' : 'light');
+  const b = document.getElementById('tema'); if (!b) return;
+  b.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}" style="fill:${id === 'auto' ? 'currentColor' : 'none'};fill-rule:evenodd;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"/></svg><span>${nama}</span>`;
+  b.title = `Tema: ${nama}. Klik untuk menukar.`;
+  b.setAttribute('aria-label', `Tema ${nama}. Klik untuk menukar tema.`);
+}
+(function () {
+  let t = store.get('tema') || 'auto'; temaPasang(t);
+  document.getElementById('tema').onclick = () => {
+    t = TEMA[(TEMA.findIndex(x => x[0] === t) + 1) % TEMA.length][0];
+    store.set('tema', t); temaPasang(t); toast('Tema: ' + TEMA.find(x => x[0] === t)[1], 'no');
+  };
+})();
 function mula() { Akaun.pulih().then(ada => { if (ada) route(); }); }
