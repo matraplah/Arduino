@@ -1,0 +1,11 @@
+{
+  "name": "fizik-spm-interaktif",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bina": "python3 build.py"
+  },
+  "dependencies": {
+    "@netlify/blobs": "8.2.0"
+  }
+}

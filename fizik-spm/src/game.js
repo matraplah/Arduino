@@ -45,34 +45,24 @@ function dariDok(o) { return { jaw: o && o.jaw ? JSON.parse(JSON.stringify(o.jaw
 
 const Akaun = {
   /* murid hanya boleh masuk jika IC telah didaftarkan oleh guru */
-  async semak(icMentah) {
-    const ic = icBersih(icMentah), salah = icSah(ic); if (salah) return { salah };
-    await dbMula();
-    if (!DB) return { salah: 'Pangkalan data tidak tersedia pada paparan ini, jadi log masuk tidak dapat digunakan. Buka laman ini melalui akaun guru.' };
-    const hash = await icCincang(ic);
-    let dok = null;
-    try { const s = await DB.doc('pelajar/' + hash).get(); if (s.exists) dok = s.data(); } catch (e) { return { salah: 'Pangkalan data tidak dapat dihubungi. Cuba sebentar lagi.' }; }
-    if (!dok) return { salah: 'No. IC ini belum didaftarkan. Sila minta guru mendaftarkan anda.' };
-    return { ic, hash, dok };
+  async masuk(icMentah) {
+    const r = await API.muridMasuk(icMentah); if (r.salah) return r;
+    this.pasang(r.token, r.profil);
+    try { sessionStorage.setItem('fz:sesi', JSON.stringify({ token: r.token })); } catch (e) { /* abaikan */ }
+    hud(); this.kedudukan();
+    return {};
   },
-  async masuk(r) {
-    const dok = r.dok;
-    Profil = { hash: r.hash, ic4: r.ic.slice(-4), nama: dok.nama || '', kelas: dok.kelas || '', mod: 'db', data: dariDok(dok) };
-    try { sessionStorage.setItem('fz:sesi', JSON.stringify({ hash: Profil.hash })); } catch (e) { /* abaikan */ }
-    hud();
-  },
+  pasang(token, p) { Profil = { token, nama: p.nama || '', kelas: p.kelas || '', ic4: p.ic4 || '', data: dariDok(p), ked: null }; },
   /* pulihkan sesi selepas muat semula halaman (tab yang sama sahaja) */
   async pulih() {
     let s = null; try { s = JSON.parse(sessionStorage.getItem('fz:sesi')); } catch (e) { s = null; }
-    if (!s || !s.hash) return false;
-    await dbMula(); if (!DB) return false;
-    let dok = null;
-    try { const d = await DB.doc('pelajar/' + s.hash).get(); if (d.exists) dok = d.data(); } catch (e) { dok = null; }
-    if (!dok) { this.keluar(); return false; }
-    Profil = { hash: s.hash, ic4: String(dok.ic || '').slice(-4), nama: dok.nama || '', kelas: dok.kelas || '', mod: 'db', data: dariDok(dok) };
+    if (!s || !s.token) return false;
+    const p = await API.muridSaya(s.token);
+    if (!p) { this.keluar(); return false; }
+    this.pasang(s.token, p); this.kedudukan();
     return true;
   },
-  keluar() { Profil = null; try { sessionStorage.removeItem('fz:sesi'); } catch (e) { /* abaikan */ } hud(); },
+  keluar() { if (Profil) API.muridKeluar(Profil.token); Profil = null; try { sessionStorage.removeItem('fz:sesi'); } catch (e) { /* abaikan */ } hud(); },
   /* hanya medan kemajuan; nama, IC dan kelas diurus oleh guru */
   dok() {
     let dijawab = 0, item = 0;
@@ -80,12 +70,27 @@ const Akaun = {
     const jumlah = Game.total(), max = Game.max();
     return { jaw: Profil.data.jaw, streak: Profil.data.streak, lencana: Profil.data.lencana, jumlah, peratusMarkah: Math.round(jumlah / max * 100), kemajuan: Math.round(dijawab / item * 100), babTamat: BAB.filter(b => Game.bab(b).tamat).length, kemaskini: Date.now() };
   },
-  /* simpan satu demi satu (tiada tulisan bertindih ke dokumen yang sama) */
+  /* simpan satu demi satu; pelayan Netlify memulangkan profil yang telah disemaknya sendiri */
   simpan() {
-    if (!Profil || !DB) return Promise.resolve();
-    const body = this.dok(), hash = Profil.hash;
-    simpanQ = simpanQ.then(() => DB.doc('pelajar/' + hash).update(body)).then(() => { if (simpanGagal) { simpanGagal = false; statusSimpan(); } }).catch(() => { simpanGagal = true; statusSimpan(); });
+    if (!Profil) return Promise.resolve();
+    const P = Profil, body = this.dok();
+    simpanQ = simpanQ.then(() => API.muridSimpan(P.token, body)).then(p => {
+      if (p && Profil === P) P.data = dariDok(p);
+      if (simpanGagal) { simpanGagal = false; statusSimpan(); }
+      this.kedudukan();
+    }).catch(() => { simpanGagal = true; statusSimpan(); });
     return simpanQ;
+  },
+  /* kedudukan dalam kelas sendiri; toast apabila mendapat gelaran baharu */
+  async kedudukan() {
+    if (!Profil) return null;
+    const P = Profil, senarai = await API.kedudukan(P.token, P.kelas);
+    if (!senarai || Profil !== P) return null;
+    const saya = senarai.find(x => x.saya) || null, lama = P.ked && P.ked.saya;
+    P.ked = { senarai, saya };
+    if (lama && saya && saya.gelaran && saya.gelaran !== lama.gelaran && saya.kedudukan < lama.kedudukan) toast(`Tahniah! Anda kini ${saya.gelaran} (#${saya.kedudukan})`, 'naik');
+    hud(); kemasKedudukan();
+    return P.ked;
   }
 };
 function statusSimpan() {
@@ -153,7 +158,7 @@ function hud() {
   if (!Profil) { h.innerHTML = '<b class="masuk-l">Log masuk</b>'; h.href = '#masuk'; h.setAttribute('aria-label', 'Log masuk dengan no. IC'); return; }
   const t = Game.total(), pk = Game.pangkat(t);
   h.href = '#utama';
-  h.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" style="fill:var(--c2)"/></svg><b class="num">${t}</b><span class="hud-l">mata · ${esc(Profil.nama.split(' ')[0])}</span>`;
+  h.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" style="fill:var(--c2)"/></svg><b class="num">${t}</b><span class="hud-l">mata · ${esc(Profil.nama.split(' ')[0])}</span>${Profil.ked && Profil.ked.saya && Profil.ked.saya.gelaran ? `<span class="hud-g">${gelaranHtml(Profil.ked.saya.gelaran)}</span>` : ''}`;
   h.setAttribute('aria-label', `${Profil.nama}: ${t} mata, pangkat ${pk.nama}`);
 }
 const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -172,21 +177,51 @@ function profilHtml() {
     <div class="profil kosong"><p>Log masuk dengan <b>no. kad pengenalan</b> untuk menjawab latihan, mengumpul mata dan menyimpan markah pada profil anda.</p><div class="row"><a class="btn" href="#masuk">Log masuk</a></div></div></section>`;
   const t = Game.total(), mx = Game.max(), pk = Game.pangkat(t), dapat = Game.lencanaDapat(), s = Game.streak();
   const tamat = BAB.filter(b => Game.bab(b).tamat).length;
-  return `<section class="sec"><div class="sec-h"><h2>Profil saya</h2><small>${esc(Profil.nama)}${Profil.kelas ? ' · ' + esc(Profil.kelas) : ''} · IC ••••••••${esc(Profil.ic4)}</small></div>
+  return `<section class="sec"><div class="sec-h"><h2>Profil saya</h2><small><span class="pf-nama">${esc(Profil.nama)}</span> <span id="pf-gel">${Profil.ked && Profil.ked.saya ? gelaranHtml(Profil.ked.saya.gelaran) : ''}</span>${Profil.kelas ? ' · ' + esc(Profil.kelas) : ''}</small></div>
     <div class="profil">
       <div class="pf-atas">
-        <div><div class="pf-n num">${t}<small> / ${mx} mata</small></div><div class="pf-p">Pangkat ${pk.aras}: <b>${pk.nama}</b></div></div>
+        <div><div class="pf-n num">${t}<small> / ${mx} mata</small></div><div class="pf-p">Pangkat ${pk.aras}: <b>${pk.nama}</b><span id="pf-ked">${kedTeks()}</span></div></div>
         <dl class="pf-s"><div><dt>Bab tamat</dt><dd class="num">${tamat}/${BAB.length}</dd></div><div><dt>Rekod berturut</dt><dd class="num">${s.best}</dd></div><div><dt>Lencana</dt><dd class="num">${dapat.size}/${LENCANA.length}</dd></div></dl>
       </div>
       <div class="pf-bar"><i style="width:${Math.round(pk.frac * 100)}%"></i></div>
       <p class="pf-next">${pk.seterusnya ? `${pk.perlu} mata lagi untuk menjadi <b>${pk.seterusnya}</b>.` : 'Pangkat tertinggi dicapai. Tahniah!'}</p>
       <ul class="lencana">${LENCANA.map(([k, n, d]) => `<li class="${dapat.has(k) ? 'ada' : ''}"><b>${n}</b><span>${d}</span></li>`).join('')}</ul>
       <p class="nota-simpan" id="simpan-nota" hidden></p>
+    </div></section>
+    <section class="sec" id="sec-ked"><div class="sec-h"><h2>Kedudukan kelas</h2><small>${esc(Profil.kelas || '')} · dikemas kini setiap kali markah disimpan</small></div>
+      <div class="profil" id="ked-box">${kedHtml()}</div>
+    </section>
+    <section class="sec"><div class="profil kosong">
       <div class="row"><button type="button" class="btn ghost" id="keluar">Log keluar</button><span class="q-hint">Log keluar selepas selesai, terutama di komputer yang dikongsi.</span></div>
     </div></section>`;
 }
+function kedTeks() {
+  const s = Profil && Profil.ked && Profil.ked.saya;
+  return s ? ` · Kedudukan <b>#${s.kedudukan}</b> daripada ${Profil.ked.senarai.length} dalam kelas` : '';
+}
+function kedHtml() {
+  if (!Profil || !Profil.ked) return '<p class="lede">Memuatkan kedudukan kelas…</p>';
+  const L = Profil.ked.senarai, saya = Profil.ked.saya;
+  if (!L.length) return '<p class="lede">Belum ada data kedudukan.</p>';
+  const atas = L.filter(x => x.kedudukan <= 10);
+  const baris = x => `<li class="${x.saya ? 'saya' : ''} k${x.kedudukan <= 3 && x.jumlah > 0 ? x.kedudukan : ''}"><span class="k-no num">${x.kedudukan}</span><span class="k-nama">${esc(x.nama)}${x.saya ? ' <small>(anda)</small>' : ''} ${gelaranHtml(x.gelaran)}</span><span class="k-mata num"><b>${x.jumlah}</b> mata</span></li>`;
+  let h = `<ol class="ked">${atas.map(baris).join('')}</ol>`;
+  if (saya && saya.kedudukan > 10) h += `<p class="q-hint" style="margin:6px 0 2px">…</p><ol class="ked">${baris(saya)}</ol>`;
+  const depan = saya ? L.filter(x => x.jumlah > saya.jumlah).pop() : null;
+  if (saya && depan) h += `<p class="k-kejar">${depan.jumlah - saya.jumlah} mata lagi untuk memintas <b>${esc(depan.nama)}</b> di tempat #${depan.kedudukan}.</p>`;
+  else if (saya && saya.kedudukan === 1 && saya.jumlah > 0) h += '<p class="k-kejar">Anda mendahului kelas. Teruskan menjawab untuk kekal di tempat pertama!</p>';
+  return h;
+}
+function kemasKedudukan() {
+  const b = document.getElementById('ked-box'); if (b) b.innerHTML = kedHtml();
+  const k = document.getElementById('pf-ked'); if (k) k.innerHTML = kedTeks();
+  const g = document.getElementById('pf-gel'); if (g) g.innerHTML = Profil && Profil.ked && Profil.ked.saya ? gelaranHtml(Profil.ked.saya.gelaran) : '';
+  const st = document.querySelector('.bab-st .bs-ked'); if (st) st.innerHTML = kedRingkas();
+}
+function kedRingkas() { const s = Profil && Profil.ked && Profil.ked.saya; return s ? `<span class="eb">Kedudukan kelas</span><b class="num">#${s.kedudukan}</b>${gelaranHtml(s.gelaran)}` : ''; }
 function profilBind() {
   statusSimpan();
+  if (Profil) Akaun.kedudukan();
   const k = document.getElementById('keluar'); if (k) k.onclick = () => { Akaun.keluar(); toast('Anda telah log keluar', 'no'); route(); };
 }
 
@@ -209,9 +244,8 @@ function viewMasuk() {
   f.onsubmit = async e => {
     e.preventDefault(); er.textContent = ''; bt.disabled = true; bt.textContent = 'Menyemak…';
     try {
-      const r = await Akaun.semak(ic.value);
+      const r = await Akaun.masuk(ic.value);
       if (r.salah) { er.textContent = r.salah; return; }
-      await Akaun.masuk(r);
       toast(`Selamat datang, ${Profil.nama.split(' ')[0]}!`, 'naik');
       location.hash = 'utama'; route();
     } finally { bt.disabled = false; bt.textContent = 'Log masuk'; }
@@ -319,5 +353,5 @@ function reka(p, b) {
 
 function babStatusHtml(b) {
   const s = Game.bab(b);
-  return `<div class="bab-st"><div><span class="eb">Mata bab ini</span><b class="num">${s.pts}<small> / ${s.max}</small></b></div>${bintangHtml(s.bintang)}<div><span class="eb">Dijawab</span><b class="num">${s.done}<small> / ${s.total}</small></b></div></div>`;
+  return `<div class="bab-st"><div><span class="eb">Mata bab ini</span><b class="num">${s.pts}<small> / ${s.max}</small></b></div>${bintangHtml(s.bintang)}<div><span class="eb">Dijawab</span><b class="num">${s.done}<small> / ${s.total}</small></b></div><div class="bs-ked">${kedRingkas()}</div></div>`;
 }

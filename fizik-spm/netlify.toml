@@ -1,0 +1,16 @@
+# Tetapan Netlify untuk Fizik SPM Interaktif.
+# Dalam Netlify, tetapkan "Base directory" kepada: fizik-spm
+[build]
+  publish = "web"
+  command = "echo 'Laman sudah dibina; tiada langkah bina diperlukan'"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "same-origin"
+    X-Frame-Options = "DENY"

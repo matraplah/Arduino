@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gabungkan fail dalam src/ menjadi satu laman web.
 
-  python3 build.py            -> index.html (laman lengkap, boleh dibuka terus)
+  python3 build.py            -> index.html dan web/index.html (laman lengkap) + netlify/functions/kunci.json
   python3 build.py --fragmen F -> juga tulis versi tanpa <html>/<head>/<body> ke fail F
 """
 import pathlib, sys
@@ -16,7 +16,7 @@ FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
 
 css = (SRC / 'style.css').read_text(encoding='utf-8')
 body = (SRC / 'body.html').read_text(encoding='utf-8')
-js = '\n'.join((SRC / n).read_text(encoding='utf-8') for n in ('core.js', 'game.js', 'guru.js', 'sims.js', 'data-t4.js', 'data-t5.js', 'spm-t4.js', 'spm-t5.js')) + '\nroute();\nmula();\n'
+js = '\n'.join((SRC / n).read_text(encoding='utf-8') for n in ('core.js', 'game.js', 'guru.js', 'backend.js', 'sims.js', 'data-t4.js', 'data-t5.js', 'spm-t4.js', 'spm-t5.js')) + '\nroute();\nmula();\n'
 assert '</script' not in js.lower()
 
 inner = f'{FONTS}\n<style>\n{css}</style>\n{body}<script>\n{js}</script>\n'
@@ -26,7 +26,11 @@ full = ('<!doctype html>\n<html lang="ms">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="description" content="Nota ringkas, visual interaktif dan latihan SPM bagi Fizik KSSM Tingkatan 4 dan 5.">\n'
         f'</head>\n<body>\n{inner}</body>\n</html>\n')
 (ROOT / 'index.html').write_text(full, encoding='utf-8')
-print('index.html', len(full.encode('utf-8')), 'bait')
+(ROOT / 'web').mkdir(exist_ok=True)
+(ROOT / 'web' / 'index.html').write_text(full, encoding='utf-8')
+print('index.html dan web/index.html', len(full.encode('utf-8')), 'bait')
+import subprocess
+subprocess.run(['node', str(ROOT / 'tools' / 'jana-kunci.mjs')], check=True)
 
 if '--fragmen' in sys.argv:
     out = pathlib.Path(sys.argv[sys.argv.index('--fragmen') + 1])

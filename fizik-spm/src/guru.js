@@ -3,8 +3,8 @@
    Kata laluan disimpan sebagai cincangan PBKDF2 (bukan teks asal) dalam tetapan/guru.
    Rekod murid: pelajar/<cincangan IC> = { ic, nama, kelas, didaftar, ...kemajuan } */
 const ITER = 150000;
-let stopGuru = null, guruSah = false;
-try { guruSah = sessionStorage.getItem('fz:guru') === '1'; } catch (e) { guruSah = false; }
+let stopGuru = null, guruToken = null;
+try { guruToken = sessionStorage.getItem('fz:guru2') || null; } catch (e) { guruToken = null; }
 
 async function kataCincang(kata, garam) {
   const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(kata), 'PBKDF2', false, ['deriveBits']);
@@ -12,7 +12,7 @@ async function kataCincang(kata, garam) {
   return [...new Uint8Array(bits)].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 const garamBaru = () => [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, '0')).join('');
-function setGuru(v) { guruSah = v; try { if (v) sessionStorage.setItem('fz:guru', '1'); else sessionStorage.removeItem('fz:guru'); } catch (e) { /* abaikan */ } }
+function setGuru(t) { guruToken = t || null; try { if (t) sessionStorage.setItem('fz:guru2', t); else sessionStorage.removeItem('fz:guru2'); } catch (e) { /* abaikan */ } }
 
 function guruShell(isi, sub) {
   app.innerHTML = `<header class="ch-head"><div class="wrap" style="padding-bottom:20px">
@@ -25,13 +25,11 @@ function guruShell(isi, sub) {
 }
 
 async function viewGuru() {
-  const box = guruShell('<p class="lede">Memuatkan…</p>', 'Daftar murid dan pantau markah mereka.');
-  await dbMula();
-  if (!DB) { box.innerHTML = '<p class="ralat">Halaman guru memerlukan pangkalan data laman. Buka laman ini melalui akaun claude.ai guru (pemilik laman).</p>'; return; }
-  let t = null;
-  try { const s = await DB.doc('tetapan/guru').get(); if (s.exists) t = s.data(); } catch (e) { box.innerHTML = '<p class="ralat">Pangkalan data tidak dapat dihubungi. Muat semula halaman untuk cuba lagi.</p>'; return; }
-  if (!t || !t.hash) return guruTetap(box);
-  if (!guruSah) return guruMasuk(box, t);
+  const box = guruShell('<p class="lede">Memuatkan…</p>', 'Daftar murid, pantau markah dan kedudukan kelas.');
+  const st = await API.guruStatus();
+  if (st.salah) { box.innerHTML = `<p class="ralat">${esc(st.salah)}</p>`; return; }
+  if (!st.ada) return st.jenis === 'claude' ? guruTetap(box) : (box.innerHTML = '<p class="ralat">Kata laluan guru belum ditetapkan. Dalam Netlify, buka Site configuration → Environment variables dan tambah <b>GURU_KATA_LALUAN</b>, kemudian deploy semula.</p>');
+  if (!guruToken) return guruMasuk(box);
   guruPapan(box);
 }
 
@@ -52,17 +50,15 @@ function guruTetap(box) {
     if (k1 !== k2) { r.textContent = 'Kedua-dua kata laluan tidak sama.'; return; }
     b.disabled = true;
     try {
-      const cur = await DB.doc('tetapan/guru').get();
-      if (cur.exists && cur.data().hash) { r.textContent = 'Kata laluan sudah ditetapkan oleh orang lain. Muat semula halaman.'; return; }
-      const garam = garamBaru();
-      await DB.doc('tetapan/guru').set({ garam, hash: await kataCincang(k1, garam), iter: ITER, dikemaskini: Date.now() });
-      setGuru(true); toast('Kata laluan disimpan', 'naik'); guruPapan(box);
-    } catch (err) { r.textContent = 'Gagal menyimpan. Hanya pemilik atau Editor laman boleh menetapkan kata laluan.'; }
+      const r = await API.guruTetap(k1);
+      if (r.salah) { return void (box.querySelector('#g-r').textContent = r.salah); }
+      setGuru(r.token); toast('Kata laluan disimpan', 'naik'); guruPapan(box);
+    } catch (err) { box.querySelector('#g-r').textContent = 'Gagal menyimpan. Hanya pemilik atau Editor laman boleh menetapkan kata laluan.'; }
     finally { b.disabled = false; }
   };
 }
 
-function guruMasuk(box, t) {
+function guruMasuk(box) {
   box.innerHTML = `<form class="masuk" id="g-f" novalidate>
       <h2>Log masuk guru</h2>
       <label for="g-k">Kata laluan</label><input id="g-k" type="password" autocomplete="current-password">
@@ -72,15 +68,16 @@ function guruMasuk(box, t) {
   f.onsubmit = async e => {
     e.preventDefault(); r.textContent = ''; b.disabled = true; b.textContent = 'Menyemak…';
     try {
-      if (await kataCincang(k.value, t.garam) === t.hash) { setGuru(true); guruPapan(box); }
-      else { r.textContent = 'Kata laluan salah.'; k.select(); }
+      const res = await API.guruMasuk(k.value);
+      if (res.token) { setGuru(res.token); guruPapan(box); }
+      else { r.textContent = res.salah || 'Kata laluan salah.'; k.select(); }
     } finally { b.disabled = false; b.textContent = 'Log masuk'; }
   };
   k.focus();
 }
 
 /* rekod murid baharu / kemas kini nama & kelas (kemajuan tidak disentuh) */
-async function daftarMurid(icMentah, nama, kelas) {
+async function daftarMuridDb(icMentah, nama, kelas) {
   const ic = icBersih(icMentah), salah = icSah(ic);
   if (salah) throw new Error(salah);
   nama = String(nama || '').trim().replace(/\s+/g, ' '); kelas = String(kelas || '').trim().toUpperCase().replace(/\s+/g, ' ');
@@ -114,10 +111,10 @@ function guruPapan(box) {
     <section class="g-kad"><div class="row g-tajuk"><h2>Senarai murid</h2><span class="q-hint" id="g-bil"></span></div>
       <div class="row g-tapis"><label for="g-kls">Kelas</label><select id="g-kls"><option value="">Semua kelas</option></select><input id="g-cari" placeholder="Cari nama atau IC" aria-label="Cari nama atau IC"><button type="button" class="btn ghost" id="g-salin">Salin sebagai jadual</button></div>
       <div id="g-ringkas"></div>
-      <div class="scroll"><table class="rumus guru"><thead><tr><th>#</th><th>No. IC</th><th>Nama</th><th>Kelas</th><th>Markah</th><th>Kemajuan</th><th>Aktiviti terakhir</th><th></th></tr></thead><tbody id="g-tb"><tr><td colspan="8">Memuatkan…</td></tr></tbody></table></div>
+      <div class="scroll"><table class="rumus guru"><thead><tr><th>Kedudukan</th><th>No. IC</th><th>Nama</th><th>Kelas</th><th>Markah</th><th>Kemajuan</th><th>Aktiviti terakhir</th><th></th></tr></thead><tbody id="g-tb"><tr><td colspan="8">Memuatkan…</td></tr></tbody></table></div>
     </section>`;
 
-  box.querySelector('#g-keluar').onclick = () => { setGuru(false); if (stopGuru) { stopGuru(); stopGuru = null; } toast('Log keluar guru', 'no'); route(); };
+  box.querySelector('#g-keluar').onclick = () => { API.guruKeluar(); setGuru(null); if (stopGuru) { stopGuru(); stopGuru = null; } toast('Log keluar guru', 'no'); route(); };
   box.querySelector('#g-tukar').onclick = () => guruTukar(box);
   const dic = box.querySelector('#d-ic'); dic.oninput = () => { dic.value = icFormat(dic.value); };
 
@@ -126,8 +123,8 @@ function guruPapan(box) {
     e.preventDefault(); dr.textContent = '';
     const bt = e.target.querySelector('button'); bt.disabled = true;
     try {
-      const st = await daftarMurid(dic.value, box.querySelector('#d-nama').value, box.querySelector('#d-kelas').value);
-      toast(st === 'baru' ? 'Murid didaftarkan' : 'Maklumat murid dikemas kini', 'ok');
+      const st = await API.guruDaftar(dic.value, box.querySelector('#d-nama').value, box.querySelector('#d-kelas').value);
+      toast(st === 'baru' ? 'Murid didaftarkan' : 'Maklumat murid dikemas kini', 'ok'); segar();
       dic.value = ''; box.querySelector('#d-nama').value = ''; dic.focus();
     } catch (err) { dr.textContent = err.message || 'Gagal mendaftar.'; }
     finally { bt.disabled = false; }
@@ -143,15 +140,15 @@ function guruPapan(box) {
       st.textContent = `Mendaftar ${i + 1}/${baris.length}…`;
       try {
         if (c.length < 3) throw new Error('perlu tiga lajur: No IC, Nama, Kelas');
-        await daftarMurid(c[0], c.slice(1, c.length - 1).join(', '), c[c.length - 1]); ok++;
+        await API.guruDaftar(c[0], c.slice(1, c.length - 1).join(', '), c[c.length - 1]); ok++;
       } catch (err) { gagal++; pr.append(el('li', null, `Baris ${i + 1} (${esc(baris[i].slice(0, 40))}): ${esc(err.message || 'gagal')}`)); }
     }
     st.textContent = `${ok} berjaya, ${gagal} gagal.`; pb.disabled = false;
     if (!gagal) box.querySelector('#p-teks').value = '';
-    toast(`${ok} murid didaftarkan`, ok ? 'ok' : 'no');
+    toast(`${ok} murid didaftarkan`, ok ? 'ok' : 'no'); segar();
   };
 
-  let rows = [];
+  let rows = [], segar = () => {};
   const kls = box.querySelector('#g-kls'), cari = box.querySelector('#g-cari'), tb = box.querySelector('#g-tb');
   const tapis = () => { const k = kls.value, q = cari.value.trim().toLowerCase().replace(/-/g, ''); return rows.filter(r => (!k || r.kelas === k) && (!q || (r.nama || '').toLowerCase().includes(q) || String(r.ic || '').includes(q))); };
   const lukis = () => {
@@ -160,7 +157,7 @@ function guruPapan(box) {
     const purata = v.length ? Math.round(v.reduce((n, r) => n + (+r.peratusMarkah || 0), 0) / v.length) : 0;
     const aktif = v.filter(r => r.kemaskini).length;
     box.querySelector('#g-ringkas').innerHTML = v.length ? `<dl class="g-sum"><div><dt>Murid</dt><dd class="num">${v.length}</dd></div><div><dt>Sudah mula</dt><dd class="num">${aktif}</dd></div><div><dt>Purata markah</dt><dd class="num">${purata}%</dd></div><div><dt>Purata kemajuan</dt><dd class="num">${Math.round(v.reduce((n, r) => n + (+r.kemajuan || 0), 0) / v.length)}%</dd></div></dl>` : '';
-    tb.innerHTML = v.length ? v.map((r, i) => `<tr><td class="num">${i + 1}</td><td class="num nw">${esc(icFormat(r.ic || ''))}</td><td>${esc(r.nama || '')}</td><td class="nw">${esc(r.kelas || '')}</td>
+    tb.innerHTML = v.length ? v.map((r, i) => `<tr class="${r.kedudukan <= 3 && r.jumlah > 0 ? 'k' + r.kedudukan : ''}"><td class="num"><b>#${r.kedudukan}</b></td><td class="num nw">${esc(icFormat(r.ic || ''))}</td><td>${esc(r.nama || '')} ${gelaranHtml(r.gelaran)}</td><td class="nw">${esc(r.kelas || '')}</td>
       <td class="num"><b>${+r.peratusMarkah || 0}%</b><small>${+r.jumlah || 0} mata</small></td>
       <td><div class="g-pr"><i style="width:${Math.min(100, +r.kemajuan || 0)}%"></i></div><small class="num">${+r.kemajuan || 0}% dijawab · ${+r.babTamat || 0}/${BAB.length} bab</small></td>
       <td class="num kecil">${r.kemaskini ? new Date(r.kemaskini).toLocaleString('ms-MY', { dateStyle: 'short', timeStyle: 'short' }) : '<span class="q-hint">Belum mula</span>'}</td>
@@ -170,29 +167,36 @@ function guruPapan(box) {
       if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = b.dataset.act === 'padam' ? 'Sahkan padam' : 'Sahkan set semula'; b.classList.add('bahaya'); return; }
       const r = rows.find(x => x.id === b.dataset.id); if (!r) return;
       try {
-        if (b.dataset.act === 'padam') { await DB.doc('pelajar/' + r.id).delete(); toast('Murid dipadam', 'no'); }
-        else { await DB.doc('pelajar/' + r.id).set({ ic: r.ic, nama: r.nama, kelas: r.kelas, didaftar: r.didaftar || Date.now(), jaw: {}, streak: { now: 0, best: 0 }, lencana: [], jumlah: 0, peratusMarkah: 0, kemajuan: 0, babTamat: 0, kemaskini: null }); toast('Markah murid diset semula', 'no'); }
+        if (b.dataset.act === 'padam') { await API.guruPadam(r); toast('Murid dipadam', 'no'); }
+        else { await API.guruSifar(r); toast('Markah murid diset semula', 'no'); }
+        API.jenis().then(j => { if (j === 'netlify') segar(); });
       } catch (e) { toast('Gagal. Cuba lagi.', 'no'); }
     });
   };
   kls.onchange = lukis; cari.oninput = lukis;
   box.querySelector('#g-salin').onclick = async () => {
     const v = tapis(), head = ['No IC', 'Nama', 'Kelas', 'Mata', 'Markah (%)', 'Kemajuan (%)', 'Bab tamat', 'Aktiviti terakhir'];
-    const txt = [head].concat(v.map(r => [icFormat(r.ic || ''), r.nama, r.kelas, +r.jumlah || 0, +r.peratusMarkah || 0, +r.kemajuan || 0, (+r.babTamat || 0) + '/' + BAB.length, r.kemaskini ? new Date(r.kemaskini).toLocaleString('ms-MY') : ''])).map(x => x.join('\t')).join('\n');
+    const txt = [head].concat(v.map(r => [r.kedudukan, icFormat(r.ic || ''), r.nama, r.kelas, r.gelaran || '', +r.jumlah || 0, +r.peratusMarkah || 0, +r.kemajuan || 0, (+r.babTamat || 0) + '/' + BAB.length, r.kemaskini ? new Date(r.kemaskini).toLocaleString('ms-MY') : ''])).map(x => x.join('\t')).join('\n');
     try { await navigator.clipboard.writeText(txt); toast('Jadual disalin. Tampal dalam Excel atau Sheets.', 'ok'); }
     catch (e) { const ta = el('textarea', 'g-salin-ta'); ta.value = txt; box.querySelector('#g-ringkas').after(ta); ta.select(); toast('Tekan Ctrl+C untuk menyalin', 'no'); }
   };
 
-  let pemasa = setTimeout(() => { tb.innerHTML = '<tr><td colspan="8" class="ralat">Pangkalan data belum menjawab. Data mungkin belum terkini.</td></tr>'; }, 10000);
-  stopGuru = DB.collection('pelajar').onSnapshot(snap => {
-    if (pemasa && !snap.metadata.fromCache) { clearTimeout(pemasa); pemasa = null; }
-    rows = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => String(a.kelas).localeCompare(String(b.kelas)) || String(a.nama).localeCompare(String(b.nama)));
-    const senarai = [...new Set(rows.map(r => r.kelas).filter(Boolean))].sort();
+  let pemasa = setTimeout(() => { tb.innerHTML = '<tr><td colspan="8" class="ralat">Pelayan belum menjawab. Data mungkin belum terkini.</td></tr>'; }, 10000);
+  const terima = (data, cache) => {
+    if (pemasa && !cache) { clearTimeout(pemasa); pemasa = null; }
+    const ikutKelas = {};
+    data.forEach(r => { (ikutKelas[r.kelas] = ikutKelas[r.kelas] || []).push(r); });
+    rows = [];
+    Object.keys(ikutKelas).sort().forEach(k => { susunKedudukan(ikutKelas[k]).forEach(r => rows.push(r)); });
+    const senarai = Object.keys(ikutKelas).filter(Boolean).sort();
     const pilih = kls.value;
     kls.innerHTML = '<option value="">Semua kelas</option>' + senarai.map(k => `<option${k === pilih ? ' selected' : ''}>${esc(k)}</option>`).join('');
     box.querySelector('#senarai-kelas').innerHTML = senarai.map(k => `<option value="${esc(k)}">`).join('');
     lukis();
-  }, () => { if (pemasa) { clearTimeout(pemasa); pemasa = null; } tb.innerHTML = '<tr><td colspan="8" class="ralat">Senarai tidak dapat dimuatkan. Muat semula halaman untuk cuba lagi.</td></tr>'; });
+  };
+  const ralat = msg => { if (pemasa) { clearTimeout(pemasa); pemasa = null; } if (!guruToken) { route(); return; } tb.innerHTML = `<tr><td colspan="8" class="ralat">${esc(msg)}</td></tr>`; };
+  stopGuru = API.guruLanggan(terima, ralat);
+  segar = () => { if (stopGuru) stopGuru(); stopGuru = API.guruLanggan(terima, ralat); };
 }
 
 function guruTukar(box) {
@@ -211,10 +215,8 @@ function guruTukar(box) {
     if (k1.length < 8) { r.textContent = 'Kata laluan mesti sekurang-kurangnya 8 aksara.'; return; }
     if (k1 !== d.querySelector('#t-k2').value) { r.textContent = 'Kedua-dua kata laluan baharu tidak sama.'; return; }
     try {
-      const t = (await DB.doc('tetapan/guru').get()).data();
-      if (await kataCincang(d.querySelector('#t-lama').value, t.garam) !== t.hash) { r.textContent = 'Kata laluan semasa salah.'; return; }
-      const garam = garamBaru();
-      await DB.doc('tetapan/guru').set({ garam, hash: await kataCincang(k1, garam), iter: ITER, dikemaskini: Date.now() });
+      const res = await API.guruTukar(d.querySelector('#t-lama').value, k1);
+      if (res.salah) { r.textContent = res.salah; return; }
       d.remove(); toast('Kata laluan ditukar', 'ok');
     } catch (err) { r.textContent = 'Gagal menyimpan. Cuba lagi.'; }
   };

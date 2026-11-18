@@ -420,6 +420,41 @@ table.guru td small{display:block;font-size:12.5px;color:var(--muted)}
 .lnk.bahaya{color:var(--bad)}
 .g-salin-ta{width:100%;min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
 
+/* ---------- kedudukan kelas & gelaran ---------- */
+.gelaran{display:inline-block;vertical-align:1px;font-family:var(--f-body);font-style:normal;font-size:11.5px;font-weight:700;letter-spacing:.02em;line-height:1;padding:4px 8px 3px;border-radius:999px;white-space:nowrap;background:var(--accent-soft);color:var(--accent);border:1px solid currentColor}
+.gelaran.emas{background:#FFF3C4;color:#8A5A00;border-color:#E2B33C}
+.gelaran.perak{background:#EEF1F5;color:#4A5568;border-color:#A9B3C1}
+.gelaran.gangsa{background:#FBE8DA;color:#8C4A1C;border-color:#D49A6A}
+:root[data-theme="dark"] .gelaran.emas{background:#3D2F06;color:#FFD866;border-color:#B8902C}
+:root[data-theme="dark"] .gelaran.perak{background:#2A3140;color:#D4DAE3;border-color:#7A8597}
+:root[data-theme="dark"] .gelaran.gangsa{background:#3A2416;color:#F0B78C;border-color:#A8693F}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .gelaran.emas{background:#3D2F06;color:#FFD866;border-color:#B8902C}
+  :root:not([data-theme="light"]) .gelaran.perak{background:#2A3140;color:#D4DAE3;border-color:#7A8597}
+  :root:not([data-theme="light"]) .gelaran.gangsa{background:#3A2416;color:#F0B78C;border-color:#A8693F}
+}
+.hud-g{display:inline-flex}
+@media (max-width:640px){.hud-g{display:none}}
+ol.ked{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+ol.ked li{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line);border-radius:4px}
+ol.ked .k-no{font-family:var(--f-display);font-weight:800;font-size:20px;color:var(--muted);text-align:center}
+ol.ked li.k1 .k-no{color:#C08A00}
+ol.ked li.k2 .k-no{color:#7A8597}
+ol.ked li.k3 .k-no{color:#B0662E}
+ol.ked .k-nama{min-width:0;overflow-wrap:anywhere}
+ol.ked .k-nama small{color:var(--muted);font-weight:600}
+ol.ked .k-mata{font-size:14px;color:var(--muted);white-space:nowrap}
+ol.ked .k-mata b{font-family:var(--f-display);font-size:18px;color:var(--ink)}
+ol.ked li.saya{background:var(--hl);color:var(--hl-ink);border-bottom-color:transparent}
+ol.ked li.saya .k-mata,ol.ked li.saya .k-mata b,ol.ked li.saya .k-nama small{color:var(--hl-ink)}
+.k-kejar{margin-top:10px;font-size:14.5px}
+.bs-ked:empty{display:none}
+.bs-ked .gelaran{margin-left:6px;vertical-align:4px}
+.pf-nama{font-weight:700;color:var(--ink)}
+table.guru tr.k1 td:first-child b{color:#C08A00}
+table.guru tr.k2 td:first-child b{color:#7A8597}
+table.guru tr.k3 td:first-child b{color:#B0662E}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 <header class="top"><div class="wrap">
@@ -566,7 +601,9 @@ function viewHome() {
       ].map(r => `<div><dt>${r[0]}</dt><dd>${fmt(r[1])}</dd></div>`).join('')}</dl></section>
   </div>
   <footer class="foot"><div class="wrap">Kandungan disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan Tingkatan 5 (KPM). Bahagian Fokus SPM dianalisis daripada Koleksi Soalan Kertas 2 Percubaan SPM 2025 (pelbagai negeri, MRSM, SBP dan SMKA). Soalan latihan ditulis semula mengikut gaya Kertas 1 dan Kertas 2; markah terbaik disimpan pada peranti ini sahaja.</div></footer>`;
-  stopHero = heroAnim(document.getElementById('hero-cv'));
+  const hentiHero = heroAnim(document.getElementById('hero-cv'));
+  const iv = setInterval(() => { if (Profil) Akaun.kedudukan(); }, 30000);
+  stopHero = () => { hentiHero(); clearInterval(iv); };
   profilBind();
 }
 
@@ -810,34 +847,24 @@ function dariDok(o) { return { jaw: o && o.jaw ? JSON.parse(JSON.stringify(o.jaw
 
 const Akaun = {
   /* murid hanya boleh masuk jika IC telah didaftarkan oleh guru */
-  async semak(icMentah) {
-    const ic = icBersih(icMentah), salah = icSah(ic); if (salah) return { salah };
-    await dbMula();
-    if (!DB) return { salah: 'Pangkalan data tidak tersedia pada paparan ini, jadi log masuk tidak dapat digunakan. Buka laman ini melalui akaun guru.' };
-    const hash = await icCincang(ic);
-    let dok = null;
-    try { const s = await DB.doc('pelajar/' + hash).get(); if (s.exists) dok = s.data(); } catch (e) { return { salah: 'Pangkalan data tidak dapat dihubungi. Cuba sebentar lagi.' }; }
-    if (!dok) return { salah: 'No. IC ini belum didaftarkan. Sila minta guru mendaftarkan anda.' };
-    return { ic, hash, dok };
+  async masuk(icMentah) {
+    const r = await API.muridMasuk(icMentah); if (r.salah) return r;
+    this.pasang(r.token, r.profil);
+    try { sessionStorage.setItem('fz:sesi', JSON.stringify({ token: r.token })); } catch (e) { /* abaikan */ }
+    hud(); this.kedudukan();
+    return {};
   },
-  async masuk(r) {
-    const dok = r.dok;
-    Profil = { hash: r.hash, ic4: r.ic.slice(-4), nama: dok.nama || '', kelas: dok.kelas || '', mod: 'db', data: dariDok(dok) };
-    try { sessionStorage.setItem('fz:sesi', JSON.stringify({ hash: Profil.hash })); } catch (e) { /* abaikan */ }
-    hud();
-  },
+  pasang(token, p) { Profil = { token, nama: p.nama || '', kelas: p.kelas || '', ic4: p.ic4 || '', data: dariDok(p), ked: null }; },
   /* pulihkan sesi selepas muat semula halaman (tab yang sama sahaja) */
   async pulih() {
     let s = null; try { s = JSON.parse(sessionStorage.getItem('fz:sesi')); } catch (e) { s = null; }
-    if (!s || !s.hash) return false;
-    await dbMula(); if (!DB) return false;
-    let dok = null;
-    try { const d = await DB.doc('pelajar/' + s.hash).get(); if (d.exists) dok = d.data(); } catch (e) { dok = null; }
-    if (!dok) { this.keluar(); return false; }
-    Profil = { hash: s.hash, ic4: String(dok.ic || '').slice(-4), nama: dok.nama || '', kelas: dok.kelas || '', mod: 'db', data: dariDok(dok) };
+    if (!s || !s.token) return false;
+    const p = await API.muridSaya(s.token);
+    if (!p) { this.keluar(); return false; }
+    this.pasang(s.token, p); this.kedudukan();
     return true;
   },
-  keluar() { Profil = null; try { sessionStorage.removeItem('fz:sesi'); } catch (e) { /* abaikan */ } hud(); },
+  keluar() { if (Profil) API.muridKeluar(Profil.token); Profil = null; try { sessionStorage.removeItem('fz:sesi'); } catch (e) { /* abaikan */ } hud(); },
   /* hanya medan kemajuan; nama, IC dan kelas diurus oleh guru */
   dok() {
     let dijawab = 0, item = 0;
@@ -845,12 +872,27 @@ const Akaun = {
     const jumlah = Game.total(), max = Game.max();
     return { jaw: Profil.data.jaw, streak: Profil.data.streak, lencana: Profil.data.lencana, jumlah, peratusMarkah: Math.round(jumlah / max * 100), kemajuan: Math.round(dijawab / item * 100), babTamat: BAB.filter(b => Game.bab(b).tamat).length, kemaskini: Date.now() };
   },
-  /* simpan satu demi satu (tiada tulisan bertindih ke dokumen yang sama) */
+  /* simpan satu demi satu; pelayan Netlify memulangkan profil yang telah disemaknya sendiri */
   simpan() {
-    if (!Profil || !DB) return Promise.resolve();
-    const body = this.dok(), hash = Profil.hash;
-    simpanQ = simpanQ.then(() => DB.doc('pelajar/' + hash).update(body)).then(() => { if (simpanGagal) { simpanGagal = false; statusSimpan(); } }).catch(() => { simpanGagal = true; statusSimpan(); });
+    if (!Profil) return Promise.resolve();
+    const P = Profil, body = this.dok();
+    simpanQ = simpanQ.then(() => API.muridSimpan(P.token, body)).then(p => {
+      if (p && Profil === P) P.data = dariDok(p);
+      if (simpanGagal) { simpanGagal = false; statusSimpan(); }
+      this.kedudukan();
+    }).catch(() => { simpanGagal = true; statusSimpan(); });
     return simpanQ;
+  },
+  /* kedudukan dalam kelas sendiri; toast apabila mendapat gelaran baharu */
+  async kedudukan() {
+    if (!Profil) return null;
+    const P = Profil, senarai = await API.kedudukan(P.token, P.kelas);
+    if (!senarai || Profil !== P) return null;
+    const saya = senarai.find(x => x.saya) || null, lama = P.ked && P.ked.saya;
+    P.ked = { senarai, saya };
+    if (lama && saya && saya.gelaran && saya.gelaran !== lama.gelaran && saya.kedudukan < lama.kedudukan) toast(`Tahniah! Anda kini ${saya.gelaran} (#${saya.kedudukan})`, 'naik');
+    hud(); kemasKedudukan();
+    return P.ked;
   }
 };
 function statusSimpan() {
@@ -918,7 +960,7 @@ function hud() {
   if (!Profil) { h.innerHTML = '<b class="masuk-l">Log masuk</b>'; h.href = '#masuk'; h.setAttribute('aria-label', 'Log masuk dengan no. IC'); return; }
   const t = Game.total(), pk = Game.pangkat(t);
   h.href = '#utama';
-  h.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" style="fill:var(--c2)"/></svg><b class="num">${t}</b><span class="hud-l">mata · ${esc(Profil.nama.split(' ')[0])}</span>`;
+  h.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" style="fill:var(--c2)"/></svg><b class="num">${t}</b><span class="hud-l">mata · ${esc(Profil.nama.split(' ')[0])}</span>${Profil.ked && Profil.ked.saya && Profil.ked.saya.gelaran ? `<span class="hud-g">${gelaranHtml(Profil.ked.saya.gelaran)}</span>` : ''}`;
   h.setAttribute('aria-label', `${Profil.nama}: ${t} mata, pangkat ${pk.nama}`);
 }
 const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -937,21 +979,51 @@ function profilHtml() {
     <div class="profil kosong"><p>Log masuk dengan <b>no. kad pengenalan</b> untuk menjawab latihan, mengumpul mata dan menyimpan markah pada profil anda.</p><div class="row"><a class="btn" href="#masuk">Log masuk</a></div></div></section>`;
   const t = Game.total(), mx = Game.max(), pk = Game.pangkat(t), dapat = Game.lencanaDapat(), s = Game.streak();
   const tamat = BAB.filter(b => Game.bab(b).tamat).length;
-  return `<section class="sec"><div class="sec-h"><h2>Profil saya</h2><small>${esc(Profil.nama)}${Profil.kelas ? ' · ' + esc(Profil.kelas) : ''} · IC ••••••••${esc(Profil.ic4)}</small></div>
+  return `<section class="sec"><div class="sec-h"><h2>Profil saya</h2><small><span class="pf-nama">${esc(Profil.nama)}</span> <span id="pf-gel">${Profil.ked && Profil.ked.saya ? gelaranHtml(Profil.ked.saya.gelaran) : ''}</span>${Profil.kelas ? ' · ' + esc(Profil.kelas) : ''}</small></div>
     <div class="profil">
       <div class="pf-atas">
-        <div><div class="pf-n num">${t}<small> / ${mx} mata</small></div><div class="pf-p">Pangkat ${pk.aras}: <b>${pk.nama}</b></div></div>
+        <div><div class="pf-n num">${t}<small> / ${mx} mata</small></div><div class="pf-p">Pangkat ${pk.aras}: <b>${pk.nama}</b><span id="pf-ked">${kedTeks()}</span></div></div>
         <dl class="pf-s"><div><dt>Bab tamat</dt><dd class="num">${tamat}/${BAB.length}</dd></div><div><dt>Rekod berturut</dt><dd class="num">${s.best}</dd></div><div><dt>Lencana</dt><dd class="num">${dapat.size}/${LENCANA.length}</dd></div></dl>
       </div>
       <div class="pf-bar"><i style="width:${Math.round(pk.frac * 100)}%"></i></div>
       <p class="pf-next">${pk.seterusnya ? `${pk.perlu} mata lagi untuk menjadi <b>${pk.seterusnya}</b>.` : 'Pangkat tertinggi dicapai. Tahniah!'}</p>
       <ul class="lencana">${LENCANA.map(([k, n, d]) => `<li class="${dapat.has(k) ? 'ada' : ''}"><b>${n}</b><span>${d}</span></li>`).join('')}</ul>
       <p class="nota-simpan" id="simpan-nota" hidden></p>
+    </div></section>
+    <section class="sec" id="sec-ked"><div class="sec-h"><h2>Kedudukan kelas</h2><small>${esc(Profil.kelas || '')} · dikemas kini setiap kali markah disimpan</small></div>
+      <div class="profil" id="ked-box">${kedHtml()}</div>
+    </section>
+    <section class="sec"><div class="profil kosong">
       <div class="row"><button type="button" class="btn ghost" id="keluar">Log keluar</button><span class="q-hint">Log keluar selepas selesai, terutama di komputer yang dikongsi.</span></div>
     </div></section>`;
 }
+function kedTeks() {
+  const s = Profil && Profil.ked && Profil.ked.saya;
+  return s ? ` · Kedudukan <b>#${s.kedudukan}</b> daripada ${Profil.ked.senarai.length} dalam kelas` : '';
+}
+function kedHtml() {
+  if (!Profil || !Profil.ked) return '<p class="lede">Memuatkan kedudukan kelas…</p>';
+  const L = Profil.ked.senarai, saya = Profil.ked.saya;
+  if (!L.length) return '<p class="lede">Belum ada data kedudukan.</p>';
+  const atas = L.filter(x => x.kedudukan <= 10);
+  const baris = x => `<li class="${x.saya ? 'saya' : ''} k${x.kedudukan <= 3 && x.jumlah > 0 ? x.kedudukan : ''}"><span class="k-no num">${x.kedudukan}</span><span class="k-nama">${esc(x.nama)}${x.saya ? ' <small>(anda)</small>' : ''} ${gelaranHtml(x.gelaran)}</span><span class="k-mata num"><b>${x.jumlah}</b> mata</span></li>`;
+  let h = `<ol class="ked">${atas.map(baris).join('')}</ol>`;
+  if (saya && saya.kedudukan > 10) h += `<p class="q-hint" style="margin:6px 0 2px">…</p><ol class="ked">${baris(saya)}</ol>`;
+  const depan = saya ? L.filter(x => x.jumlah > saya.jumlah).pop() : null;
+  if (saya && depan) h += `<p class="k-kejar">${depan.jumlah - saya.jumlah} mata lagi untuk memintas <b>${esc(depan.nama)}</b> di tempat #${depan.kedudukan}.</p>`;
+  else if (saya && saya.kedudukan === 1 && saya.jumlah > 0) h += '<p class="k-kejar">Anda mendahului kelas. Teruskan menjawab untuk kekal di tempat pertama!</p>';
+  return h;
+}
+function kemasKedudukan() {
+  const b = document.getElementById('ked-box'); if (b) b.innerHTML = kedHtml();
+  const k = document.getElementById('pf-ked'); if (k) k.innerHTML = kedTeks();
+  const g = document.getElementById('pf-gel'); if (g) g.innerHTML = Profil && Profil.ked && Profil.ked.saya ? gelaranHtml(Profil.ked.saya.gelaran) : '';
+  const st = document.querySelector('.bab-st .bs-ked'); if (st) st.innerHTML = kedRingkas();
+}
+function kedRingkas() { const s = Profil && Profil.ked && Profil.ked.saya; return s ? `<span class="eb">Kedudukan kelas</span><b class="num">#${s.kedudukan}</b>${gelaranHtml(s.gelaran)}` : ''; }
 function profilBind() {
   statusSimpan();
+  if (Profil) Akaun.kedudukan();
   const k = document.getElementById('keluar'); if (k) k.onclick = () => { Akaun.keluar(); toast('Anda telah log keluar', 'no'); route(); };
 }
 
@@ -974,9 +1046,8 @@ function viewMasuk() {
   f.onsubmit = async e => {
     e.preventDefault(); er.textContent = ''; bt.disabled = true; bt.textContent = 'Menyemak…';
     try {
-      const r = await Akaun.semak(ic.value);
+      const r = await Akaun.masuk(ic.value);
       if (r.salah) { er.textContent = r.salah; return; }
-      await Akaun.masuk(r);
       toast(`Selamat datang, ${Profil.nama.split(' ')[0]}!`, 'naik');
       location.hash = 'utama'; route();
     } finally { bt.disabled = false; bt.textContent = 'Log masuk'; }
@@ -1084,7 +1155,7 @@ function reka(p, b) {
 
 function babStatusHtml(b) {
   const s = Game.bab(b);
-  return `<div class="bab-st"><div><span class="eb">Mata bab ini</span><b class="num">${s.pts}<small> / ${s.max}</small></b></div>${bintangHtml(s.bintang)}<div><span class="eb">Dijawab</span><b class="num">${s.done}<small> / ${s.total}</small></b></div></div>`;
+  return `<div class="bab-st"><div><span class="eb">Mata bab ini</span><b class="num">${s.pts}<small> / ${s.max}</small></b></div>${bintangHtml(s.bintang)}<div><span class="eb">Dijawab</span><b class="num">${s.done}<small> / ${s.total}</small></b></div><div class="bs-ked">${kedRingkas()}</div></div>`;
 }
 
 'use strict';
@@ -1092,8 +1163,8 @@ function babStatusHtml(b) {
    Kata laluan disimpan sebagai cincangan PBKDF2 (bukan teks asal) dalam tetapan/guru.
    Rekod murid: pelajar/<cincangan IC> = { ic, nama, kelas, didaftar, ...kemajuan } */
 const ITER = 150000;
-let stopGuru = null, guruSah = false;
-try { guruSah = sessionStorage.getItem('fz:guru') === '1'; } catch (e) { guruSah = false; }
+let stopGuru = null, guruToken = null;
+try { guruToken = sessionStorage.getItem('fz:guru2') || null; } catch (e) { guruToken = null; }
 
 async function kataCincang(kata, garam) {
   const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(kata), 'PBKDF2', false, ['deriveBits']);
@@ -1101,7 +1172,7 @@ async function kataCincang(kata, garam) {
   return [...new Uint8Array(bits)].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 const garamBaru = () => [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, '0')).join('');
-function setGuru(v) { guruSah = v; try { if (v) sessionStorage.setItem('fz:guru', '1'); else sessionStorage.removeItem('fz:guru'); } catch (e) { /* abaikan */ } }
+function setGuru(t) { guruToken = t || null; try { if (t) sessionStorage.setItem('fz:guru2', t); else sessionStorage.removeItem('fz:guru2'); } catch (e) { /* abaikan */ } }
 
 function guruShell(isi, sub) {
   app.innerHTML = `<header class="ch-head"><div class="wrap" style="padding-bottom:20px">
@@ -1114,13 +1185,11 @@ function guruShell(isi, sub) {
 }
 
 async function viewGuru() {
-  const box = guruShell('<p class="lede">Memuatkan…</p>', 'Daftar murid dan pantau markah mereka.');
-  await dbMula();
-  if (!DB) { box.innerHTML = '<p class="ralat">Halaman guru memerlukan pangkalan data laman. Buka laman ini melalui akaun claude.ai guru (pemilik laman).</p>'; return; }
-  let t = null;
-  try { const s = await DB.doc('tetapan/guru').get(); if (s.exists) t = s.data(); } catch (e) { box.innerHTML = '<p class="ralat">Pangkalan data tidak dapat dihubungi. Muat semula halaman untuk cuba lagi.</p>'; return; }
-  if (!t || !t.hash) return guruTetap(box);
-  if (!guruSah) return guruMasuk(box, t);
+  const box = guruShell('<p class="lede">Memuatkan…</p>', 'Daftar murid, pantau markah dan kedudukan kelas.');
+  const st = await API.guruStatus();
+  if (st.salah) { box.innerHTML = `<p class="ralat">${esc(st.salah)}</p>`; return; }
+  if (!st.ada) return st.jenis === 'claude' ? guruTetap(box) : (box.innerHTML = '<p class="ralat">Kata laluan guru belum ditetapkan. Dalam Netlify, buka Site configuration → Environment variables dan tambah <b>GURU_KATA_LALUAN</b>, kemudian deploy semula.</p>');
+  if (!guruToken) return guruMasuk(box);
   guruPapan(box);
 }
 
@@ -1141,17 +1210,15 @@ function guruTetap(box) {
     if (k1 !== k2) { r.textContent = 'Kedua-dua kata laluan tidak sama.'; return; }
     b.disabled = true;
     try {
-      const cur = await DB.doc('tetapan/guru').get();
-      if (cur.exists && cur.data().hash) { r.textContent = 'Kata laluan sudah ditetapkan oleh orang lain. Muat semula halaman.'; return; }
-      const garam = garamBaru();
-      await DB.doc('tetapan/guru').set({ garam, hash: await kataCincang(k1, garam), iter: ITER, dikemaskini: Date.now() });
-      setGuru(true); toast('Kata laluan disimpan', 'naik'); guruPapan(box);
-    } catch (err) { r.textContent = 'Gagal menyimpan. Hanya pemilik atau Editor laman boleh menetapkan kata laluan.'; }
+      const r = await API.guruTetap(k1);
+      if (r.salah) { return void (box.querySelector('#g-r').textContent = r.salah); }
+      setGuru(r.token); toast('Kata laluan disimpan', 'naik'); guruPapan(box);
+    } catch (err) { box.querySelector('#g-r').textContent = 'Gagal menyimpan. Hanya pemilik atau Editor laman boleh menetapkan kata laluan.'; }
     finally { b.disabled = false; }
   };
 }
 
-function guruMasuk(box, t) {
+function guruMasuk(box) {
   box.innerHTML = `<form class="masuk" id="g-f" novalidate>
       <h2>Log masuk guru</h2>
       <label for="g-k">Kata laluan</label><input id="g-k" type="password" autocomplete="current-password">
@@ -1161,15 +1228,16 @@ function guruMasuk(box, t) {
   f.onsubmit = async e => {
     e.preventDefault(); r.textContent = ''; b.disabled = true; b.textContent = 'Menyemak…';
     try {
-      if (await kataCincang(k.value, t.garam) === t.hash) { setGuru(true); guruPapan(box); }
-      else { r.textContent = 'Kata laluan salah.'; k.select(); }
+      const res = await API.guruMasuk(k.value);
+      if (res.token) { setGuru(res.token); guruPapan(box); }
+      else { r.textContent = res.salah || 'Kata laluan salah.'; k.select(); }
     } finally { b.disabled = false; b.textContent = 'Log masuk'; }
   };
   k.focus();
 }
 
 /* rekod murid baharu / kemas kini nama & kelas (kemajuan tidak disentuh) */
-async function daftarMurid(icMentah, nama, kelas) {
+async function daftarMuridDb(icMentah, nama, kelas) {
   const ic = icBersih(icMentah), salah = icSah(ic);
   if (salah) throw new Error(salah);
   nama = String(nama || '').trim().replace(/\s+/g, ' '); kelas = String(kelas || '').trim().toUpperCase().replace(/\s+/g, ' ');
@@ -1203,10 +1271,10 @@ function guruPapan(box) {
     <section class="g-kad"><div class="row g-tajuk"><h2>Senarai murid</h2><span class="q-hint" id="g-bil"></span></div>
       <div class="row g-tapis"><label for="g-kls">Kelas</label><select id="g-kls"><option value="">Semua kelas</option></select><input id="g-cari" placeholder="Cari nama atau IC" aria-label="Cari nama atau IC"><button type="button" class="btn ghost" id="g-salin">Salin sebagai jadual</button></div>
       <div id="g-ringkas"></div>
-      <div class="scroll"><table class="rumus guru"><thead><tr><th>#</th><th>No. IC</th><th>Nama</th><th>Kelas</th><th>Markah</th><th>Kemajuan</th><th>Aktiviti terakhir</th><th></th></tr></thead><tbody id="g-tb"><tr><td colspan="8">Memuatkan…</td></tr></tbody></table></div>
+      <div class="scroll"><table class="rumus guru"><thead><tr><th>Kedudukan</th><th>No. IC</th><th>Nama</th><th>Kelas</th><th>Markah</th><th>Kemajuan</th><th>Aktiviti terakhir</th><th></th></tr></thead><tbody id="g-tb"><tr><td colspan="8">Memuatkan…</td></tr></tbody></table></div>
     </section>`;
 
-  box.querySelector('#g-keluar').onclick = () => { setGuru(false); if (stopGuru) { stopGuru(); stopGuru = null; } toast('Log keluar guru', 'no'); route(); };
+  box.querySelector('#g-keluar').onclick = () => { API.guruKeluar(); setGuru(null); if (stopGuru) { stopGuru(); stopGuru = null; } toast('Log keluar guru', 'no'); route(); };
   box.querySelector('#g-tukar').onclick = () => guruTukar(box);
   const dic = box.querySelector('#d-ic'); dic.oninput = () => { dic.value = icFormat(dic.value); };
 
@@ -1215,8 +1283,8 @@ function guruPapan(box) {
     e.preventDefault(); dr.textContent = '';
     const bt = e.target.querySelector('button'); bt.disabled = true;
     try {
-      const st = await daftarMurid(dic.value, box.querySelector('#d-nama').value, box.querySelector('#d-kelas').value);
-      toast(st === 'baru' ? 'Murid didaftarkan' : 'Maklumat murid dikemas kini', 'ok');
+      const st = await API.guruDaftar(dic.value, box.querySelector('#d-nama').value, box.querySelector('#d-kelas').value);
+      toast(st === 'baru' ? 'Murid didaftarkan' : 'Maklumat murid dikemas kini', 'ok'); segar();
       dic.value = ''; box.querySelector('#d-nama').value = ''; dic.focus();
     } catch (err) { dr.textContent = err.message || 'Gagal mendaftar.'; }
     finally { bt.disabled = false; }
@@ -1232,15 +1300,15 @@ function guruPapan(box) {
       st.textContent = `Mendaftar ${i + 1}/${baris.length}…`;
       try {
         if (c.length < 3) throw new Error('perlu tiga lajur: No IC, Nama, Kelas');
-        await daftarMurid(c[0], c.slice(1, c.length - 1).join(', '), c[c.length - 1]); ok++;
+        await API.guruDaftar(c[0], c.slice(1, c.length - 1).join(', '), c[c.length - 1]); ok++;
       } catch (err) { gagal++; pr.append(el('li', null, `Baris ${i + 1} (${esc(baris[i].slice(0, 40))}): ${esc(err.message || 'gagal')}`)); }
     }
     st.textContent = `${ok} berjaya, ${gagal} gagal.`; pb.disabled = false;
     if (!gagal) box.querySelector('#p-teks').value = '';
-    toast(`${ok} murid didaftarkan`, ok ? 'ok' : 'no');
+    toast(`${ok} murid didaftarkan`, ok ? 'ok' : 'no'); segar();
   };
 
-  let rows = [];
+  let rows = [], segar = () => {};
   const kls = box.querySelector('#g-kls'), cari = box.querySelector('#g-cari'), tb = box.querySelector('#g-tb');
   const tapis = () => { const k = kls.value, q = cari.value.trim().toLowerCase().replace(/-/g, ''); return rows.filter(r => (!k || r.kelas === k) && (!q || (r.nama || '').toLowerCase().includes(q) || String(r.ic || '').includes(q))); };
   const lukis = () => {
@@ -1249,7 +1317,7 @@ function guruPapan(box) {
     const purata = v.length ? Math.round(v.reduce((n, r) => n + (+r.peratusMarkah || 0), 0) / v.length) : 0;
     const aktif = v.filter(r => r.kemaskini).length;
     box.querySelector('#g-ringkas').innerHTML = v.length ? `<dl class="g-sum"><div><dt>Murid</dt><dd class="num">${v.length}</dd></div><div><dt>Sudah mula</dt><dd class="num">${aktif}</dd></div><div><dt>Purata markah</dt><dd class="num">${purata}%</dd></div><div><dt>Purata kemajuan</dt><dd class="num">${Math.round(v.reduce((n, r) => n + (+r.kemajuan || 0), 0) / v.length)}%</dd></div></dl>` : '';
-    tb.innerHTML = v.length ? v.map((r, i) => `<tr><td class="num">${i + 1}</td><td class="num nw">${esc(icFormat(r.ic || ''))}</td><td>${esc(r.nama || '')}</td><td class="nw">${esc(r.kelas || '')}</td>
+    tb.innerHTML = v.length ? v.map((r, i) => `<tr class="${r.kedudukan <= 3 && r.jumlah > 0 ? 'k' + r.kedudukan : ''}"><td class="num"><b>#${r.kedudukan}</b></td><td class="num nw">${esc(icFormat(r.ic || ''))}</td><td>${esc(r.nama || '')} ${gelaranHtml(r.gelaran)}</td><td class="nw">${esc(r.kelas || '')}</td>
       <td class="num"><b>${+r.peratusMarkah || 0}%</b><small>${+r.jumlah || 0} mata</small></td>
       <td><div class="g-pr"><i style="width:${Math.min(100, +r.kemajuan || 0)}%"></i></div><small class="num">${+r.kemajuan || 0}% dijawab · ${+r.babTamat || 0}/${BAB.length} bab</small></td>
       <td class="num kecil">${r.kemaskini ? new Date(r.kemaskini).toLocaleString('ms-MY', { dateStyle: 'short', timeStyle: 'short' }) : '<span class="q-hint">Belum mula</span>'}</td>
@@ -1259,29 +1327,36 @@ function guruPapan(box) {
       if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = b.dataset.act === 'padam' ? 'Sahkan padam' : 'Sahkan set semula'; b.classList.add('bahaya'); return; }
       const r = rows.find(x => x.id === b.dataset.id); if (!r) return;
       try {
-        if (b.dataset.act === 'padam') { await DB.doc('pelajar/' + r.id).delete(); toast('Murid dipadam', 'no'); }
-        else { await DB.doc('pelajar/' + r.id).set({ ic: r.ic, nama: r.nama, kelas: r.kelas, didaftar: r.didaftar || Date.now(), jaw: {}, streak: { now: 0, best: 0 }, lencana: [], jumlah: 0, peratusMarkah: 0, kemajuan: 0, babTamat: 0, kemaskini: null }); toast('Markah murid diset semula', 'no'); }
+        if (b.dataset.act === 'padam') { await API.guruPadam(r); toast('Murid dipadam', 'no'); }
+        else { await API.guruSifar(r); toast('Markah murid diset semula', 'no'); }
+        API.jenis().then(j => { if (j === 'netlify') segar(); });
       } catch (e) { toast('Gagal. Cuba lagi.', 'no'); }
     });
   };
   kls.onchange = lukis; cari.oninput = lukis;
   box.querySelector('#g-salin').onclick = async () => {
     const v = tapis(), head = ['No IC', 'Nama', 'Kelas', 'Mata', 'Markah (%)', 'Kemajuan (%)', 'Bab tamat', 'Aktiviti terakhir'];
-    const txt = [head].concat(v.map(r => [icFormat(r.ic || ''), r.nama, r.kelas, +r.jumlah || 0, +r.peratusMarkah || 0, +r.kemajuan || 0, (+r.babTamat || 0) + '/' + BAB.length, r.kemaskini ? new Date(r.kemaskini).toLocaleString('ms-MY') : ''])).map(x => x.join('\t')).join('\n');
+    const txt = [head].concat(v.map(r => [r.kedudukan, icFormat(r.ic || ''), r.nama, r.kelas, r.gelaran || '', +r.jumlah || 0, +r.peratusMarkah || 0, +r.kemajuan || 0, (+r.babTamat || 0) + '/' + BAB.length, r.kemaskini ? new Date(r.kemaskini).toLocaleString('ms-MY') : ''])).map(x => x.join('\t')).join('\n');
     try { await navigator.clipboard.writeText(txt); toast('Jadual disalin. Tampal dalam Excel atau Sheets.', 'ok'); }
     catch (e) { const ta = el('textarea', 'g-salin-ta'); ta.value = txt; box.querySelector('#g-ringkas').after(ta); ta.select(); toast('Tekan Ctrl+C untuk menyalin', 'no'); }
   };
 
-  let pemasa = setTimeout(() => { tb.innerHTML = '<tr><td colspan="8" class="ralat">Pangkalan data belum menjawab. Data mungkin belum terkini.</td></tr>'; }, 10000);
-  stopGuru = DB.collection('pelajar').onSnapshot(snap => {
-    if (pemasa && !snap.metadata.fromCache) { clearTimeout(pemasa); pemasa = null; }
-    rows = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => String(a.kelas).localeCompare(String(b.kelas)) || String(a.nama).localeCompare(String(b.nama)));
-    const senarai = [...new Set(rows.map(r => r.kelas).filter(Boolean))].sort();
+  let pemasa = setTimeout(() => { tb.innerHTML = '<tr><td colspan="8" class="ralat">Pelayan belum menjawab. Data mungkin belum terkini.</td></tr>'; }, 10000);
+  const terima = (data, cache) => {
+    if (pemasa && !cache) { clearTimeout(pemasa); pemasa = null; }
+    const ikutKelas = {};
+    data.forEach(r => { (ikutKelas[r.kelas] = ikutKelas[r.kelas] || []).push(r); });
+    rows = [];
+    Object.keys(ikutKelas).sort().forEach(k => { susunKedudukan(ikutKelas[k]).forEach(r => rows.push(r)); });
+    const senarai = Object.keys(ikutKelas).filter(Boolean).sort();
     const pilih = kls.value;
     kls.innerHTML = '<option value="">Semua kelas</option>' + senarai.map(k => `<option${k === pilih ? ' selected' : ''}>${esc(k)}</option>`).join('');
     box.querySelector('#senarai-kelas').innerHTML = senarai.map(k => `<option value="${esc(k)}">`).join('');
     lukis();
-  }, () => { if (pemasa) { clearTimeout(pemasa); pemasa = null; } tb.innerHTML = '<tr><td colspan="8" class="ralat">Senarai tidak dapat dimuatkan. Muat semula halaman untuk cuba lagi.</td></tr>'; });
+  };
+  const ralat = msg => { if (pemasa) { clearTimeout(pemasa); pemasa = null; } if (!guruToken) { route(); return; } tb.innerHTML = `<tr><td colspan="8" class="ralat">${esc(msg)}</td></tr>`; };
+  stopGuru = API.guruLanggan(terima, ralat);
+  segar = () => { if (stopGuru) stopGuru(); stopGuru = API.guruLanggan(terima, ralat); };
 }
 
 function guruTukar(box) {
@@ -1300,14 +1375,143 @@ function guruTukar(box) {
     if (k1.length < 8) { r.textContent = 'Kata laluan mesti sekurang-kurangnya 8 aksara.'; return; }
     if (k1 !== d.querySelector('#t-k2').value) { r.textContent = 'Kedua-dua kata laluan baharu tidak sama.'; return; }
     try {
-      const t = (await DB.doc('tetapan/guru').get()).data();
-      if (await kataCincang(d.querySelector('#t-lama').value, t.garam) !== t.hash) { r.textContent = 'Kata laluan semasa salah.'; return; }
-      const garam = garamBaru();
-      await DB.doc('tetapan/guru').set({ garam, hash: await kataCincang(k1, garam), iter: ITER, dikemaskini: Date.now() });
+      const res = await API.guruTukar(d.querySelector('#t-lama').value, k1);
+      if (res.salah) { r.textContent = res.salah; return; }
       d.remove(); toast('Kata laluan ditukar', 'ok');
     } catch (err) { r.textContent = 'Gagal menyimpan. Cuba lagi.'; }
   };
 }
+
+'use strict';
+/* ===== Sumber data =====
+   'netlify' : pelayan sendiri di /api (Netlify Functions + Netlify Blobs). No. IC tidak pernah dihantar ke murid.
+   'claude'  : pangkalan data artifak claude.ai (window.claude.use('db')).
+   null      : tiada sumber data; log masuk tidak tersedia. */
+const GELARAN_GAYA = { 'Juara Kelas': 'emas', 'Naib Juara': 'perak', 'Tempat Ketiga': 'gangsa', '10 Terbaik': 'biru' };
+function gelaran(r, mata) { if (!(mata > 0)) return ''; return r === 1 ? 'Juara Kelas' : r === 2 ? 'Naib Juara' : r === 3 ? 'Tempat Ketiga' : r <= 10 ? '10 Terbaik' : ''; }
+function susunKedudukan(rows) {
+  const s = rows.slice().sort((a, b) => (b.jumlah || 0) - (a.jumlah || 0) || String(a.nama).localeCompare(String(b.nama)));
+  let r = 0, prev = null;
+  s.forEach((x, i) => { if (x.jumlah !== prev) { r = i + 1; prev = x.jumlah; } x.kedudukan = r; x.gelaran = gelaran(r, x.jumlah); });
+  return s;
+}
+function gelaranHtml(g) { return g ? `<span class="gelaran ${GELARAN_GAYA[g] || ''}">${g === 'Juara Kelas' ? '♛ ' : ''}${g}</span>` : ''; }
+
+let jenisSedia = null;
+const API = {
+  jenis() {
+    if (jenisSedia) return jenisSedia;
+    jenisSedia = (async () => {
+      if (window.claude && window.claude.use) { await dbMula(); return DB ? 'claude' : null; }
+      try { const r = await fetch('api/ping', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }); const j = await r.json(); if (j && j.ok) return 'netlify'; } catch (e) { /* tiada pelayan */ }
+      return null;
+    })();
+    return jenisSedia;
+  },
+  async post(laluan, body) {
+    try {
+      const r = await fetch('api/' + laluan, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) });
+      const j = await r.json().catch(() => ({ ok: false, salah: 'Respons pelayan tidak sah.' }));
+      if (!j.ok && r.status === 401 && laluan.startsWith('guru/') && laluan !== 'guru/masuk') { setGuru(null); }
+      return j;
+    } catch (e) { return { ok: false, salah: 'Tidak dapat menghubungi pelayan. Semak sambungan internet.' }; }
+  },
+  tiada: 'Sistem log masuk tidak tersedia pada paparan ini.',
+
+  /* ---------- murid ---------- */
+  async muridMasuk(icMentah) {
+    const ic = icBersih(icMentah), e = icSah(ic); if (e) return { salah: e };
+    const j = await this.jenis();
+    if (j === 'netlify') { const r = await this.post('murid/masuk', { ic }); return r.ok ? { token: r.token, profil: r.profil } : { salah: r.salah }; }
+    if (j !== 'claude') return { salah: this.tiada };
+    const hash = await icCincang(ic);
+    try { const s = await DB.doc('pelajar/' + hash).get(); if (!s.exists) return { salah: 'No. IC ini belum didaftarkan. Sila minta guru mendaftarkan anda.' }; const d = s.data(); return { token: hash, profil: { ...d, ic4: String(d.ic || '').slice(-4) } }; }
+    catch (err) { return { salah: 'Pangkalan data tidak dapat dihubungi. Cuba sebentar lagi.' }; }
+  },
+  async muridSaya(token) {
+    const j = await this.jenis();
+    if (j === 'netlify') { const r = await this.post('murid/saya', { token }); return r.ok ? r.profil : null; }
+    if (j !== 'claude') return null;
+    try { const s = await DB.doc('pelajar/' + token).get(); if (!s.exists) return null; const d = s.data(); return { ...d, ic4: String(d.ic || '').slice(-4) }; } catch (e) { return null; }
+  },
+  /* pulangkan profil terkini daripada pelayan (Netlify) atau null jika tiada perubahan pelayan */
+  async muridSimpan(token, body) {
+    const j = await this.jenis();
+    if (j === 'netlify') { const r = await this.post('murid/simpan', { token, jaw: body.jaw, streak: body.streak, lencana: body.lencana }); if (!r.ok) throw new Error(r.salah); return r.profil; }
+    if (j === 'claude') { await DB.doc('pelajar/' + token).update(body); return null; }
+    throw new Error(this.tiada);
+  },
+  async kedudukan(token, kelas) {
+    const j = await this.jenis();
+    if (j === 'netlify') { const r = await this.post('kedudukan', { token }); return r.ok ? r.senarai : null; }
+    if (j !== 'claude') return null;
+    try {
+      const snap = await DB.collection('pelajar').where('kelas', '==', kelas).get();
+      return susunKedudukan(snap.docs.map(d => { const x = d.data(); return { nama: x.nama, jumlah: x.jumlah || 0, peratusMarkah: x.peratusMarkah || 0, kemajuan: x.kemajuan || 0, saya: d.id === token }; }));
+    } catch (e) { return null; }
+  },
+  async muridKeluar(token) { if ((await this.jenis()) === 'netlify') this.post('keluar', { token }); },
+
+  /* ---------- guru ---------- */
+  async guruStatus() {
+    const j = await this.jenis();
+    if (j === 'netlify') { const r = await this.post('guru/status'); return r.ok ? { ada: r.ada, jenis: j } : { salah: r.salah }; }
+    if (j !== 'claude') return { salah: 'Halaman guru memerlukan pelayan laman (Netlify) atau pangkalan data claude.ai.' };
+    try { const s = await DB.doc('tetapan/guru').get(); return { ada: s.exists && !!s.data().hash, jenis: j }; } catch (e) { return { salah: 'Pangkalan data tidak dapat dihubungi. Muat semula halaman.' }; }
+  },
+  async guruTetap(kata) {
+    if ((await this.jenis()) !== 'claude') return { salah: 'Pada Netlify, kata laluan pertama ditetapkan melalui pemboleh ubah GURU_KATA_LALUAN.' };
+    const cur = await DB.doc('tetapan/guru').get();
+    if (cur.exists && cur.data().hash) return { salah: 'Kata laluan sudah ditetapkan. Muat semula halaman.' };
+    const garam = garamBaru();
+    await DB.doc('tetapan/guru').set({ garam, hash: await kataCincang(kata, garam), iter: ITER, dikemaskini: Date.now() });
+    return { token: 'claude' };
+  },
+  async guruMasuk(kata) {
+    const j = await this.jenis();
+    if (j === 'netlify') { const r = await this.post('guru/masuk', { kata }); return r.ok ? { token: r.token } : { salah: r.salah }; }
+    const t = (await DB.doc('tetapan/guru').get()).data();
+    return (await kataCincang(kata, t.garam)) === t.hash ? { token: 'claude' } : { salah: 'Kata laluan salah.' };
+  },
+  async guruTukar(lama, baru) {
+    const j = await this.jenis();
+    if (j === 'netlify') { const r = await this.post('guru/tukar', { token: guruToken, lama, baru }); return r.ok ? {} : { salah: r.salah }; }
+    const t = (await DB.doc('tetapan/guru').get()).data();
+    if ((await kataCincang(lama, t.garam)) !== t.hash) return { salah: 'Kata laluan semasa salah.' };
+    const garam = garamBaru();
+    await DB.doc('tetapan/guru').set({ garam, hash: await kataCincang(baru, garam), iter: ITER, dikemaskini: Date.now() });
+    return {};
+  },
+  async guruDaftar(ic, nama, kelas) {
+    const j = await this.jenis();
+    if (j === 'netlify') { const r = await this.post('guru/daftar', { token: guruToken, ic, nama, kelas }); if (!r.ok) throw new Error(r.salah); return r.hasil; }
+    return daftarMuridDb(ic, nama, kelas);
+  },
+  async guruPadam(row) {
+    if ((await this.jenis()) === 'netlify') { const r = await this.post('guru/padam', { token: guruToken, id: row.id }); if (!r.ok) throw new Error(r.salah); return; }
+    await DB.doc('pelajar/' + row.id).delete();
+  },
+  async guruSifar(row) {
+    if ((await this.jenis()) === 'netlify') { const r = await this.post('guru/sifar', { token: guruToken, id: row.id }); if (!r.ok) throw new Error(r.salah); return; }
+    await DB.doc('pelajar/' + row.id).set({ ic: row.ic, nama: row.nama, kelas: row.kelas, didaftar: row.didaftar || Date.now(), jaw: {}, streak: { now: 0, best: 0 }, lencana: [], jumlah: 0, peratusMarkah: 0, kemajuan: 0, babTamat: 0, kemaskini: null });
+  },
+  /* senarai langsung: claude = onSnapshot; netlify = tinjau setiap 15 s */
+  guruLanggan(cb, err) {
+    let mati = false, stop = () => { mati = true; };
+    this.jenis().then(j => {
+      if (mati) return;
+      if (j === 'netlify') {
+        const tarik = async () => { const r = await this.post('guru/senarai', { token: guruToken }); if (mati) return; if (r.ok) cb(r.senarai, false); else err(r.salah); };
+        tarik(); const iv = setInterval(tarik, 15000); stop = () => { mati = true; clearInterval(iv); };
+      } else {
+        const un = DB.collection('pelajar').onSnapshot(snap => cb(snap.docs.map(d => ({ id: d.id, ...d.data() })), snap.metadata.fromCache), () => err('Senarai tidak dapat dimuatkan. Muat semula halaman untuk cuba lagi.'));
+        stop = () => { mati = true; un(); };
+      }
+    });
+    return () => stop();
+  },
+  async guruKeluar() { if ((await this.jenis()) === 'netlify' && guruToken && guruToken !== 'claude') this.post('guru/keluar', { token: guruToken }); }
+};
 
 'use strict';
 /* ===== Visual interaktif (kanvas) ===== */

@@ -409,4 +409,39 @@ table.guru td small{display:block;font-size:12.5px;color:var(--muted)}
 .lnk.bahaya{color:var(--bad)}
 .g-salin-ta{width:100%;min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
 
+/* ---------- kedudukan kelas & gelaran ---------- */
+.gelaran{display:inline-block;vertical-align:1px;font-family:var(--f-body);font-style:normal;font-size:11.5px;font-weight:700;letter-spacing:.02em;line-height:1;padding:4px 8px 3px;border-radius:999px;white-space:nowrap;background:var(--accent-soft);color:var(--accent);border:1px solid currentColor}
+.gelaran.emas{background:#FFF3C4;color:#8A5A00;border-color:#E2B33C}
+.gelaran.perak{background:#EEF1F5;color:#4A5568;border-color:#A9B3C1}
+.gelaran.gangsa{background:#FBE8DA;color:#8C4A1C;border-color:#D49A6A}
+:root[data-theme="dark"] .gelaran.emas{background:#3D2F06;color:#FFD866;border-color:#B8902C}
+:root[data-theme="dark"] .gelaran.perak{background:#2A3140;color:#D4DAE3;border-color:#7A8597}
+:root[data-theme="dark"] .gelaran.gangsa{background:#3A2416;color:#F0B78C;border-color:#A8693F}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .gelaran.emas{background:#3D2F06;color:#FFD866;border-color:#B8902C}
+  :root:not([data-theme="light"]) .gelaran.perak{background:#2A3140;color:#D4DAE3;border-color:#7A8597}
+  :root:not([data-theme="light"]) .gelaran.gangsa{background:#3A2416;color:#F0B78C;border-color:#A8693F}
+}
+.hud-g{display:inline-flex}
+@media (max-width:640px){.hud-g{display:none}}
+ol.ked{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+ol.ked li{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line);border-radius:4px}
+ol.ked .k-no{font-family:var(--f-display);font-weight:800;font-size:20px;color:var(--muted);text-align:center}
+ol.ked li.k1 .k-no{color:#C08A00}
+ol.ked li.k2 .k-no{color:#7A8597}
+ol.ked li.k3 .k-no{color:#B0662E}
+ol.ked .k-nama{min-width:0;overflow-wrap:anywhere}
+ol.ked .k-nama small{color:var(--muted);font-weight:600}
+ol.ked .k-mata{font-size:14px;color:var(--muted);white-space:nowrap}
+ol.ked .k-mata b{font-family:var(--f-display);font-size:18px;color:var(--ink)}
+ol.ked li.saya{background:var(--hl);color:var(--hl-ink);border-bottom-color:transparent}
+ol.ked li.saya .k-mata,ol.ked li.saya .k-mata b,ol.ked li.saya .k-nama small{color:var(--hl-ink)}
+.k-kejar{margin-top:10px;font-size:14.5px}
+.bs-ked:empty{display:none}
+.bs-ked .gelaran{margin-left:6px;vertical-align:4px}
+.pf-nama{font-weight:700;color:var(--ink)}
+table.guru tr.k1 td:first-child b{color:#C08A00}
+table.guru tr.k2 td:first-child b{color:#7A8597}
+table.guru tr.k3 td:first-child b{color:#B0662E}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}

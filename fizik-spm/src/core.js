@@ -136,7 +136,9 @@ function viewHome() {
       ].map(r => `<div><dt>${r[0]}</dt><dd>${fmt(r[1])}</dd></div>`).join('')}</dl></section>
   </div>
   <footer class="foot"><div class="wrap">Kandungan disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan Tingkatan 5 (KPM). Bahagian Fokus SPM dianalisis daripada Koleksi Soalan Kertas 2 Percubaan SPM 2025 (pelbagai negeri, MRSM, SBP dan SMKA). Soalan latihan ditulis semula mengikut gaya Kertas 1 dan Kertas 2; markah terbaik disimpan pada peranti ini sahaja.</div></footer>`;
-  stopHero = heroAnim(document.getElementById('hero-cv'));
+  const hentiHero = heroAnim(document.getElementById('hero-cv'));
+  const iv = setInterval(() => { if (Profil) Akaun.kedudukan(); }, 30000);
+  stopHero = () => { hentiHero(); clearInterval(iv); };
   profilBind();
 }
 
