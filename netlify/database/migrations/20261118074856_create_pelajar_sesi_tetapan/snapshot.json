@@ -1,0 +1,327 @@
+{
+  "version": "8",
+  "dialect": "postgres",
+  "id": "c90f72f3-7a17-4e0a-92f1-45d26c4bac9f",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "ddl": [
+    {
+      "isRlsEnabled": false,
+      "name": "pelajar",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "sesi",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "tetapan",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "ic",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "nama",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "kelas",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "didaftar",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'{}'",
+      "generated": null,
+      "identity": null,
+      "name": "jaw",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'{\"now\":0,\"best\":0}'",
+      "generated": null,
+      "identity": null,
+      "name": "streak",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'[]'",
+      "generated": null,
+      "identity": null,
+      "name": "lencana",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "name": "jumlah",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "name": "peratus_markah",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "name": "kemajuan",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "name": "bab_tamat",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "kemaskini",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "token",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "sesi"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "jenis",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "sesi"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "pelajar_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "sesi"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "tamat",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "sesi"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "kunci",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tetapan"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "nilai",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tetapan"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "kelas",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "pelajar_kelas_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "pelajar"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "pelajar_pkey",
+      "schema": "public",
+      "table": "pelajar",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "token"
+      ],
+      "nameExplicit": false,
+      "name": "sesi_pkey",
+      "schema": "public",
+      "table": "sesi",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "kunci"
+      ],
+      "nameExplicit": false,
+      "name": "tetapan_pkey",
+      "schema": "public",
+      "table": "tetapan",
+      "entityType": "pks"
+    }
+  ],
+  "renames": []
+}

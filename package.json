@@ -2,5 +2,13 @@
     "name": "framework-arduinoespressif8266",
     "description": "Arduino Wiring-based Framework (ESP8266 Core)",
     "url": "https://github.com/esp8266/Arduino",
-    "version": "2.5.0-dev"
+    "version": "2.5.0-dev",
+    "dependencies": {
+        "@netlify/database": "^2.0.3",
+        "drizzle-orm": "^1.0.0-beta.22"
+    },
+    "devDependencies": {
+        "drizzle-kit": "^1.0.0-beta.22",
+        "strapi-plugin-netlify-deployments": "file:netlify/plugins/strapi-plugin-netlify-deployments-noop"
+    }
 }

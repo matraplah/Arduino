@@ -1,0 +1,7 @@
+{
+  "name": "strapi-plugin-netlify-deployments",
+  "version": "0.0.0-noop",
+  "private": true,
+  "description": "No-op stand-in. A Strapi CMS plugin of this name is enabled in the site's Netlify UI plugin list but is not a Netlify Build plugin and breaks the build. Remove it from Site configuration → Build & deploy → Plugins, then delete this folder.",
+  "main": "index.js"
+}
