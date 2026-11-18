@@ -44,52 +44,54 @@ const dataKosong = () => ({ jaw: {}, streak: { now: 0, best: 0 }, lencana: [] })
 function dariDok(o) { return { jaw: o && o.jaw ? JSON.parse(JSON.stringify(o.jaw)) : {}, streak: o && o.streak ? { ...o.streak } : { now: 0, best: 0 }, lencana: o && o.lencana ? [...o.lencana] : [] }; }
 
 const Akaun = {
-  /* langkah 1: semak IC; pulangkan {baru:true} jika profil belum wujud */
+  /* murid hanya boleh masuk jika IC telah didaftarkan oleh guru */
   async semak(icMentah) {
     const ic = icBersih(icMentah), salah = icSah(ic); if (salah) return { salah };
-    const hash = await icCincang(ic); await dbMula();
+    await dbMula();
+    if (!DB) return { salah: 'Pangkalan data tidak tersedia pada paparan ini, jadi log masuk tidak dapat digunakan. Buka laman ini melalui akaun guru.' };
+    const hash = await icCincang(ic);
     let dok = null;
-    if (DB) { try { const s = await DB.doc('pelajar/' + hash).get(); if (s.exists) dok = s.data(); } catch (e) { dok = null; } }
-    if (!dok) dok = store.get('p:' + hash);
-    return { ic, hash, dok, baru: !dok };
+    try { const s = await DB.doc('pelajar/' + hash).get(); if (s.exists) dok = s.data(); } catch (e) { return { salah: 'Pangkalan data tidak dapat dihubungi. Cuba sebentar lagi.' }; }
+    if (!dok) return { salah: 'No. IC ini belum didaftarkan. Sila minta guru mendaftarkan anda.' };
+    return { ic, hash, dok };
   },
-  async masuk(r, nama) {
-    const dok = r.dok || {};
-    Profil = { hash: r.hash, ic4: r.ic.slice(-4), nama: (nama || dok.nama || '').trim(), mod: DB ? 'db' : 'lokal', data: dariDok(dok) };
-    try { sessionStorage.setItem('fz:sesi', JSON.stringify({ hash: Profil.hash, ic4: Profil.ic4, nama: Profil.nama })); } catch (e) { /* abaikan */ }
-    if (r.baru) await this.simpan();
+  async masuk(r) {
+    const dok = r.dok;
+    Profil = { hash: r.hash, ic4: r.ic.slice(-4), nama: dok.nama || '', kelas: dok.kelas || '', mod: 'db', data: dariDok(dok) };
+    try { sessionStorage.setItem('fz:sesi', JSON.stringify({ hash: Profil.hash })); } catch (e) { /* abaikan */ }
     hud();
   },
   /* pulihkan sesi selepas muat semula halaman (tab yang sama sahaja) */
   async pulih() {
     let s = null; try { s = JSON.parse(sessionStorage.getItem('fz:sesi')); } catch (e) { s = null; }
     if (!s || !s.hash) return false;
-    await dbMula();
+    await dbMula(); if (!DB) return false;
     let dok = null;
-    if (DB) { try { const d = await DB.doc('pelajar/' + s.hash).get(); if (d.exists) dok = d.data(); } catch (e) { dok = null; } }
-    if (!dok) dok = store.get('p:' + s.hash);
-    Profil = { hash: s.hash, ic4: s.ic4, nama: (dok && dok.nama) || s.nama, mod: DB ? 'db' : 'lokal', data: dariDok(dok) };
+    try { const d = await DB.doc('pelajar/' + s.hash).get(); if (d.exists) dok = d.data(); } catch (e) { dok = null; }
+    if (!dok) { this.keluar(); return false; }
+    Profil = { hash: s.hash, ic4: String(dok.ic || '').slice(-4), nama: dok.nama || '', kelas: dok.kelas || '', mod: 'db', data: dariDok(dok) };
     return true;
   },
   keluar() { Profil = null; try { sessionStorage.removeItem('fz:sesi'); } catch (e) { /* abaikan */ } hud(); },
+  /* hanya medan kemajuan; nama, IC dan kelas diurus oleh guru */
   dok() {
-    const babTamat = BAB.filter(b => Game.bab(b).tamat).length;
-    return { nama: Profil.nama, ic4: Profil.ic4, jaw: Profil.data.jaw, streak: Profil.data.streak, lencana: Profil.data.lencana, jumlah: Game.total(), babTamat, kemaskini: Date.now() };
+    let dijawab = 0, item = 0;
+    BAB.forEach(b => { const x = Game.bab(b); dijawab += x.done; item += x.total; });
+    const jumlah = Game.total(), max = Game.max();
+    return { jaw: Profil.data.jaw, streak: Profil.data.streak, lencana: Profil.data.lencana, jumlah, peratusMarkah: Math.round(jumlah / max * 100), kemajuan: Math.round(dijawab / item * 100), babTamat: BAB.filter(b => Game.bab(b).tamat).length, kemaskini: Date.now() };
   },
   /* simpan satu demi satu (tiada tulisan bertindih ke dokumen yang sama) */
   simpan() {
-    if (!Profil) return Promise.resolve();
+    if (!Profil || !DB) return Promise.resolve();
     const body = this.dok(), hash = Profil.hash;
-    store.set('p:' + hash, body);
-    if (!DB) return Promise.resolve();
-    simpanQ = simpanQ.then(() => DB.doc('pelajar/' + hash).set(body)).then(() => { if (simpanGagal) { simpanGagal = false; statusSimpan(); } }).catch(() => { simpanGagal = true; statusSimpan(); });
+    simpanQ = simpanQ.then(() => DB.doc('pelajar/' + hash).update(body)).then(() => { if (simpanGagal) { simpanGagal = false; statusSimpan(); } }).catch(() => { simpanGagal = true; statusSimpan(); });
     return simpanQ;
   }
 };
 function statusSimpan() {
   const n = document.getElementById('simpan-nota'); if (!n) return;
-  n.hidden = !simpanGagal && Profil && Profil.mod === 'db';
-  n.textContent = simpanGagal ? 'Markah belum dapat disimpan ke pangkalan data; ia disimpan pada peranti ini dan akan dihantar semasa semakan seterusnya.' : 'Pangkalan data tidak tersedia pada paparan ini, jadi markah disimpan pada peranti ini sahaja.';
+  n.hidden = !simpanGagal;
+  n.textContent = 'Markah terkini belum dapat disimpan ke pangkalan data. Ia akan dihantar semula semasa semakan seterusnya; jangan log keluar dahulu.';
 }
 
 const Game = {
@@ -170,7 +172,7 @@ function profilHtml() {
     <div class="profil kosong"><p>Log masuk dengan <b>no. kad pengenalan</b> untuk menjawab latihan, mengumpul mata dan menyimpan markah pada profil anda.</p><div class="row"><a class="btn" href="#masuk">Log masuk</a></div></div></section>`;
   const t = Game.total(), mx = Game.max(), pk = Game.pangkat(t), dapat = Game.lencanaDapat(), s = Game.streak();
   const tamat = BAB.filter(b => Game.bab(b).tamat).length;
-  return `<section class="sec"><div class="sec-h"><h2>Profil saya</h2><small>${esc(Profil.nama)} · IC ••••••••${esc(Profil.ic4)}</small></div>
+  return `<section class="sec"><div class="sec-h"><h2>Profil saya</h2><small>${esc(Profil.nama)}${Profil.kelas ? ' · ' + esc(Profil.kelas) : ''} · IC ••••••••${esc(Profil.ic4)}</small></div>
     <div class="profil">
       <div class="pf-atas">
         <div><div class="pf-n num">${t}<small> / ${mx} mata</small></div><div class="pf-p">Pangkat ${pk.aras}: <b>${pk.nama}</b></div></div>
@@ -188,70 +190,35 @@ function profilBind() {
   const k = document.getElementById('keluar'); if (k) k.onclick = () => { Akaun.keluar(); toast('Anda telah log keluar', 'no'); route(); };
 }
 
-/* ---------- halaman log masuk ---------- */
+/* ---------- halaman log masuk murid ---------- */
 function viewMasuk() {
   app.innerHTML = `<header class="ch-head"><div class="wrap" style="padding-bottom:20px">
       <a class="back" href="#utama">← Kandungan</a>
       <div class="ch-title"><div><div class="eb">Profil murid</div><h1>Log masuk</h1></div></div>
-      <p class="ch-intro">Masukkan no. kad pengenalan anda. Markah dan jawapan disimpan pada profil IC anda.</p>
+      <p class="ch-intro">Masukkan no. kad pengenalan anda. Hanya murid yang telah didaftarkan oleh guru boleh log masuk.</p>
     </div></header>
     <div class="wrap"><div class="panel"><form class="masuk" id="f-masuk" novalidate>
       <label for="ic">No. kad pengenalan</label>
       <input id="ic" name="ic" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="080512-10-1234" required>
-      <div id="f-nama" hidden><label for="nama">Nama penuh</label><input id="nama" name="nama" autocomplete="name" maxlength="60" placeholder="Nama seperti dalam senarai kelas"><p class="q-hint">Profil baharu. Nama dipaparkan kepada guru bersama 4 digit terakhir IC.</p></div>
       <p class="ralat" id="ralat" role="alert"></p>
-      <div class="row"><button type="submit" class="btn" id="b-masuk">Teruskan</button></div>
-      <p class="q-hint">No. IC penuh tidak disimpan. Sistem hanya menyimpan kod cincangan IC, nama dan 4 digit terakhir IC.</p>
-    </form></div></div>
+      <div class="row"><button type="submit" class="btn" id="b-masuk">Log masuk</button></div>
+    </form><p class="lede">Guru? <a href="#guru">Log masuk ke halaman guru</a>.</p></div></div>
     <footer class="foot"><div class="wrap">Fizik SPM Interaktif · Log masuk</div></footer>`;
-  const f = document.getElementById('f-masuk'), ic = document.getElementById('ic'), nm = document.getElementById('nama'), bx = document.getElementById('f-nama'), er = document.getElementById('ralat'), bt = document.getElementById('b-masuk');
-  let semakan = null;
-  ic.oninput = () => { const d = icBersih(ic.value).slice(0, 12); ic.value = d.length > 8 ? d.slice(0, 6) + '-' + d.slice(6, 8) + '-' + d.slice(8) : d.length > 6 ? d.slice(0, 6) + '-' + d.slice(6) : d; semakan = null; bx.hidden = true; bt.textContent = 'Teruskan'; er.textContent = ''; };
+  const f = document.getElementById('f-masuk'), ic = document.getElementById('ic'), er = document.getElementById('ralat'), bt = document.getElementById('b-masuk');
+  ic.oninput = () => { ic.value = icFormat(ic.value); er.textContent = ''; };
   f.onsubmit = async e => {
-    e.preventDefault(); er.textContent = ''; bt.disabled = true;
+    e.preventDefault(); er.textContent = ''; bt.disabled = true; bt.textContent = 'Menyemak…';
     try {
-      if (!semakan) {
-        bt.textContent = 'Menyemak…';
-        const r = await Akaun.semak(ic.value);
-        if (r.salah) { er.textContent = r.salah; bt.textContent = 'Teruskan'; return; }
-        semakan = r;
-        if (r.baru) { bx.hidden = false; nm.focus(); bt.textContent = 'Daftar dan masuk'; return; }
-      } else if (semakan.baru && nm.value.trim().length < 3) { er.textContent = 'Sila masukkan nama penuh.'; return; }
-      await Akaun.masuk(semakan, nm.value);
-      toast(semakan.baru ? `Selamat datang, ${Profil.nama.split(' ')[0]}!` : `Selamat kembali, ${Profil.nama.split(' ')[0]}!`, 'naik');
+      const r = await Akaun.semak(ic.value);
+      if (r.salah) { er.textContent = r.salah; return; }
+      await Akaun.masuk(r);
+      toast(`Selamat datang, ${Profil.nama.split(' ')[0]}!`, 'naik');
       location.hash = 'utama'; route();
-    } finally { bt.disabled = false; }
+    } finally { bt.disabled = false; bt.textContent = 'Log masuk'; }
   };
   ic.focus();
 }
-
-/* ---------- papan guru (Editor / pemilik sahaja) ---------- */
-let stopGuru = null;
-function viewGuru() {
-  app.innerHTML = `<header class="ch-head"><div class="wrap" style="padding-bottom:20px">
-      <a class="back" href="#utama">← Kandungan</a>
-      <div class="ch-title"><div><div class="eb">Untuk guru</div><h1>Markah murid</h1></div></div>
-      <p class="ch-intro">Senarai dikemas kini secara langsung apabila murid menjawab.</p>
-    </div></header><div class="wrap"><div class="panel" id="guru"><p class="lede">Memuatkan…</p></div></div>
-    <footer class="foot"><div class="wrap">Fizik SPM Interaktif · Papan guru</div></footer>`;
-  const box = document.getElementById('guru');
-  dbMula().then(() => {
-    if (!DB || !PENGGUNA || !PENGGUNA.canEdit()) { box.innerHTML = '<p class="lede">Papan ini hanya untuk pemilik atau Editor laman, dan memerlukan pangkalan data laman.</p>'; return; }
-    let pemasa = setTimeout(() => { box.insertAdjacentHTML('afterbegin', '<p class="ralat">Pangkalan data belum menjawab. Data mungkin belum terkini.</p>'); }, 10000);
-    stopGuru = DB.collection('pelajar').orderBy('jumlah', 'desc').onSnapshot(snap => {
-      if (!snap.metadata.fromCache) { clearTimeout(pemasa); pemasa = null; }
-      const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      box.innerHTML = rows.length ? `<p class="lede">${rows.length} murid berdaftar. Klik “Padam” untuk membuang profil seorang murid (contohnya pendaftaran tersilap).</p>
-        <div class="scroll"><table class="rumus guru"><thead><tr><th>#</th><th>Nama</th><th>IC</th><th>Mata</th><th>Bab tamat</th><th>Kemas kini</th><th></th></tr></thead><tbody>
-        ${rows.map((r, i) => `<tr><td class="num">${i + 1}</td><td>${esc(r.nama || '–')}</td><td class="num">••••${esc(r.ic4 || '')}</td><td class="num"><b>${+r.jumlah || 0}</b></td><td class="num">${+r.babTamat || 0}/${BAB.length}</td><td class="num">${r.kemaskini ? new Date(r.kemaskini).toLocaleString('ms-MY', { dateStyle: 'short', timeStyle: 'short' }) : '–'}</td><td><button type="button" class="lnk" data-id="${esc(r.id)}">Padam</button></td></tr>`).join('')}
-        </tbody></table></div>` : '<p class="lede">Belum ada murid yang log masuk. Senarai akan muncul di sini sebaik sahaja murid mendaftar.</p>';
-      box.querySelectorAll('button[data-id]').forEach(b => b.onclick = () => {
-        if (b.dataset.sure) { DB.doc('pelajar/' + b.dataset.id).delete().catch(() => toast('Gagal memadam', 'no')); return; }
-        b.dataset.sure = '1'; b.textContent = 'Klik lagi untuk sahkan';
-      });
-    }, () => { box.innerHTML = '<p class="ralat">Senarai tidak dapat dimuatkan. Muat semula halaman untuk cuba lagi.</p>'; });
-  });
-}
+function icFormat(v) { const d = icBersih(v).slice(0, 12); return d.length > 8 ? d.slice(0, 6) + '-' + d.slice(6, 8) + '-' + d.slice(8) : d.length > 6 ? d.slice(0, 6) + '-' + d.slice(6) : d; }
 
 /* ---------- soalan objektif (mod permainan atau latihan bebas) ---------- */
 function mcq(host, qs, opt) {

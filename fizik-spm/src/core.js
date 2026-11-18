@@ -99,7 +99,7 @@ function viewHome() {
   </div></section>
   <div class="wrap">
     ${profilHtml()}
-    <section class="sec" id="sec-guru" hidden><div class="sec-h"><h2>Untuk guru</h2><small>Hanya dipaparkan kepada pemilik dan Editor laman</small></div><div class="mix" style="grid-template-columns:minmax(0,1fr)"><a href="#guru"><b>Markah murid</b><span>Senarai semua murid, mata dan bab yang telah tamat</span></a></div></section>
+    <section class="sec" id="sec-guru"><div class="sec-h"><h2>Untuk guru</h2><small>Memerlukan kata laluan guru</small></div><div class="mix" style="grid-template-columns:minmax(0,1fr)"><a href="#guru"><b>Halaman guru</b><span>Daftar murid, pantau markah dan peratus kemajuan setiap murid</span></a></div></section>
     <section class="sec"><div class="sec-h"><h2>Cara guna</h2><small>Lima langkah bagi setiap bab</small></div>
       <ol class="steps">
         <li><b>Penerangan</b><span>Baca isi ringkas. Tanda <i class="chip-spm">SPM</i> = kerap ditanya.</span></li>
@@ -138,7 +138,6 @@ function viewHome() {
   <footer class="foot"><div class="wrap">Kandungan disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan Tingkatan 5 (KPM). Bahagian Fokus SPM dianalisis daripada Koleksi Soalan Kertas 2 Percubaan SPM 2025 (pelbagai negeri, MRSM, SBP dan SMKA). Soalan latihan ditulis semula mengikut gaya Kertas 1 dan Kertas 2; markah terbaik disimpan pada peranti ini sahaja.</div></footer>`;
   stopHero = heroAnim(document.getElementById('hero-cv'));
   profilBind();
-  dbMula().then(() => { if (DB && PENGGUNA && PENGGUNA.canEdit() && location.hash.slice(1) !== 'guru') { const f = document.querySelector('#sec-guru'); if (f) f.hidden = false; } });
 }
 
 function heroAnim(cv) {
@@ -320,7 +319,7 @@ function route() {
   cleanup();
   const h = location.hash.slice(1), b = BAB.find(x => x.id === h), k = /^kuiz-(t4|t5|semua)$/.exec(h);
   if (h === 'masuk') { viewMasuk(); document.title = 'Log masuk · Fizik SPM Interaktif'; }
-  else if (h === 'guru') { viewGuru(); document.title = 'Markah murid · Fizik SPM Interaktif'; }
+  else if (h === 'guru') { viewGuru(); document.title = 'Halaman guru · Fizik SPM Interaktif'; }
   else if (b) { viewBab(b); document.title = `Bab ${b.no} ${b.tajuk} · Fizik SPM Interaktif`; }
   else if (k) { viewKuiz(k[1]); document.title = 'Kuiz campuran · Fizik SPM Interaktif'; }
   else { viewHome(); document.title = 'Fizik SPM Interaktif'; }
