@@ -16,7 +16,7 @@ FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
 
 css = (SRC / 'style.css').read_text(encoding='utf-8')
 body = (SRC / 'body.html').read_text(encoding='utf-8')
-js = '\n'.join((SRC / n).read_text(encoding='utf-8') for n in ('core.js', 'sims.js', 'data-t4.js', 'data-t5.js')) + '\nroute();\n'
+js = '\n'.join((SRC / n).read_text(encoding='utf-8') for n in ('core.js', 'sims.js', 'data-t4.js', 'data-t5.js', 'spm-t4.js', 'spm-t5.js')) + '\nroute();\n'
 assert '</script' not in js.lower()
 
 inner = f'{FONTS}\n<style>\n{css}</style>\n{body}<script>\n{js}</script>\n'

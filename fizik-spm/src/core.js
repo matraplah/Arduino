@@ -67,8 +67,10 @@ function fmt(t) {
 /* ---------- keadaan ---------- */
 const app = document.getElementById('app');
 let stopSim = null, stopHero = null;
-let curTab = store.get('tab') || 'visual';
-const TABS = [['visual', 'Visual Interaktif', 'Visual'], ['terang', 'Penerangan', 'Penerangan'], ['latih', 'Latihan SPM', 'Latihan'], ['nota', 'Nota &amp; Rumusan', 'Nota']];
+const TABS = [['terang', 'Penerangan', 'Isi'], ['visual', 'Visual', 'Visual'], ['fokus', 'Fokus SPM', 'Fokus SPM'], ['latih', 'Latihan', 'Latihan'], ['nota', 'Rumusan', 'Rumusan']];
+let curTab = store.get('tab2');
+if (!TABS.some(t => t[0] === curTab)) curTab = 'terang';
+const semuaKuiz = b => (b.kuizTambah || []).concat(b.kuiz);
 
 function cleanup() {
   if (stopSim) { stopSim(); stopSim = null; }
@@ -78,24 +80,32 @@ function best(id) { return store.get('skor:' + id); }
 
 /* ---------- laman utama ---------- */
 function viewHome() {
-  const nq = BAB.reduce((n, b) => n + b.kuiz.length + b.struktur.length, 0);
+  const nq = BAB.reduce((n, b) => n + semuaKuiz(b).length + b.struktur.length + (b.reka ? 1 : 0), 0);
   const nsim = BAB.reduce((n, b) => n + (b.sim.n || 1), 0);
   const toc = ting => BAB.filter(b => b.ting === ting).map(b => {
     const s = best(b.id);
     return `<li><a href="#${b.id}"><span class="no">${b.no}</span>
       <span><span class="tm">${b.tema}</span><span class="tj">${b.tajuk}</span><span class="st">${b.sub.map(x => x.n + ' ' + x.t).join(' · ')}</span></span>
-      <span class="pg${s != null && s === b.kuiz.length ? ' done' : ''}"><b class="num">${s != null ? s + '/' + b.kuiz.length : '–'}</b>${s != null ? 'markah terbaik' : 'belum dicuba'}</span></a></li>`;
+      <span class="pg${s != null && s === semuaKuiz(b).length ? ' done' : ''}"><b class="num">${s != null ? s + '/' + semuaKuiz(b).length : '–'}</b>${s != null ? 'markah terbaik' : 'belum dicuba'}</span></a></li>`;
   }).join('');
   app.innerHTML = `
   <section class="hero"><div class="wrap">
     <div>
       <h1>Fizik SPM <span>Interaktif</span></h1>
-      <p>Nota ringkas, visual yang boleh diubah sendiri dan latihan berformat SPM untuk semua bab Fizik KSSM Tingkatan 4 dan Tingkatan 5.</p>
+      <p>Penerangan ringkas, isi yang kerap keluar SPM dan latihan bertahap untuk semua bab Fizik KSSM Tingkatan 4 dan Tingkatan 5.</p>
       <ul class="stats"><li><b class="num">${BAB.length}</b>bab</li><li><b class="num">${nsim}</b>visual interaktif</li><li><b class="num">${nq}</b>soalan latihan</li></ul>
     </div>
     <canvas id="hero-cv" aria-hidden="true"></canvas>
   </div></section>
   <div class="wrap">
+    <section class="sec"><div class="sec-h"><h2>Cara guna</h2><small>Lima langkah bagi setiap bab</small></div>
+      <ol class="steps">
+        <li><b>Penerangan</b><span>Baca isi ringkas. Tanda <i class="chip-spm">SPM</i> = kerap ditanya.</span></li>
+        <li><b>Visual</b><span>Ubah nilai dan lihat konsep berlaku.</span></li>
+        <li><b>Fokus SPM</b><span>Hafal takrif, kenali corak soalan.</span></li>
+        <li><b>Latihan</b><span>Objektif, struktur dan soalan reka bentuk.</span></li>
+        <li><b>Rumusan</b><span>Ulang kaji rumus dan kesilapan lazim.</span></li>
+      </ol></section>
     <section class="sec" id="sec-t4"><div class="sec-h"><h2>Tingkatan 4</h2><small>6 bab · Asas Fizik, Mekanik Newton, Haba, Gelombang, Cahaya dan Optik</small></div><ol class="toc">${toc(4)}</ol></section>
     <section class="sec" id="sec-t5"><div class="sec-h"><h2>Tingkatan 5</h2><small>7 bab · Mekanik Newton, Elektrik dan Keelektromagnetan, Fizik Gunaan, Fizik Moden</small></div><ol class="toc">${toc(5)}</ol></section>
     <section class="sec"><div class="sec-h"><h2>Kuiz campuran</h2><small>10 soalan objektif dipilih secara rawak, dengan penjelasan bagi setiap jawapan</small></div>
@@ -123,7 +133,7 @@ function viewHome() {
         ['Elektron-volt', '$1 "eV" = 1.60 × 10^{-19} "J"$']
       ].map(r => `<div><dt>${r[0]}</dt><dd>${fmt(r[1])}</dd></div>`).join('')}</dl></section>
   </div>
-  <footer class="foot"><div class="wrap">Kandungan disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan Tingkatan 5 (Kementerian Pendidikan Malaysia). Soalan latihan ditulis mengikut gaya Kertas 1 dan Kertas 2 SPM; markah terbaik disimpan pada peranti ini sahaja.</div></footer>`;
+  <footer class="foot"><div class="wrap">Kandungan disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan Tingkatan 5 (KPM). Bahagian Fokus SPM dianalisis daripada Koleksi Soalan Kertas 2 Percubaan SPM 2025 (pelbagai negeri, MRSM, SBP dan SMKA). Soalan latihan ditulis semula mengikut gaya Kertas 1 dan Kertas 2; markah terbaik disimpan pada peranti ini sahaja.</div></footer>`;
   stopHero = heroAnim(document.getElementById('hero-cv'));
 }
 
@@ -171,7 +181,7 @@ function viewBab(b) {
       ${nx ? `<a href="#${nx.id}" style="text-align:right"><small>T${nx.ting} Bab ${nx.no} →</small>${nx.tajuk}</a>` : '<span></span>'}
     </nav></div>
   <footer class="foot"><div class="wrap">Fizik SPM Interaktif · Tingkatan ${b.ting} Bab ${b.no}: ${b.tajuk}</div></footer>`;
-  app.querySelectorAll('.tabs button').forEach(bt => bt.onclick = () => { curTab = bt.dataset.tab; store.set('tab', curTab); showTab(b); });
+  app.querySelectorAll('.tabs button').forEach(bt => bt.onclick = () => { curTab = bt.dataset.tab; store.set('tab2', curTab); showTab(b); window.scrollTo({ top: app.querySelector('.tabs').getBoundingClientRect().top + window.scrollY - 60 }); });
   showTab(b);
 }
 
@@ -179,7 +189,7 @@ function showTab(b) {
   if (stopSim) { stopSim(); stopSim = null; }
   app.querySelectorAll('.tabs button').forEach(bt => bt.setAttribute('aria-selected', bt.dataset.tab === curTab));
   const p = document.getElementById('panel'); p.innerHTML = ''; p.setAttribute('aria-labelledby', 'tab-' + curTab);
-  ({ visual: tabVisual, terang: tabTerang, latih: tabLatih, nota: tabNota })[curTab](p, b);
+  ({ visual: tabVisual, terang: tabTerang, fokus: tabFokus, latih: tabLatih, nota: tabNota })[curTab](p, b);
 }
 
 function tabVisual(p, b) {
@@ -192,32 +202,120 @@ function tabVisual(p, b) {
   box.append(ol); p.append(box);
 }
 
+const isiLi = x => x[0] === '!' ? `<li class="kerap"><span>${fmt(x.slice(1))}</span><i class="chip-spm" title="Kerap keluar SPM">SPM</i></li>` : `<li><span>${fmt(x)}</span></li>`;
+
 function tabTerang(p, b) {
+  p.append(el('p', 'lede', `Isi bertanda <i class="chip-spm">SPM</i> kerap ditanya dalam peperiksaan. Kotak kuning ialah perkara utama yang mesti diingat.`));
   b.sub.forEach(s => {
-    p.append(el('section', 'sub', `<div class="sn">${s.n}</div><div><h3>${s.t}</h3><ul>${s.p.map(x => '<li>' + fmt(x) + '</li>').join('')}</ul></div>`));
+    p.append(el('section', 'sub', `<div class="sn">${s.n}</div><div><h3>${s.t}</h3><ul class="isi">${(s.isi || s.p).map(isiLi).join('')}</ul>${s.ingat ? `<p class="ingat"><b>Ingat:</b> ${fmt(s.ingat)}</p>` : ''}</div>`));
   });
+  if (b.contoh && b.contoh.length) {
+    p.append(el('div', null, `<h2>Contoh pengiraan langkah demi langkah</h2><p class="lede" style="margin-top:6px">Cuba jawab dahulu, kemudian buka satu langkah pada satu masa.</p>`));
+    b.contoh.forEach((c, i) => {
+      const card = el('div', 'contoh', `<div class="eb">Contoh ${i + 1} · ${c.t}</div><p>${fmt(c.q)}</p><ol class="langkah"></ol><div class="row"><button type="button" class="btn">Langkah seterusnya</button><button type="button" class="btn ghost">Tunjuk semua</button></div>`);
+      const ol = card.querySelector('.langkah'), [nx, all] = card.querySelectorAll('button');
+      let k = 0;
+      const step = () => {
+        if (k < c.l.length) ol.append(el('li', null, fmt(c.l[k++])));
+        else if (k === c.l.length) { ol.append(el('li', 'jwp', `<b>Jawapan:</b> ${fmt(c.j)}`)); k++; }
+        if (k > c.l.length) { nx.remove(); all.remove(); }
+      };
+      nx.onclick = step; all.onclick = () => { while (k <= c.l.length) step(); };
+      p.append(card);
+    });
+  }
+}
+
+function tabFokus(p, b) {
+  const f = b.fokus; if (!f) return;
+  const bin = n => '<span class="bintang" aria-label="' + ['', 'Pernah keluar', 'Kerap', 'Sangat kerap'][n] + '">' + '★'.repeat(n) + '<s>' + '★'.repeat(3 - n) + '</s></span>';
+  p.append(el('div', null, `<h2>Topik yang kerap ditanya</h2><p class="lede" style="margin-top:6px">Berdasarkan Koleksi Soalan K2 Percubaan SPM 2025 bagi bab ini. ★★★ sangat kerap · ★★ kerap · ★ pernah keluar.</p>
+    <ul class="topik">${f.topik.map(t => `<li>${bin(t[1])}<span>${fmt(t[0])}</span></li>`).join('')}</ul>`));
+
+  const sudah = store.get('hafal:' + b.id) || [];
+  const tk = el('div', null, `<h2>Takrif wajib hafal</h2><p class="lede" style="margin-top:6px">Soalan 1 markah “Nyatakan maksud …” hampir pasti keluar. Cuba sebut takrif dahulu, kemudian buka kad untuk menyemak.</p><div class="row" style="margin-top:8px"><span class="hafal-n num"></span><button type="button" class="btn ghost">Buka semua</button></div><div class="kad"></div>`);
+  const box = tk.querySelector('.kad'), cnt = tk.querySelector('.hafal-n');
+  const upd = () => { cnt.textContent = `Sudah hafal: ${sudah.length}/${f.takrif.length}`; };
+  f.takrif.forEach(([t, d]) => {
+    const k = el('details', 'kd' + (sudah.includes(t) ? ' ok' : ''), `<summary>${t}</summary><p>${fmt(d)}</p><label class="chk"><input type="checkbox"${sudah.includes(t) ? ' checked' : ''}> Saya sudah hafal</label>`);
+    k.querySelector('input').onchange = e => {
+      const i = sudah.indexOf(t); if (e.target.checked && i < 0) sudah.push(t); if (!e.target.checked && i >= 0) sudah.splice(i, 1);
+      k.classList.toggle('ok', e.target.checked); store.set('hafal:' + b.id, sudah); upd();
+    };
+    box.append(k);
+  });
+  tk.querySelector('.btn').onclick = e => { const open = e.target.textContent === 'Buka semua'; box.querySelectorAll('details').forEach(d => d.open = open); e.target.textContent = open ? 'Tutup semua' : 'Buka semua'; };
+  upd(); p.append(tk);
+
+  p.append(el('div', null, `<h2>Corak soalan Kertas 2</h2><ul class="corak">${f.corak.map(x => `<li>${fmt(x)}</li>`).join('')}</ul>`));
+  p.append(el('div', null, `<h2>Cara jawab soalan “banding” dan “hubung kait”</h2>
+    <ol class="rum" style="margin-top:12px">
+      <li><span><b>Bandingkan</b>: tulis perbandingan lengkap dengan perkataan “lebih”, contoh “Panjang gelombang di kawasan P <i>lebih panjang</i> daripada di kawasan Q.” Jangan tulis nilai sahaja.</span></li>
+      <li><span><b>Hubung kait</b>: guna pola “Semakin … , semakin …”, contoh “Semakin dalam air, semakin panjang panjang gelombang.”</span></li>
+      <li><span><b>Nyatakan hukum/prinsip/konsep</b>: tulis nama penuh, contoh “Prinsip Pascal”, “Hukum Kepler Kedua”.</span></li>
+    </ol>`));
+  p.append(el('div', null, `<h2>Bank jawapan soalan reka bentuk (10 markah)</h2>
+    <p class="lede" style="margin-top:6px">Format jawapan: setiap aspek = <b>ciri</b> (1 markah) + <b>sebab</b> (1 markah). Akhir sekali: pilih satu jawapan dan nyatakan sebab (2 markah).</p>
+    <div class="scroll" style="margin-top:10px"><table class="rumus bank"><thead><tr><th>Situasi</th><th>Ciri yang sesuai</th><th>Sebab</th></tr></thead><tbody>${f.ciri.map(r => `<tr><td>${fmt(r[0])}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td></tr>`).join('')}</tbody></table></div>`));
 }
 
 function tabNota(p, b) {
   p.append(el('div', null, `<h2>Rumus penting</h2><div class="scroll" style="margin-top:10px"><table class="rumus"><thead><tr><th>Rumus</th><th>Maksud simbol dan catatan</th></tr></thead><tbody>${b.rumus.map(r => `<tr><td>${fmt(r[0])}</td><td>${fmt(r[1])}</td></tr>`).join('')}</tbody></table></div>`));
-  p.append(el('div', null, `<h2>Istilah utama</h2><dl class="ist" style="margin-top:6px">${b.istilah.map(r => `<dt>${r[0]}</dt><dd>${fmt(r[1])}</dd>`).join('')}</dl>`));
   p.append(el('div', null, `<h2>Rumusan bab</h2><ol class="rum" style="margin-top:12px">${b.rumusan.map(r => `<li><span>${fmt(r)}</span></li>`).join('')}</ol>`));
   p.append(el('div', null, `<h2>Kesilapan lazim dalam peperiksaan</h2><ul class="awas" style="margin-top:12px">${b.silap.map(r => `<li>${fmt(r)}</li>`).join('')}</ul>`));
+  if (b.istilah) p.append(el('div', null, `<h2>Istilah lain</h2><dl class="ist" style="margin-top:6px">${b.istilah.map(r => `<dt>${r[0]}</dt><dd>${fmt(r[1])}</dd>`).join('')}</dl>`));
 }
 
 function tabLatih(p, b) {
-  p.append(el('div', null, `<h2>Bahagian A: Soalan objektif</h2><p class="lede" style="margin-top:8px">Gaya Kertas 1. Pilih satu jawapan; penjelasan dipaparkan sebaik sahaja anda menjawab.</p>`));
-  const a = el('div'); p.append(a); mcq(a, b.kuiz, b.id);
-  p.append(el('div', null, `<h2 style="margin-top:14px">Bahagian B: Soalan struktur</h2><p class="lede" style="margin-top:8px">Gaya Kertas 2. Jawab di atas kertas dahulu, kemudian bandingkan dengan skema jawapan.</p>`));
+  const nav = el('nav', 'bhg', `<a href="#" data-k="A"><b>A</b>Objektif</a><a href="#" data-k="B"><b>B</b>Struktur</a>${b.reka ? '<a href="#" data-k="C"><b>C</b>Reka bentuk</a>' : ''}`);
+  nav.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); document.getElementById('bhg-' + a.dataset.k).scrollIntoView({ behavior: 'smooth' }); });
+  p.append(nav);
+  p.append(el('div', null, `<h2 id="bhg-A">Bahagian A: Soalan objektif</h2><p class="lede" style="margin-top:6px">Gaya Kertas 1. Penjelasan dipaparkan sebaik sahaja anda menjawab, jadi anda belajar daripada setiap kesilapan.</p>`));
+  const a = el('div'); p.append(a); mcq(a, semuaKuiz(b), b.id);
+  p.append(el('div', null, `<h2 id="bhg-B" style="margin-top:14px">Bahagian B: Soalan struktur</h2><p class="lede" style="margin-top:6px">Gaya Kertas 2. Jawab di atas kertas dahulu. Tekan “Petunjuk” jika buntu, kemudian semak skema bahagian demi bahagian.</p>`));
   b.struktur.forEach((s, i) => {
     const tot = s.b.reduce((n, x) => n + x.m, 0);
     const card = el('div', 'q', `<div class="qh"><span class="qn">${i + 1}</span><div>${fmt(s.t)}</div></div>
-      <ol class="parts">${s.b.map(x => `<li><div>${fmt(x.q)}</div><span class="mk">[${x.m} markah]</span><div class="ans" hidden>${fmt(x.j)}</div></li>`).join('')}</ol>
-      <div class="row"><button type="button" class="btn ghost">Tunjuk skema jawapan</button><span class="mk" style="font-weight:500;color:var(--muted)">Jumlah: ${tot} markah</span></div>`);
-    const bt = card.querySelector('button');
-    bt.onclick = () => { const show = bt.textContent.startsWith('Tunjuk'); card.querySelectorAll('.ans').forEach(x => x.hidden = !show); bt.textContent = show ? 'Sembunyi skema jawapan' : 'Tunjuk skema jawapan'; };
+      <ol class="parts">${s.b.map(x => `<li><div>${fmt(x.q)}</div><span class="mk">[${x.m} markah]</span><div class="ans-row"><button type="button" class="lnk">Semak skema</button></div><div class="ans" hidden>${fmt(x.j)}</div></li>`).join('')}</ol>
+      <div class="row"><button type="button" class="btn ghost">Tunjuk semua skema</button><span class="mk" style="font-weight:500;color:var(--muted)">Jumlah: ${tot} markah</span></div>`);
+    card.querySelectorAll('.parts li').forEach(li => { const bt = li.querySelector('.lnk'), an = li.querySelector('.ans'); bt.onclick = () => { an.hidden = !an.hidden; bt.textContent = an.hidden ? 'Semak skema' : 'Sembunyi skema'; }; });
+    const bt = card.querySelector('.btn');
+    bt.onclick = () => { const show = bt.textContent.startsWith('Tunjuk'); card.querySelectorAll('.ans').forEach(x => x.hidden = !show); card.querySelectorAll('.lnk').forEach(x => x.textContent = show ? 'Sembunyi skema' : 'Semak skema'); bt.textContent = show ? 'Sembunyi semua skema' : 'Tunjuk semua skema'; };
     p.append(card);
   });
+  if (b.reka) { p.append(el('div', null, `<h2 id="bhg-C" style="margin-top:14px">Bahagian C: Soalan reka bentuk (10 markah)</h2><p class="lede" style="margin-top:6px">Soalan ini muncul hampir setiap tahun dalam Bahagian B dan C Kertas 2. Pilih ciri yang paling sesuai bagi setiap aspek, kemudian pilih reka bentuk terbaik.</p>`)); reka(p, b.reka); }
+}
+
+/* ---------- soalan reka bentuk interaktif ---------- */
+function reka(p, r) {
+  const card = el('div', 'reka');
+  card.innerHTML = `<p>${fmt(r.s)}</p>
+    <div class="scroll"><table class="rumus spec"><thead><tr><th>Aspek</th>${r.opsyen.map(o => `<th>${o}</th>`).join('')}</tr></thead><tbody>${r.aspek.map(x => `<tr><td>${x.a}</td>${x.v.map(v => `<td>${fmt(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <h3>Langkah 1: Pilih ciri yang paling sesuai bagi setiap aspek</h3><div class="asp"></div>
+    <h3>Langkah 2: Reka bentuk yang paling sesuai ialah</h3><div class="row pilih"></div>
+    <div class="row rk-act"><button type="button" class="btn">Semak jawapan</button><button type="button" class="btn ghost">Cuba semula</button></div><div class="hasil" role="status"></div>`;
+  const asp = card.querySelector('.asp'), pilih = card.querySelector('.pilih'), [cek, sem] = card.querySelectorAll('.rk-act .btn'), hasil = card.querySelector('.hasil');
+  const jaw = r.aspek.map(() => null); let opt = null;
+  r.aspek.forEach((x, i) => {
+    const uniq = [...new Set(x.v)];
+    const row = el('div', 'asp-r', `<b>${x.a}</b><div class="row"></div><div class="sebab" hidden></div>`);
+    uniq.forEach(v => { const c = el('button', 'chip', fmt(v)); c.type = 'button'; c.setAttribute('aria-pressed', 'false'); c.onclick = () => { jaw[i] = v; row.querySelectorAll('.chip').forEach(z => z.setAttribute('aria-pressed', z === c)); }; row.querySelector('.row').append(c); });
+    asp.append(row);
+  });
+  r.opsyen.forEach((o, i) => { const c = el('button', 'chip', o); c.type = 'button'; c.setAttribute('aria-pressed', 'false'); c.onclick = () => { opt = i; pilih.querySelectorAll('.chip').forEach(z => z.setAttribute('aria-pressed', z === c)); }; pilih.append(c); });
+  cek.onclick = () => {
+    let m = 0;
+    asp.querySelectorAll('.asp-r').forEach((row, i) => {
+      const x = r.aspek[i], ok = jaw[i] === x.ok, sb = row.querySelector('.sebab');
+      row.classList.toggle('ok', ok); row.classList.toggle('no', !ok); if (ok) m += 2;
+      sb.hidden = false; sb.innerHTML = `${ok ? '✓' : '✗'} Ciri: <b>${fmt(x.ok)}</b>. Sebab: ${fmt(x.sebab)}`;
+    });
+    const okp = opt === r.jawapan; if (okp) m += 2;
+    pilih.classList.toggle('ok', okp); pilih.classList.toggle('no', !okp);
+    hasil.innerHTML = `<b class="num">Markah: ${m}/${r.aspek.length * 2 + 2}</b><p>Jawapan contoh: <b>${r.opsyen[r.jawapan]}</b> paling sesuai kerana ${r.aspek.map(x => `${x.a.charAt(0).toLowerCase() + x.a.slice(1)} ialah ${fmt(x.ok)}`).join('; ')}.</p>`;
+  };
+  sem.onclick = () => { const n = el('div'); card.replaceWith(n); reka(n, r); n.replaceWith(n.firstChild); };
+  p.append(card);
 }
 
 /* ---------- soalan objektif ---------- */

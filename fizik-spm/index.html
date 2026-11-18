@@ -239,6 +239,82 @@ ol.rum li::before{content:counter(r);font-family:var(--f-display);font-weight:80
 ul.awas{margin:0;padding:14px 16px 14px 34px;background:var(--bad-soft);border-radius:4px;display:flex;flex-direction:column;gap:7px;max-width:72ch}
 ul.awas li::marker{color:var(--bad)}
 
+
+/* ---------- cara guna ---------- */
+.steps{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;counter-reset:st}
+.steps li{counter-increment:st;border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.steps li::before{content:counter(st);font-family:var(--f-display);font-weight:800;font-size:22px;color:var(--accent);line-height:1}
+.steps b{font-family:var(--f-display);font-size:16px}
+.steps span{font-size:13.5px;color:var(--muted);line-height:1.45}
+@media (max-width:760px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:400px){.steps{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- penerangan ---------- */
+.chip-spm{display:inline-block;font-style:normal;font-family:var(--f-body);font-size:10.5px;font-weight:700;letter-spacing:.06em;line-height:1;padding:4px 6px 3px;border-radius:3px;background:var(--c2);color:#fff;vertical-align:2px}
+:root[data-theme="dark"] .chip-spm{color:var(--bg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip-spm{color:var(--bg)}}
+ul.isi{list-style:none;padding-left:0}
+ul.isi li{position:relative;padding-left:18px}
+ul.isi li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+ul.isi li.kerap::before{background:var(--c2)}
+ul.isi li .chip-spm{margin-left:6px}
+.ingat{margin-top:12px;background:var(--hl);color:var(--hl-ink);border-radius:4px;padding:9px 12px;max-width:68ch}
+.contoh{border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.contoh .eb{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700}
+ol.langkah{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:6px}
+ol.langkah:empty{display:none}
+ol.langkah li::marker{font-family:var(--f-display);font-weight:800;color:var(--accent)}
+ol.langkah li.jwp{list-style:none;margin-left:-1.4em;background:var(--ok-soft);border-radius:4px;padding:8px 12px}
+
+/* ---------- fokus SPM ---------- */
+ul.topik{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column}
+ul.topik li{display:grid;grid-template-columns:62px minmax(0,1fr);gap:12px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line)}
+.bintang{color:var(--c2);letter-spacing:1px;font-size:15px;white-space:nowrap}
+.bintang s{text-decoration:none;color:var(--line)}
+.kad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+@media (max-width:620px){.kad{grid-template-columns:minmax(0,1fr)}}
+.kd{border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:0}
+.kd summary{cursor:pointer;padding:11px 14px;font-weight:700;font-family:var(--f-display);font-size:16px;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.kd summary::-webkit-details-marker{display:none}
+.kd summary::after{content:"Buka";font-family:var(--f-body);font-size:12.5px;font-weight:600;color:var(--accent)}
+.kd[open] summary::after{content:"Tutup"}
+.kd.ok{border-color:var(--ok)}
+.kd.ok summary{color:var(--ok)}
+.kd p{padding:0 14px;margin:0}
+.kd .chk{padding:8px 14px 12px;font-size:13.5px;color:var(--muted)}
+.hafal-n{font-size:14px;font-weight:600;color:var(--ok)}
+ul.corak{margin:12px 0 0;padding-left:1.2em;display:flex;flex-direction:column;gap:8px;max-width:72ch}
+ul.corak li::marker{color:var(--c2)}
+table.bank td:first-child{white-space:normal;font-size:15px;font-weight:600;min-width:130px}
+
+/* ---------- latihan ---------- */
+nav.bhg{display:flex;gap:8px;flex-wrap:wrap}
+nav.bhg a{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:7px 12px;text-decoration:none;color:var(--ink);font-weight:600;font-size:14.5px}
+nav.bhg a b{font-family:var(--f-display);color:var(--accent)}
+nav.bhg a:hover{border-color:var(--accent)}
+h2[id^="bhg-"]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 70px)}
+.ans-row{grid-column:1/-1}
+.lnk{background:none;border:0;padding:0;color:var(--accent);font-weight:600;font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.reka{border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.reka h3{font-size:16px;margin-top:4px}
+table.spec{min-width:520px}
+table.spec td:first-child{font-size:14.5px;font-weight:600;white-space:normal}
+table.spec th:not(:first-child){font-family:var(--f-display);font-size:15px;color:var(--ink);text-align:left}
+.asp{display:flex;flex-direction:column;gap:12px}
+.asp-r{display:flex;flex-direction:column;gap:6px;border-left:3px solid var(--line);padding-left:12px}
+.asp-r.ok{border-color:var(--ok)}
+.asp-r.no{border-color:var(--bad)}
+.asp-r .chip{border-radius:4px;text-align:left}
+.sebab{font-size:14.5px}
+.asp-r.ok .sebab{color:var(--ok)}
+.asp-r.no .sebab{color:var(--bad)}
+.asp-r .sebab b{color:var(--ink)}
+.pilih.ok .chip[aria-pressed="true"]{background:var(--ok);border-color:var(--ok)}
+.pilih.no .chip[aria-pressed="true"]{background:var(--bad);border-color:var(--bad)}
+.hasil:empty{display:none}
+.hasil{border:1px solid var(--ok);background:var(--ok-soft);border-radius:4px;padding:12px 14px}
+.hasil b{font-family:var(--f-display);font-size:19px}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 <header class="top"><div class="wrap">
@@ -316,8 +392,10 @@ function fmt(t) {
 /* ---------- keadaan ---------- */
 const app = document.getElementById('app');
 let stopSim = null, stopHero = null;
-let curTab = store.get('tab') || 'visual';
-const TABS = [['visual', 'Visual Interaktif', 'Visual'], ['terang', 'Penerangan', 'Penerangan'], ['latih', 'Latihan SPM', 'Latihan'], ['nota', 'Nota &amp; Rumusan', 'Nota']];
+const TABS = [['terang', 'Penerangan', 'Isi'], ['visual', 'Visual', 'Visual'], ['fokus', 'Fokus SPM', 'Fokus SPM'], ['latih', 'Latihan', 'Latihan'], ['nota', 'Rumusan', 'Rumusan']];
+let curTab = store.get('tab2');
+if (!TABS.some(t => t[0] === curTab)) curTab = 'terang';
+const semuaKuiz = b => (b.kuizTambah || []).concat(b.kuiz);
 
 function cleanup() {
   if (stopSim) { stopSim(); stopSim = null; }
@@ -327,24 +405,32 @@ function best(id) { return store.get('skor:' + id); }
 
 /* ---------- laman utama ---------- */
 function viewHome() {
-  const nq = BAB.reduce((n, b) => n + b.kuiz.length + b.struktur.length, 0);
+  const nq = BAB.reduce((n, b) => n + semuaKuiz(b).length + b.struktur.length + (b.reka ? 1 : 0), 0);
   const nsim = BAB.reduce((n, b) => n + (b.sim.n || 1), 0);
   const toc = ting => BAB.filter(b => b.ting === ting).map(b => {
     const s = best(b.id);
     return `<li><a href="#${b.id}"><span class="no">${b.no}</span>
       <span><span class="tm">${b.tema}</span><span class="tj">${b.tajuk}</span><span class="st">${b.sub.map(x => x.n + ' ' + x.t).join(' · ')}</span></span>
-      <span class="pg${s != null && s === b.kuiz.length ? ' done' : ''}"><b class="num">${s != null ? s + '/' + b.kuiz.length : '–'}</b>${s != null ? 'markah terbaik' : 'belum dicuba'}</span></a></li>`;
+      <span class="pg${s != null && s === semuaKuiz(b).length ? ' done' : ''}"><b class="num">${s != null ? s + '/' + semuaKuiz(b).length : '–'}</b>${s != null ? 'markah terbaik' : 'belum dicuba'}</span></a></li>`;
   }).join('');
   app.innerHTML = `
   <section class="hero"><div class="wrap">
     <div>
       <h1>Fizik SPM <span>Interaktif</span></h1>
-      <p>Nota ringkas, visual yang boleh diubah sendiri dan latihan berformat SPM untuk semua bab Fizik KSSM Tingkatan 4 dan Tingkatan 5.</p>
+      <p>Penerangan ringkas, isi yang kerap keluar SPM dan latihan bertahap untuk semua bab Fizik KSSM Tingkatan 4 dan Tingkatan 5.</p>
       <ul class="stats"><li><b class="num">${BAB.length}</b>bab</li><li><b class="num">${nsim}</b>visual interaktif</li><li><b class="num">${nq}</b>soalan latihan</li></ul>
     </div>
     <canvas id="hero-cv" aria-hidden="true"></canvas>
   </div></section>
   <div class="wrap">
+    <section class="sec"><div class="sec-h"><h2>Cara guna</h2><small>Lima langkah bagi setiap bab</small></div>
+      <ol class="steps">
+        <li><b>Penerangan</b><span>Baca isi ringkas. Tanda <i class="chip-spm">SPM</i> = kerap ditanya.</span></li>
+        <li><b>Visual</b><span>Ubah nilai dan lihat konsep berlaku.</span></li>
+        <li><b>Fokus SPM</b><span>Hafal takrif, kenali corak soalan.</span></li>
+        <li><b>Latihan</b><span>Objektif, struktur dan soalan reka bentuk.</span></li>
+        <li><b>Rumusan</b><span>Ulang kaji rumus dan kesilapan lazim.</span></li>
+      </ol></section>
     <section class="sec" id="sec-t4"><div class="sec-h"><h2>Tingkatan 4</h2><small>6 bab · Asas Fizik, Mekanik Newton, Haba, Gelombang, Cahaya dan Optik</small></div><ol class="toc">${toc(4)}</ol></section>
     <section class="sec" id="sec-t5"><div class="sec-h"><h2>Tingkatan 5</h2><small>7 bab · Mekanik Newton, Elektrik dan Keelektromagnetan, Fizik Gunaan, Fizik Moden</small></div><ol class="toc">${toc(5)}</ol></section>
     <section class="sec"><div class="sec-h"><h2>Kuiz campuran</h2><small>10 soalan objektif dipilih secara rawak, dengan penjelasan bagi setiap jawapan</small></div>
@@ -372,7 +458,7 @@ function viewHome() {
         ['Elektron-volt', '$1 "eV" = 1.60 × 10^{-19} "J"$']
       ].map(r => `<div><dt>${r[0]}</dt><dd>${fmt(r[1])}</dd></div>`).join('')}</dl></section>
   </div>
-  <footer class="foot"><div class="wrap">Kandungan disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan Tingkatan 5 (Kementerian Pendidikan Malaysia). Soalan latihan ditulis mengikut gaya Kertas 1 dan Kertas 2 SPM; markah terbaik disimpan pada peranti ini sahaja.</div></footer>`;
+  <footer class="foot"><div class="wrap">Kandungan disusun mengikut Buku Teks Fizik KSSM Tingkatan 4 dan Tingkatan 5 (KPM). Bahagian Fokus SPM dianalisis daripada Koleksi Soalan Kertas 2 Percubaan SPM 2025 (pelbagai negeri, MRSM, SBP dan SMKA). Soalan latihan ditulis semula mengikut gaya Kertas 1 dan Kertas 2; markah terbaik disimpan pada peranti ini sahaja.</div></footer>`;
   stopHero = heroAnim(document.getElementById('hero-cv'));
 }
 
@@ -420,7 +506,7 @@ function viewBab(b) {
       ${nx ? `<a href="#${nx.id}" style="text-align:right"><small>T${nx.ting} Bab ${nx.no} →</small>${nx.tajuk}</a>` : '<span></span>'}
     </nav></div>
   <footer class="foot"><div class="wrap">Fizik SPM Interaktif · Tingkatan ${b.ting} Bab ${b.no}: ${b.tajuk}</div></footer>`;
-  app.querySelectorAll('.tabs button').forEach(bt => bt.onclick = () => { curTab = bt.dataset.tab; store.set('tab', curTab); showTab(b); });
+  app.querySelectorAll('.tabs button').forEach(bt => bt.onclick = () => { curTab = bt.dataset.tab; store.set('tab2', curTab); showTab(b); window.scrollTo({ top: app.querySelector('.tabs').getBoundingClientRect().top + window.scrollY - 60 }); });
   showTab(b);
 }
 
@@ -428,7 +514,7 @@ function showTab(b) {
   if (stopSim) { stopSim(); stopSim = null; }
   app.querySelectorAll('.tabs button').forEach(bt => bt.setAttribute('aria-selected', bt.dataset.tab === curTab));
   const p = document.getElementById('panel'); p.innerHTML = ''; p.setAttribute('aria-labelledby', 'tab-' + curTab);
-  ({ visual: tabVisual, terang: tabTerang, latih: tabLatih, nota: tabNota })[curTab](p, b);
+  ({ visual: tabVisual, terang: tabTerang, fokus: tabFokus, latih: tabLatih, nota: tabNota })[curTab](p, b);
 }
 
 function tabVisual(p, b) {
@@ -441,32 +527,120 @@ function tabVisual(p, b) {
   box.append(ol); p.append(box);
 }
 
+const isiLi = x => x[0] === '!' ? `<li class="kerap"><span>${fmt(x.slice(1))}</span><i class="chip-spm" title="Kerap keluar SPM">SPM</i></li>` : `<li><span>${fmt(x)}</span></li>`;
+
 function tabTerang(p, b) {
+  p.append(el('p', 'lede', `Isi bertanda <i class="chip-spm">SPM</i> kerap ditanya dalam peperiksaan. Kotak kuning ialah perkara utama yang mesti diingat.`));
   b.sub.forEach(s => {
-    p.append(el('section', 'sub', `<div class="sn">${s.n}</div><div><h3>${s.t}</h3><ul>${s.p.map(x => '<li>' + fmt(x) + '</li>').join('')}</ul></div>`));
+    p.append(el('section', 'sub', `<div class="sn">${s.n}</div><div><h3>${s.t}</h3><ul class="isi">${(s.isi || s.p).map(isiLi).join('')}</ul>${s.ingat ? `<p class="ingat"><b>Ingat:</b> ${fmt(s.ingat)}</p>` : ''}</div>`));
   });
+  if (b.contoh && b.contoh.length) {
+    p.append(el('div', null, `<h2>Contoh pengiraan langkah demi langkah</h2><p class="lede" style="margin-top:6px">Cuba jawab dahulu, kemudian buka satu langkah pada satu masa.</p>`));
+    b.contoh.forEach((c, i) => {
+      const card = el('div', 'contoh', `<div class="eb">Contoh ${i + 1} · ${c.t}</div><p>${fmt(c.q)}</p><ol class="langkah"></ol><div class="row"><button type="button" class="btn">Langkah seterusnya</button><button type="button" class="btn ghost">Tunjuk semua</button></div>`);
+      const ol = card.querySelector('.langkah'), [nx, all] = card.querySelectorAll('button');
+      let k = 0;
+      const step = () => {
+        if (k < c.l.length) ol.append(el('li', null, fmt(c.l[k++])));
+        else if (k === c.l.length) { ol.append(el('li', 'jwp', `<b>Jawapan:</b> ${fmt(c.j)}`)); k++; }
+        if (k > c.l.length) { nx.remove(); all.remove(); }
+      };
+      nx.onclick = step; all.onclick = () => { while (k <= c.l.length) step(); };
+      p.append(card);
+    });
+  }
+}
+
+function tabFokus(p, b) {
+  const f = b.fokus; if (!f) return;
+  const bin = n => '<span class="bintang" aria-label="' + ['', 'Pernah keluar', 'Kerap', 'Sangat kerap'][n] + '">' + '★'.repeat(n) + '<s>' + '★'.repeat(3 - n) + '</s></span>';
+  p.append(el('div', null, `<h2>Topik yang kerap ditanya</h2><p class="lede" style="margin-top:6px">Berdasarkan Koleksi Soalan K2 Percubaan SPM 2025 bagi bab ini. ★★★ sangat kerap · ★★ kerap · ★ pernah keluar.</p>
+    <ul class="topik">${f.topik.map(t => `<li>${bin(t[1])}<span>${fmt(t[0])}</span></li>`).join('')}</ul>`));
+
+  const sudah = store.get('hafal:' + b.id) || [];
+  const tk = el('div', null, `<h2>Takrif wajib hafal</h2><p class="lede" style="margin-top:6px">Soalan 1 markah “Nyatakan maksud …” hampir pasti keluar. Cuba sebut takrif dahulu, kemudian buka kad untuk menyemak.</p><div class="row" style="margin-top:8px"><span class="hafal-n num"></span><button type="button" class="btn ghost">Buka semua</button></div><div class="kad"></div>`);
+  const box = tk.querySelector('.kad'), cnt = tk.querySelector('.hafal-n');
+  const upd = () => { cnt.textContent = `Sudah hafal: ${sudah.length}/${f.takrif.length}`; };
+  f.takrif.forEach(([t, d]) => {
+    const k = el('details', 'kd' + (sudah.includes(t) ? ' ok' : ''), `<summary>${t}</summary><p>${fmt(d)}</p><label class="chk"><input type="checkbox"${sudah.includes(t) ? ' checked' : ''}> Saya sudah hafal</label>`);
+    k.querySelector('input').onchange = e => {
+      const i = sudah.indexOf(t); if (e.target.checked && i < 0) sudah.push(t); if (!e.target.checked && i >= 0) sudah.splice(i, 1);
+      k.classList.toggle('ok', e.target.checked); store.set('hafal:' + b.id, sudah); upd();
+    };
+    box.append(k);
+  });
+  tk.querySelector('.btn').onclick = e => { const open = e.target.textContent === 'Buka semua'; box.querySelectorAll('details').forEach(d => d.open = open); e.target.textContent = open ? 'Tutup semua' : 'Buka semua'; };
+  upd(); p.append(tk);
+
+  p.append(el('div', null, `<h2>Corak soalan Kertas 2</h2><ul class="corak">${f.corak.map(x => `<li>${fmt(x)}</li>`).join('')}</ul>`));
+  p.append(el('div', null, `<h2>Cara jawab soalan “banding” dan “hubung kait”</h2>
+    <ol class="rum" style="margin-top:12px">
+      <li><span><b>Bandingkan</b>: tulis perbandingan lengkap dengan perkataan “lebih”, contoh “Panjang gelombang di kawasan P <i>lebih panjang</i> daripada di kawasan Q.” Jangan tulis nilai sahaja.</span></li>
+      <li><span><b>Hubung kait</b>: guna pola “Semakin … , semakin …”, contoh “Semakin dalam air, semakin panjang panjang gelombang.”</span></li>
+      <li><span><b>Nyatakan hukum/prinsip/konsep</b>: tulis nama penuh, contoh “Prinsip Pascal”, “Hukum Kepler Kedua”.</span></li>
+    </ol>`));
+  p.append(el('div', null, `<h2>Bank jawapan soalan reka bentuk (10 markah)</h2>
+    <p class="lede" style="margin-top:6px">Format jawapan: setiap aspek = <b>ciri</b> (1 markah) + <b>sebab</b> (1 markah). Akhir sekali: pilih satu jawapan dan nyatakan sebab (2 markah).</p>
+    <div class="scroll" style="margin-top:10px"><table class="rumus bank"><thead><tr><th>Situasi</th><th>Ciri yang sesuai</th><th>Sebab</th></tr></thead><tbody>${f.ciri.map(r => `<tr><td>${fmt(r[0])}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td></tr>`).join('')}</tbody></table></div>`));
 }
 
 function tabNota(p, b) {
   p.append(el('div', null, `<h2>Rumus penting</h2><div class="scroll" style="margin-top:10px"><table class="rumus"><thead><tr><th>Rumus</th><th>Maksud simbol dan catatan</th></tr></thead><tbody>${b.rumus.map(r => `<tr><td>${fmt(r[0])}</td><td>${fmt(r[1])}</td></tr>`).join('')}</tbody></table></div>`));
-  p.append(el('div', null, `<h2>Istilah utama</h2><dl class="ist" style="margin-top:6px">${b.istilah.map(r => `<dt>${r[0]}</dt><dd>${fmt(r[1])}</dd>`).join('')}</dl>`));
   p.append(el('div', null, `<h2>Rumusan bab</h2><ol class="rum" style="margin-top:12px">${b.rumusan.map(r => `<li><span>${fmt(r)}</span></li>`).join('')}</ol>`));
   p.append(el('div', null, `<h2>Kesilapan lazim dalam peperiksaan</h2><ul class="awas" style="margin-top:12px">${b.silap.map(r => `<li>${fmt(r)}</li>`).join('')}</ul>`));
+  if (b.istilah) p.append(el('div', null, `<h2>Istilah lain</h2><dl class="ist" style="margin-top:6px">${b.istilah.map(r => `<dt>${r[0]}</dt><dd>${fmt(r[1])}</dd>`).join('')}</dl>`));
 }
 
 function tabLatih(p, b) {
-  p.append(el('div', null, `<h2>Bahagian A: Soalan objektif</h2><p class="lede" style="margin-top:8px">Gaya Kertas 1. Pilih satu jawapan; penjelasan dipaparkan sebaik sahaja anda menjawab.</p>`));
-  const a = el('div'); p.append(a); mcq(a, b.kuiz, b.id);
-  p.append(el('div', null, `<h2 style="margin-top:14px">Bahagian B: Soalan struktur</h2><p class="lede" style="margin-top:8px">Gaya Kertas 2. Jawab di atas kertas dahulu, kemudian bandingkan dengan skema jawapan.</p>`));
+  const nav = el('nav', 'bhg', `<a href="#" data-k="A"><b>A</b>Objektif</a><a href="#" data-k="B"><b>B</b>Struktur</a>${b.reka ? '<a href="#" data-k="C"><b>C</b>Reka bentuk</a>' : ''}`);
+  nav.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); document.getElementById('bhg-' + a.dataset.k).scrollIntoView({ behavior: 'smooth' }); });
+  p.append(nav);
+  p.append(el('div', null, `<h2 id="bhg-A">Bahagian A: Soalan objektif</h2><p class="lede" style="margin-top:6px">Gaya Kertas 1. Penjelasan dipaparkan sebaik sahaja anda menjawab, jadi anda belajar daripada setiap kesilapan.</p>`));
+  const a = el('div'); p.append(a); mcq(a, semuaKuiz(b), b.id);
+  p.append(el('div', null, `<h2 id="bhg-B" style="margin-top:14px">Bahagian B: Soalan struktur</h2><p class="lede" style="margin-top:6px">Gaya Kertas 2. Jawab di atas kertas dahulu. Tekan “Petunjuk” jika buntu, kemudian semak skema bahagian demi bahagian.</p>`));
   b.struktur.forEach((s, i) => {
     const tot = s.b.reduce((n, x) => n + x.m, 0);
     const card = el('div', 'q', `<div class="qh"><span class="qn">${i + 1}</span><div>${fmt(s.t)}</div></div>
-      <ol class="parts">${s.b.map(x => `<li><div>${fmt(x.q)}</div><span class="mk">[${x.m} markah]</span><div class="ans" hidden>${fmt(x.j)}</div></li>`).join('')}</ol>
-      <div class="row"><button type="button" class="btn ghost">Tunjuk skema jawapan</button><span class="mk" style="font-weight:500;color:var(--muted)">Jumlah: ${tot} markah</span></div>`);
-    const bt = card.querySelector('button');
-    bt.onclick = () => { const show = bt.textContent.startsWith('Tunjuk'); card.querySelectorAll('.ans').forEach(x => x.hidden = !show); bt.textContent = show ? 'Sembunyi skema jawapan' : 'Tunjuk skema jawapan'; };
+      <ol class="parts">${s.b.map(x => `<li><div>${fmt(x.q)}</div><span class="mk">[${x.m} markah]</span><div class="ans-row"><button type="button" class="lnk">Semak skema</button></div><div class="ans" hidden>${fmt(x.j)}</div></li>`).join('')}</ol>
+      <div class="row"><button type="button" class="btn ghost">Tunjuk semua skema</button><span class="mk" style="font-weight:500;color:var(--muted)">Jumlah: ${tot} markah</span></div>`);
+    card.querySelectorAll('.parts li').forEach(li => { const bt = li.querySelector('.lnk'), an = li.querySelector('.ans'); bt.onclick = () => { an.hidden = !an.hidden; bt.textContent = an.hidden ? 'Semak skema' : 'Sembunyi skema'; }; });
+    const bt = card.querySelector('.btn');
+    bt.onclick = () => { const show = bt.textContent.startsWith('Tunjuk'); card.querySelectorAll('.ans').forEach(x => x.hidden = !show); card.querySelectorAll('.lnk').forEach(x => x.textContent = show ? 'Sembunyi skema' : 'Semak skema'); bt.textContent = show ? 'Sembunyi semua skema' : 'Tunjuk semua skema'; };
     p.append(card);
   });
+  if (b.reka) { p.append(el('div', null, `<h2 id="bhg-C" style="margin-top:14px">Bahagian C: Soalan reka bentuk (10 markah)</h2><p class="lede" style="margin-top:6px">Soalan ini muncul hampir setiap tahun dalam Bahagian B dan C Kertas 2. Pilih ciri yang paling sesuai bagi setiap aspek, kemudian pilih reka bentuk terbaik.</p>`)); reka(p, b.reka); }
+}
+
+/* ---------- soalan reka bentuk interaktif ---------- */
+function reka(p, r) {
+  const card = el('div', 'reka');
+  card.innerHTML = `<p>${fmt(r.s)}</p>
+    <div class="scroll"><table class="rumus spec"><thead><tr><th>Aspek</th>${r.opsyen.map(o => `<th>${o}</th>`).join('')}</tr></thead><tbody>${r.aspek.map(x => `<tr><td>${x.a}</td>${x.v.map(v => `<td>${fmt(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <h3>Langkah 1: Pilih ciri yang paling sesuai bagi setiap aspek</h3><div class="asp"></div>
+    <h3>Langkah 2: Reka bentuk yang paling sesuai ialah</h3><div class="row pilih"></div>
+    <div class="row rk-act"><button type="button" class="btn">Semak jawapan</button><button type="button" class="btn ghost">Cuba semula</button></div><div class="hasil" role="status"></div>`;
+  const asp = card.querySelector('.asp'), pilih = card.querySelector('.pilih'), [cek, sem] = card.querySelectorAll('.rk-act .btn'), hasil = card.querySelector('.hasil');
+  const jaw = r.aspek.map(() => null); let opt = null;
+  r.aspek.forEach((x, i) => {
+    const uniq = [...new Set(x.v)];
+    const row = el('div', 'asp-r', `<b>${x.a}</b><div class="row"></div><div class="sebab" hidden></div>`);
+    uniq.forEach(v => { const c = el('button', 'chip', fmt(v)); c.type = 'button'; c.setAttribute('aria-pressed', 'false'); c.onclick = () => { jaw[i] = v; row.querySelectorAll('.chip').forEach(z => z.setAttribute('aria-pressed', z === c)); }; row.querySelector('.row').append(c); });
+    asp.append(row);
+  });
+  r.opsyen.forEach((o, i) => { const c = el('button', 'chip', o); c.type = 'button'; c.setAttribute('aria-pressed', 'false'); c.onclick = () => { opt = i; pilih.querySelectorAll('.chip').forEach(z => z.setAttribute('aria-pressed', z === c)); }; pilih.append(c); });
+  cek.onclick = () => {
+    let m = 0;
+    asp.querySelectorAll('.asp-r').forEach((row, i) => {
+      const x = r.aspek[i], ok = jaw[i] === x.ok, sb = row.querySelector('.sebab');
+      row.classList.toggle('ok', ok); row.classList.toggle('no', !ok); if (ok) m += 2;
+      sb.hidden = false; sb.innerHTML = `${ok ? '✓' : '✗'} Ciri: <b>${fmt(x.ok)}</b>. Sebab: ${fmt(x.sebab)}`;
+    });
+    const okp = opt === r.jawapan; if (okp) m += 2;
+    pilih.classList.toggle('ok', okp); pilih.classList.toggle('no', !okp);
+    hasil.innerHTML = `<b class="num">Markah: ${m}/${r.aspek.length * 2 + 2}</b><p>Jawapan contoh: <b>${r.opsyen[r.jawapan]}</b> paling sesuai kerana ${r.aspek.map(x => `${x.a.charAt(0).toLowerCase() + x.a.slice(1)} ialah ${fmt(x.ok)}`).join('; ')}.</p>`;
+  };
+  sem.onclick = () => { const n = el('div'); card.replaceWith(n); reka(n, r); n.replaceWith(n.firstChild); };
+  p.append(card);
 }
 
 /* ---------- soalan objektif ---------- */
@@ -2447,6 +2621,1093 @@ BAB.push({
       { q: '(d) Mengapakah mikroskop elektron mempunyai resolusi yang lebih tinggi daripada mikroskop cahaya?', m: 1, j: 'Panjang gelombang de Broglie elektron jauh lebih pendek daripada panjang gelombang cahaya nampak, maka butiran yang lebih halus dapat dibezakan.' },
       { q: '(e) Mengapakah sifat gelombang sebiji bola sepak yang bergerak tidak dapat diperhatikan?', m: 1, j: 'Jisim bola sangat besar, maka panjang gelombang de Broglienya terlalu pendek untuk dikesan.' }
     ] }
+  ]
+});
+
+'use strict';
+/* ===== Kandungan fokus SPM Tingkatan 4 =====
+   sub: penerangan ringkas (baris bermula "!" = isi yang kerap keluar SPM)
+   contoh: pengiraan langkah demi langkah
+   fokus: topik (bintang 3 = sangat kerap dalam Koleksi K2 Trial SPM 2025), takrif wajib hafal, corak soalan, bank ciri
+   reka: soalan reka bentuk 10 markah (interaktif)  */
+function SPM(id, o) { Object.assign(BAB.find(b => b.id === id), o); }
+
+SPM('t4-b1', {
+  sub: [
+    { n: '1.1', t: 'Kuantiti Fizik', ingat: 'Kuantiti asas: 7 sahaja. Yang lain semuanya kuantiti terbitan.', isi: [
+      '!**Kuantiti asas** ialah kuantiti yang tidak boleh diterbitkan daripada kuantiti lain. Ada 7: panjang (m), jisim (kg), masa (s), suhu (K), arus (A), keamatan berluminositi (cd), kuantiti bahan (mol).',
+      '**Kuantiti terbitan** = gabungan kuantiti asas. Contoh: halaju ($"m s"^{-1}$), daya ($"kg m s"^{-2}$), tekanan ($"kg m"^{-1} "s"^{-2}$).',
+      '!Cara cari unit terbitan: tulis rumus, gantikan unit asas, ringkaskan. Contoh: $F = ma$ → $"kg" × "m s"^{-2}$.',
+      '!**Skalar** = magnitud sahaja (jarak, laju, jisim, masa, tenaga). **Vektor** = magnitud + arah (sesaran, halaju, pecutan, daya, momentum).'
+    ] },
+    { n: '1.2', t: 'Penyiasatan Saintifik', ingat: 'Garis lurus melalui asalan = berkadar terus. Tidak melalui asalan = bertambah/berkurang secara linear.', isi: [
+      '!Tafsir graf: garis lurus **melalui asalan** → $y$ berkadar terus dengan $x$. Garis lurus **tidak melalui asalan** → $y$ bertambah secara linear dengan $x$.',
+      '!Lima analisis graf: hubungan, **kecerunan**, **luas di bawah graf**, **interpolasi** (baca nilai di dalam julat) dan **ekstrapolasi** (panjangkan garis).',
+      'Kecerunan: lukis segi tiga besar (sekurang-kurangnya separuh garis) dan tulis unit.',
+      'Pemboleh ubah: **dimanipulasikan** (diubah), **bergerak balas** (diukur), **dimalarkan** (ditetapkan).',
+      'Bandul ringkas: ukur masa 20 ayunan untuk kurangkan ralat. $T^2 = {4π^2}/{g}l$, jadi $g = {4π^2}/{"kecerunan"}$.'
+    ] }
+  ],
+  contoh: [
+    { t: 'Cari unit terbitan', q: 'Tekanan $P = {F}/{A}$. Terbitkan unit S.I. tekanan dalam sebutan unit asas.', l: [
+      'Unit daya: $F = ma$ → $"kg" × "m s"^{-2} = "kg m s"^{-2}$.',
+      'Unit luas: $A$ → $"m"^2$.',
+      'Bahagi: ${"kg m s"^{-2}}/{"m"^2}$.'
+    ], j: '$"kg m"^{-1} "s"^{-2}$ (bersamaan pascal, Pa)' },
+    { t: 'Nilai g daripada kecerunan graf', q: 'Graf $T^2$ melawan $l$ bagi bandul ringkas ialah garis lurus melalui asalan dengan kecerunan $4.03 "s"^2 "m"^{-1}$. Hitung $g$.', l: [
+      'Rumus: $T^2 = {4π^2}/{g}l$, maka kecerunan $= {4π^2}/{g}$.',
+      'Susun semula: $g = {4π^2}/{"kecerunan"}$.',
+      'Ganti: $g = {39.48}/{4.03}$.'
+    ], j: '$g = 9.80 "m s"^{-2}$' }
+  ],
+  fokus: {
+    topik: [['Tafsir graf (kecerunan, luas, ekstrapolasi)', 3], ['Kuantiti asas & terbitan, unit', 2], ['Skalar & vektor', 2], ['Pemboleh ubah eksperimen', 2]],
+    takrif: [
+      ['Kuantiti asas', 'Kuantiti fizik yang tidak boleh diterbitkan daripada kuantiti fizik yang lain.'],
+      ['Kuantiti terbitan', 'Kuantiti fizik yang terdiri daripada gabungan kuantiti asas secara darab atau bahagi.'],
+      ['Kuantiti skalar', 'Kuantiti fizik yang mempunyai magnitud sahaja.'],
+      ['Kuantiti vektor', 'Kuantiti fizik yang mempunyai magnitud dan arah.']
+    ],
+    corak: [
+      'Nyatakan kuantiti asas yang ditunjukkan oleh paksi graf (cth: masa).',
+      'Namakan kuantiti yang diwakili oleh kecerunan atau luas di bawah graf.',
+      'Terbitkan unit bagi suatu kuantiti (cth: unit $G$ ialah $"kg"^{-1} "m"^3 "s"^{-2}$).',
+      'Ekstrapolasi graf untuk mencari nilai di luar julat data.'
+    ],
+    ciri: [
+      ['Mengukur tempoh bandul', 'Ukur masa 20 ayunan, ulang dan ambil purata', 'Kurangkan ralat masa tindak balas manusia'],
+      ['Mengukur masa larian', 'Guna pengesan elektronik / jam randik digital', 'Elak ralat masa tindak balas'],
+      ['Membaca skala', 'Mata berserenjang dengan skala', 'Elak ralat paralaks']
+    ]
+  },
+  reka: {
+    s: 'Seorang murid mahu menentukan nilai $g$ dengan **jitu** menggunakan bandul ringkas. Pilih kaedah yang paling sesuai.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Bilangan ayunan yang dimasa', v: ['1 ayunan', '20 ayunan', '20 ayunan', '1 ayunan'], ok: '20 ayunan', sebab: 'Ralat masa tindak balas dibahagi dengan 20, maka tempoh lebih jitu.' },
+      { a: 'Alat pengukur masa', v: ['Jam randik digital', 'Jam dinding', 'Jam randik digital', 'Jam randik digital'], ok: 'Jam randik digital', sebab: 'Kepekaan tinggi (0.01 s).' },
+      { a: 'Bilangan bacaan bagi setiap panjang', v: ['Dua kali, ambil purata', 'Sekali', 'Dua kali, ambil purata', 'Sekali'], ok: 'Dua kali, ambil purata', sebab: 'Purata mengurangkan ralat rawak.' },
+      { a: 'Sudut ayunan', v: ['Kecil (< 10°)', 'Kecil (< 10°)', 'Kecil (< 10°)', 'Besar (40°)'], ok: 'Kecil (< 10°)', sebab: 'Rumus $T = 2π sqrt{{l}/{g}}$ hanya tepat untuk ayunan kecil.' }
+    ],
+    jawapan: 2
+  }
+});
+
+SPM('t4-b2', {
+  sub: [
+    { n: '2.1', t: 'Gerakan Linear', ingat: 'Pilih persamaan gerakan berdasarkan kuantiti yang TIDAK diberi.', isi: [
+      '!**Halaju** = kadar perubahan sesaran. **Pecutan** = kadar perubahan halaju: $a = {v − u}/{t}$.',
+      '**Jarak** (skalar) ialah jumlah lintasan; **sesaran** (vektor) ialah jarak terpendek dari mula ke akhir dengan arah.',
+      '!Empat persamaan gerakan (pecutan seragam): $v = u + at$, $s = {1}/{2}(u + v)t$, $s = ut + {1}/{2}at^2$, $v^2 = u^2 + 2as$.',
+      'Pita detik 50 Hz: 1 detik = 0.02 s. Jarak antara titik bertambah → memecut.'
+    ] },
+    { n: '2.2', t: 'Graf Gerakan Linear', ingat: 'Graf v–t: kecerunan = pecutan, luas = sesaran.', isi: [
+      '!Graf **s–t**: kecerunan = halaju. Garis mengufuk = pegun.',
+      '!Graf **v–t**: kecerunan = pecutan; **luas di bawah graf = sesaran**. Garis mengufuk = halaju seragam.',
+      'Kecerunan lebih curam → pecutan lebih besar.'
+    ] },
+    { n: '2.3', t: 'Gerakan Jatuh Bebas', ingat: 'Dalam vakum, bulu dan bola keluli jatuh serentak.', isi: [
+      '!**Jatuh bebas**: objek jatuh di bawah pengaruh daya graviti sahaja.',
+      '!Semua objek jatuh bebas dengan pecutan sama, $g = 9.81 "m s"^{-2}$, **tidak bergantung pada jisim**.',
+      '!Dalam udara, objek dengan luas permukaan besar (kertas, bulu) mengalami **rintangan udara** lebih besar dan jatuh lebih lambat. Dalam **vakum** tiada rintangan udara, jadi semua jatuh serentak.',
+      'Hitung: guna persamaan gerakan dengan $u = 0$ dan $a = g$. Contoh: $s = {1}/{2}gt^2$.'
+    ] },
+    { n: '2.4', t: 'Inersia', isi: [
+      '!**Inersia**: kecenderungan objek untuk kekal pegun atau bergerak dengan halaju seragam (Hukum Newton Pertama).',
+      '!Jisim bertambah → inersia bertambah. Contoh: lori berat sukar dihentikan; tali pinggang keledar menahan penumpang terhumban ke depan.'
+    ] },
+    { n: '2.5', t: 'Momentum', ingat: 'Tetapkan arah positif dahulu; halaju arah bertentangan diberi tanda negatif.', isi: [
+      '!**Momentum** $p = mv$ (unit $"kg m s"^{-1}$, vektor).',
+      '!**Prinsip keabadian momentum**: jumlah momentum sebelum = jumlah momentum selepas, jika tiada daya luar.',
+      'Perlanggaran kenyal: $m_1u_1 + m_2u_2 = m_1v_1 + m_2v_2$. Tidak kenyal (melekat): $m_1u_1 + m_2u_2 = (m_1 + m_2)v$.',
+      '!**Letupan / pelancaran roket**: momentum awal sifar → $0 = m_1v_1 + m_2v_2$. Gas ditolak ke belakang, roket bergerak ke hadapan.'
+    ] },
+    { n: '2.6–2.7', t: 'Daya, Impuls dan Daya Impuls', ingat: 'Masa impak panjang → daya impuls kecil.', isi: [
+      '!**Hukum Newton Kedua**: $F = ma$. Jisim tetap: $a ∝ F$. Daya tetap: $a ∝ {1}/{m}$.',
+      '!**Impuls** = perubahan momentum: $Ft = mv − mu$ (unit N s).',
+      '!**Daya impuls** = kadar perubahan momentum dalam masa yang singkat: $F = {mv − mu}/{t}$.',
+      '!Kurangkan daya impuls dengan **memanjangkan masa impak**: beg udara, zon remuk, tilam lompat tinggi, membengkokkan lutut.',
+      'Tambah daya impuls dengan memendekkan masa impak: alu, tukul, kaki pemain bola sepak.',
+      '**Hukum Newton Ketiga**: setiap daya tindakan ada daya tindak balas yang sama magnitud, bertentangan arah.'
+    ] },
+    { n: '2.8', t: 'Berat', isi: [
+      '**Berat** $W = mg$ ialah daya graviti (unit N). Jisim (kg) tidak berubah di mana-mana; berat berubah mengikut $g$.'
+    ] }
+  ],
+  contoh: [
+    { t: 'Jatuh bebas', q: 'Sebuah roket air jatuh bebas dari ketinggian maksimum 80 m. Hitung (a) masa untuk sampai ke tanah, (b) halaju sebelum mencecah tanah.', l: [
+      'Data: $u = 0$, $s = 80 "m"$, $a = g = 9.81 "m s"^{-2}$.',
+      '(a) $s = ut + {1}/{2}at^2$ → $80 = {1}/{2}(9.81)t^2$ → $t = sqrt{{160}/{9.81}}$ = 4.04 s.',
+      '(b) $v = u + at = 0 + 9.81 × 4.04$.'
+    ], j: '(a) 4.04 s  (b) $39.6 "m s"^{-1}$' },
+    { t: 'Impuls dan halaju lantunan', q: 'Bola 0.3 kg bergerak pada $60 "km j"^{-1}$ dipukul dengan daya 70 N selama 0.2 s dan melantun ke arah bertentangan. Hitung (a) impuls, (b) halaju lantunan.', l: [
+      'Tukar unit: $60 "km j"^{-1} = {60}/{3.6} = 16.67 "m s"^{-1}$.',
+      '(a) $J = Ft = 70 × 0.2 = 14 "N s"$ (arah bertentangan dengan gerakan asal).',
+      '(b) Ambil arah asal positif: $−14 = 0.3(v − 16.67)$.',
+      '$v = 16.67 − {14}/{0.3} = 16.67 − 46.67$.'
+    ], j: '(a) 14 N s  (b) $v = −30.0 "m s"^{-1}$, iaitu $30.0 "m s"^{-1}$ ke arah bertentangan' }
+  ],
+  fokus: {
+    topik: [['Momentum, letupan & roket', 3], ['Takrif halaju / pecutan + graf v–t', 3], ['Jatuh bebas & rintangan udara / vakum', 3], ['Daya impuls (beg udara, zon remuk)', 2], ['$F = ma$ (hubung kait jisim & pecutan)', 2], ['Soalan reka bentuk: kenderaan laju & selamat', 2]],
+    takrif: [
+      ['Halaju', 'Kadar perubahan sesaran.'],
+      ['Pecutan', 'Kadar perubahan halaju.'],
+      ['Jatuh bebas', 'Gerakan objek yang jatuh di bawah pengaruh daya graviti sahaja.'],
+      ['Inersia', 'Kecenderungan objek untuk kekal dalam keadaan pegun atau bergerak dengan halaju seragam.'],
+      ['Momentum', 'Hasil darab jisim dengan halaju.'],
+      ['Prinsip keabadian momentum', 'Jumlah momentum sebelum perlanggaran sama dengan jumlah momentum selepas perlanggaran jika tiada daya luar bertindak.'],
+      ['Impuls', 'Perubahan momentum.'],
+      ['Daya impuls', 'Kadar perubahan momentum dalam perlanggaran atau hentaman dalam masa yang singkat.']
+    ],
+    corak: [
+      'Rajah dua graf v–t → **bandingkan** kecerunan, pecutan, halaju akhir → **hubung kait** kecerunan dengan pecutan.',
+      'Bulu dan bola dalam udara vs vakum → bandingkan masa jatuh, hubung kait luas permukaan dengan rintangan udara.',
+      'Hitung masa jatuh bebas dan halaju sebelum mencecah tanah.',
+      'Beg udara / tilam keselamatan → nyatakan hukum, terangkan kesan kepada daya impuls (masa impak bertambah).',
+      'Roket / kereta belon → nyatakan konsep (keabadian momentum) dan terangkan cara ia bergerak (4 markah).',
+      'Reka bentuk 10 markah: keretapi laju, hoverkraf, paraglider, kereta lumba.'
+    ],
+    ciri: [
+      ['Kenderaan laju', 'Bentuk aerodinamik / larus', 'Kurangkan rintangan udara'],
+      ['Kenderaan laju', 'Bahan badan berketumpatan rendah & kuat (gentian karbon)', 'Jisim kecil → pecutan besar ($a = {F}/{m}$); tahan hentaman'],
+      ['Kenderaan laju', 'Kuasa enjin tinggi', 'Daya tujah besar → pecutan besar'],
+      ['Keselamatan', 'Zon remuk, beg udara, tali pinggang keledar', 'Panjangkan masa impak → daya impuls kecil; atasi inersia'],
+      ['Hoverkraf', 'Lapisan udara di bawah badan', 'Kurangkan geseran dengan permukaan'],
+      ['Roket', 'Gas ekzos keluar laju ke belakang', 'Keabadian momentum → roket ke hadapan']
+    ]
+  },
+  reka: {
+    s: 'Anda diminta memilih reka bentuk **keretapi laju** yang boleh bergerak pantas dan selamat.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Bentuk hadapan', v: ['Rata', 'Aerodinamik', 'Aerodinamik', 'Rata'], ok: 'Aerodinamik', sebab: 'Kurangkan rintangan udara.' },
+      { a: 'Bahan badan', v: ['Keluli (ketumpatan tinggi)', 'Keluli (ketumpatan tinggi)', 'Aloi aluminium (ketumpatan rendah, kuat)', 'Aloi aluminium (ketumpatan rendah, kuat)'], ok: 'Aloi aluminium (ketumpatan rendah, kuat)', sebab: 'Jisim kecil → pecutan lebih besar untuk daya tujahan yang sama; tahan hentaman.' },
+      { a: 'Kuasa enjin', v: ['Tinggi', 'Rendah', 'Tinggi', 'Tinggi'], ok: 'Tinggi', sebab: 'Daya tujahan besar, pecutan besar.' },
+      { a: 'Sistem keselamatan', v: ['Zon remuk & beg udara', 'Tiada', 'Zon remuk & beg udara', 'Tiada'], ok: 'Zon remuk & beg udara', sebab: 'Panjangkan masa impak, kurangkan daya impuls semasa perlanggaran.' }
+    ],
+    jawapan: 2
+  },
+  kuizTambah: [
+    { q: 'Sebiji syiling dan sehelai bulu pelepah dilepaskan serentak dari ketinggian sama di dalam **vakum**. Pernyataan manakah betul?', o: ['Syiling sampai dahulu kerana lebih berat', 'Bulu sampai dahulu kerana lebih ringan', 'Kedua-duanya sampai serentak', 'Bulu terapung kerana tiada udara'], a: 2, e: 'Dalam vakum tiada rintangan udara. Kedua-dua objek jatuh bebas dengan pecutan $g$ yang sama.' },
+    { q: 'Mengapakah roket dapat bergerak ke atas apabila gas panas dipancut ke bawah?', o: ['Gas menolak udara di bawah roket', 'Keabadian momentum: momentum gas ke bawah diimbangi momentum roket ke atas', 'Inersia roket berkurang', 'Berat roket menjadi sifar'], a: 1, e: 'Jumlah momentum awal sifar. Gas mendapat momentum ke bawah, jadi roket mendapat momentum yang sama magnitud ke atas.' },
+    { q: 'Seorang lelaki melompat ke atas beg udara keselamatan. Apabila dia tenggelam lebih dalam ke dalam beg itu, daya impuls', o: ['bertambah kerana masa impak berkurang', 'berkurang kerana masa impak bertambah', 'tidak berubah', 'bertambah kerana momentum bertambah'], a: 1, e: 'Perubahan momentum sama, tetapi masa impak lebih panjang, jadi $F = {mv − mu}/{t}$ menjadi lebih kecil.' }
+  ]
+});
+
+SPM('t4-b3', {
+  sub: [
+    { n: '3.1', t: 'Hukum Kegravitian Semesta Newton', ingat: 'Jarak $r$ diukur dari PUSAT ke PUSAT: $r = R + h$.', isi: [
+      '!$F = {Gm_1m_2}/{r^2}$: daya graviti **berkadar terus** dengan hasil darab jisim dan **berkadar songsang** dengan kuasa dua jarak.',
+      '!Jarak ganda dua → daya jadi ${1}/{4}$. Satu jisim ganda dua → daya ganda dua.',
+      '!Pecutan graviti $g = {GM}/{r^2}$: semakin jauh dari pusat Bumi, $g$ semakin kecil.',
+      '!**Daya memusat** $F = {mv^2}/{r}$: daya ke arah pusat bagi objek dalam gerakan membulat. Laju ganda dua → daya memusat ganda empat.',
+      'Bagi satelit dan planet, **daya graviti membekalkan daya memusat**.',
+      'Jika daya memusat hilang (tali putus), objek bergerak lurus pada arah tangen (laju linear).'
+    ] },
+    { n: '3.2', t: 'Hukum Kepler', ingat: 'Dekat Matahari = laju. Jauh = perlahan.', isi: [
+      '!**Kepler I**: orbit planet berbentuk **elips**, Matahari di salah satu fokus.',
+      '!**Kepler II**: garis planet–Matahari mencakupi **luas yang sama dalam masa yang sama**. Maka planet bergerak lebih laju apabila dekat dengan Matahari.',
+      '!**Kepler III**: $T^2 ∝ r^3$. Bandingkan dua planet: ${T_1^2}/{T_2^2} = {r_1^3}/{r_2^3}$.'
+    ] },
+    { n: '3.3', t: 'Satelit Buatan Manusia', ingat: 'Orbit tinggi → laju rendah, tempoh panjang.', isi: [
+      '!Laju satelit $v = sqrt{{GM}/{r}}$: jejari orbit besar → laju kecil, tempoh besar. Tidak bergantung pada jisim satelit.',
+      '!**Satelit geopegun** (cth. MEASAT): tempoh 24 jam, di atas Khatulistiwa, arah sama dengan putaran Bumi, kelihatan pegun → komunikasi, siaran TV.',
+      '!**Satelit bukan geopegun** (cth. RazakSAT): orbit rendah, tempoh < 24 jam, melintasi tempat berbeza → pengimejan, kaji cuaca, GPS.',
+      '!**Halaju lepas** $v = sqrt{{2GM}/{R}}$: halaju minimum untuk terlepas daripada graviti. Bumi: $11.2 "km s"^{-1}$.',
+      'Satelit dengan laju kurang daripada laju orbit akan jatuh ke Bumi; laju melebihi halaju lepas akan terlepas ke angkasa.'
+    ] }
+  ],
+  contoh: [
+    { t: 'Daya graviti antara Bumi dan satelit', q: 'Satelit 1 000 kg mengorbit pada ketinggian 600 km. Hitung daya graviti. [$G = 6.67 × 10^{-11}$, $M = 5.97 × 10^{24} "kg"$, $R = 6.37 × 10^6 "m"$]', l: [
+      'Jarak dari pusat: $r = R + h = 6.37 × 10^6 + 6.0 × 10^5 = 6.97 × 10^6 "m"$.',
+      '$F = {GMm}/{r^2} = {(6.67 × 10^{-11})(5.97 × 10^{24})(1 000)}/{(6.97 × 10^6)^2}$.'
+    ], j: '$F = 8.20 × 10^3 "N"$' },
+    { t: 'Daya memusat', q: 'Objek 6 kg bergerak dalam bulatan berjejari 1.5 m dengan laju $20 "m s"^{-1}$. Hitung (a) daya memusat, (b) pecutan memusat.', l: [
+      '(a) $F = {mv^2}/{r} = {6 × 20^2}/{1.5}$ = 1 600 N.',
+      '(b) $a = {v^2}/{r} = {400}/{1.5}$.'
+    ], j: '(a) 1 600 N  (b) $267 "m s"^{-2}$' }
+  ],
+  fokus: {
+    topik: [['Satelit geopegun vs bukan geopegun', 3], ['Hitung daya graviti $F = {Gm_1m_2}/{r^2}$', 3], ['Daya memusat (takrif, hitung, bandingkan)', 3], ['Hukum Kepler II (luas sama, laju berbeza)', 2], ['Hukum Kepler III & halaju lepas', 2], ['Reka bentuk: roket / teknik lontar tukul', 2]],
+    takrif: [
+      ['Hukum Kegravitian Semesta Newton', 'Daya graviti antara dua jasad berkadar terus dengan hasil darab jisim kedua-dua jasad dan berkadar songsang dengan kuasa dua jarak di antara pusat kedua-dua jasad.'],
+      ['Daya memusat', 'Daya yang bertindak ke atas objek dalam gerakan membulat dan berarah ke pusat bulatan.'],
+      ['Hukum Kepler Pertama', 'Orbit setiap planet ialah elips dengan Matahari berada di salah satu fokusnya.'],
+      ['Hukum Kepler Kedua', 'Garis yang menyambungkan planet dengan Matahari mencakupi luas yang sama dalam selang masa yang sama.'],
+      ['Hukum Kepler Ketiga', 'Kuasa dua tempoh orbit planet berkadar terus dengan kuasa tiga jejari orbitnya.'],
+      ['Halaju lepas', 'Halaju minimum yang diperlukan oleh objek di permukaan Bumi untuk mengatasi daya graviti dan terlepas ke angkasa lepas.']
+    ],
+    corak: [
+      'Rajah orbit elips (A→B dekat, C→D jauh) → bandingkan panjang lengkok, luas, laju → nyatakan Hukum Kepler II.',
+      'Dua satelit (cth. GOES-19 vs CloudSat) → bandingkan jejari orbit, tempoh, laju linear → hubung kait.',
+      'Tukul besi / kereta di selekoh → takrif daya memusat, hitung $F = {mv^2}/{r}$, kesan jika laju bertambah.',
+      'Hitung daya graviti antara Bumi dengan satelit / roket (ingat $r = R + h$).',
+      'Nyatakan dua perbezaan satelit geopegun dan bukan geopegun.'
+    ],
+    ciri: [
+      ['Satelit komunikasi', 'Orbit geopegun, tempoh 24 jam, atas Khatulistiwa', 'Sentiasa di atas tempat yang sama'],
+      ['Satelit pengimejan', 'Orbit rendah, tempoh pendek', 'Gambar jelas; lalu banyak tempat'],
+      ['Roket', 'Jisim kecil / bahan ringan', 'Pecutan besar untuk mencapai halaju lepas'],
+      ['Roket', 'Bahan api berkuasa tinggi (hidrogen + oksigen cecair)', 'Daya tujahan besar'],
+      ['Roket', 'Berbilang peringkat', 'Tangki kosong dibuang → jisim berkurang'],
+      ['Lontar tukul besi', 'Laju putaran tinggi, jejari besar', 'Laju linear besar semasa dilepaskan → lontaran jauh']
+    ]
+  },
+  reka: {
+    s: 'Pilih **roket** yang paling sesuai untuk membawa satelit ke orbit.',
+    opsyen: ['K', 'L', 'M', 'N'],
+    aspek: [
+      { a: 'Bahan badan roket', v: ['Aloi titanium (ringan, kuat)', 'Keluli (berat)', 'Aloi titanium (ringan, kuat)', 'Keluli (berat)'], ok: 'Aloi titanium (ringan, kuat)', sebab: 'Jisim kecil → pecutan besar; tahan suhu dan tekanan tinggi.' },
+      { a: 'Jenis bahan api', v: ['Petrol', 'Hidrogen + oksigen cecair', 'Hidrogen + oksigen cecair', 'Petrol'], ok: 'Hidrogen + oksigen cecair', sebab: 'Membebaskan tenaga besar; oksigen dibawa sendiri kerana tiada udara di angkasa.' },
+      { a: 'Bilangan peringkat', v: ['Satu', 'Berbilang', 'Berbilang', 'Berbilang'], ok: 'Berbilang', sebab: 'Peringkat kosong dibuang, jisim berkurang, pecutan bertambah.' },
+      { a: 'Bentuk', v: ['Larus (aerodinamik)', 'Larus (aerodinamik)', 'Larus (aerodinamik)', 'Silinder rata'], ok: 'Larus (aerodinamik)', sebab: 'Kurangkan rintangan udara semasa melalui atmosfera.' }
+    ],
+    jawapan: 2
+  },
+  kuizTambah: [
+    { q: 'Satelit X mempunyai jejari orbit lebih besar daripada satelit Y. Berbanding Y, satelit X mempunyai', o: ['laju linear lebih tinggi dan tempoh lebih pendek', 'laju linear lebih rendah dan tempoh lebih panjang', 'laju linear dan tempoh yang sama', 'laju linear lebih tinggi dan tempoh lebih panjang'], a: 1, e: '$v = sqrt{{GM}/{r}}$ (r besar → v kecil) dan $T^2 ∝ r^3$ (r besar → T besar).' },
+    { q: 'Laju sebuah kereta di selekoh bulat digandakan dua kali. Daya memusat yang diperlukan menjadi', o: ['separuh', 'dua kali ganda', 'empat kali ganda', 'tidak berubah'], a: 2, e: '$F = {mv^2}/{r}$, jadi $F ∝ v^2$. $2^2 = 4$.' },
+    { q: 'Antara berikut, yang manakah satelit geopegun?', o: ['RazakSAT untuk pengimejan', 'Satelit GPS', 'MEASAT untuk siaran televisyen', 'Stesen Angkasa Antarabangsa (ISS)'], a: 2, e: 'MEASAT ialah satelit komunikasi yang berada di orbit geopegun dengan tempoh 24 jam.' }
+  ]
+});
+
+SPM('t4-b4', {
+  sub: [
+    { n: '4.1', t: 'Keseimbangan Terma', ingat: 'Keseimbangan terma = suhu sama, kadar pemindahan haba bersih sifar.', isi: [
+      '!**Haba** ialah tenaga yang dipindahkan dari objek panas ke objek sejuk. **Suhu** ialah darjah kepanasan objek.',
+      '!**Keseimbangan terma**: dua objek bersentuhan mencapai suhu yang sama; kadar pemindahan haba bersih menjadi sifar.',
+      '!Termometer: bebuli dan badan bertukar haba sehingga mencapai keseimbangan terma, kemudian bacaan termometer = suhu badan.',
+      'Tentu ukur termometer: $θ = {l_θ − l_0}/{l_{100} − l_0} × 100 "°C"$. Suhu dalam kelvin: $T = θ + 273$.'
+    ] },
+    { n: '4.2', t: 'Muatan Haba Tentu', ingat: 'c rendah = cepat panas, cepat sejuk. c tinggi = lambat panas, simpan haba lama.', isi: [
+      '!**Muatan haba tentu**, $c$: haba yang diperlukan untuk menaikkan suhu **1 kg** bahan sebanyak **1 °C**. $Q = mcθ$.',
+      '!Pemanas elektrik: $Pt = mcθ$ (andaian: tiada haba hilang ke persekitaran).',
+      '!Campuran panas + sejuk: **haba hilang = haba diterima**, $m_1c(θ_1 − θ) = m_2c(θ − θ_2)$.',
+      '!Aplikasi: periuk logam ($c$ rendah, cepat panas), pemegang plastik ($c$ tinggi, penebat), air sebagai agen penyejuk enjin ($c$ tinggi), bayu laut dan bayu darat.'
+    ] },
+    { n: '4.3', t: 'Haba Pendam Tentu', ingat: 'Garis mengufuk pada lengkung pemanasan = perubahan fasa → guna $Q = ml$.', isi: [
+      '!**Haba pendam tentu**, $l$: haba yang diserap/dibebaskan semasa perubahan fasa **1 kg** bahan **tanpa perubahan suhu**. $Q = ml$.',
+      '!Suhu tetap semasa melebur/mendidih kerana haba digunakan untuk **memutuskan ikatan antara molekul**, bukan menambah tenaga kinetik.',
+      '!**Peluh menyejukkan badan**: peluh menyejat dan menyerap haba pendam pengewapan daripada kulit.',
+      'Stim lebih melecurkan kerana membebaskan haba pendam pengewapan yang besar semasa terkondensasi.',
+      'Pada lengkung pemanasan: bahagian condong guna $Pt = mcθ$; bahagian mengufuk guna $Pt = ml$.'
+    ] },
+    { n: '4.4', t: 'Hukum Gas', ingat: 'Suhu MESTI dalam kelvin (+273).', isi: [
+      '!**Boyle** ($T$ malar): $P_1V_1 = P_2V_2$. **Charles** ($P$ malar): ${V_1}/{T_1} = {V_2}/{T_2}$. **Gay-Lussac** ($V$ malar): ${P_1}/{T_1} = {P_2}/{T_2}$.',
+      '!Teori kinetik: suhu naik → molekul bergerak lebih laju → lebih kerap berlanggar dengan dinding → tekanan bertambah (periuk tekanan, tayar panas).',
+      'Isi padu berkurang (Boyle) → molekul lebih rapat → kekerapan perlanggaran bertambah → tekanan bertambah.'
+    ] }
+  ],
+  contoh: [
+    { t: 'Suhu akhir campuran', q: '0.2 kg air pada 80 °C dicampur dengan 0.3 kg air pada 20 °C. Hitung suhu akhir. (Abaikan haba hilang.)', l: [
+      'Haba hilang oleh air panas = haba diterima oleh air sejuk.',
+      '$0.2 × 4 200 × (80 − θ) = 0.3 × 4 200 × (θ − 20)$.',
+      '$c$ dibatalkan: $16 − 0.2θ = 0.3θ − 6$ → $0.5θ = 22$.'
+    ], j: '$θ = 44 "°C"$' },
+    { t: 'Haba pendam daripada lengkung pemanasan', q: 'Pepejal 0.05 kg dipanaskan dengan pemanas 100 W. Suhu kekal pada takat lebur selama 120 s. Hitung haba pendam tentu pelakuran.', l: [
+      'Bahagian mengufuk = peleburan, maka $Pt = ml$.',
+      '$100 × 120 = 0.05 × l$.',
+      '$l = {12 000}/{0.05}$.'
+    ], j: '$l = 2.4 × 10^5 "J kg"^{-1}$' },
+    { t: 'Hukum Gay-Lussac', q: 'Udara dalam kelalang pada 25 °C mempunyai tekanan 101 kPa. Hitung tekanan pada 50 °C (isi padu malar).', l: [
+      'Tukar ke kelvin: $T_1 = 298 "K"$, $T_2 = 323 "K"$.',
+      '${P_1}/{T_1} = {P_2}/{T_2}$ → $P_2 = 101 × {323}/{298}$.'
+    ], j: '$P_2 = 109 "kPa"$' }
+  ],
+  fokus: {
+    topik: [['Muatan haba tentu $Q = mcθ$ (hitung, campuran)', 3], ['Soalan reka bentuk: termos, periuk, tabung nasi, peti sejuk', 3], ['Haba pendam (peluh, lengkung pemanasan)', 3], ['Keseimbangan terma & termometer', 2], ['Hukum gas & kelvin', 2]],
+    takrif: [
+      ['Suhu', 'Darjah kepanasan sesuatu objek.'],
+      ['Haba', 'Tenaga yang dipindahkan dari objek panas ke objek sejuk.'],
+      ['Keseimbangan terma', 'Keadaan dua objek bersentuhan secara terma apabila kadar pemindahan haba bersih ialah sifar dan suhunya sama.'],
+      ['Muatan haba tentu', 'Kuantiti haba yang diperlukan untuk menaikkan suhu 1 kg bahan sebanyak 1 °C.'],
+      ['Haba pendam tentu', 'Kuantiti haba yang diserap atau dibebaskan semasa perubahan fasa bagi 1 kg bahan tanpa perubahan suhu.'],
+      ['Hukum Boyle', 'Tekanan berkadar songsang dengan isi padu bagi gas berjisim tetap pada suhu malar.'],
+      ['Hukum Charles', 'Isi padu berkadar terus dengan suhu mutlak bagi gas berjisim tetap pada tekanan malar.'],
+      ['Hukum Gay-Lussac', 'Tekanan berkadar terus dengan suhu mutlak bagi gas berjisim tetap pada isi padu malar.']
+    ],
+    corak: [
+      'Termometer klinik / inframerah → terangkan keseimbangan terma (haba mengalir hingga suhu sama, kadar bersih sifar).',
+      'Peluh / tuala basah menyejukkan tin minuman → haba pendam pengewapan diserap.',
+      'Lengkung pemanasan → hitung haba pendam (bahagian rata) dan muatan haba tentu (bahagian condong).',
+      'Campuran air panas + sejuk → hitung suhu akhir; nyatakan andaian (tiada haba hilang).',
+      'Periuk tekanan / pam basikal → namakan hukum gas, terangkan dengan teori kinetik.',
+      'Reka bentuk 10 markah: kelalang termos, beg makanan, tabung nasi, pengukus, seterika wap, peti sejuk.'
+    ],
+    ciri: [
+      ['Simpan panas (termos, beg makanan)', 'Lapisan vakum / udara', 'Halang konduksi dan perolakan'],
+      ['Simpan panas', 'Permukaan dalam berkilat', 'Pantulkan sinaran haba, kurang kehilangan'],
+      ['Simpan panas', 'Penutup penebat (gabus/plastik), ketat', 'Kurangkan kehilangan haba'],
+      ['Periuk / kuali', 'Badan logam, $c$ rendah', 'Cepat panas'],
+      ['Periuk / kuali', 'Pemegang plastik/kayu, $c$ tinggi & penebat', 'Lambat panas, selamat dipegang'],
+      ['Agen penyejuk', 'Air / cecair dengan $c$ tinggi', 'Serap banyak haba dengan kenaikan suhu kecil'],
+      ['Pengukus / seterika wap', 'Stim', 'Bebaskan haba pendam pengewapan yang besar semasa terkondensasi'],
+      ['Termometer peka', 'Dinding bebuli nipis, tiub rerambut sempit', 'Haba cepat dipindah; perubahan panjang turus ketara']
+    ]
+  },
+  reka: {
+    s: 'Pilih **kelalang termos** yang paling sesuai untuk mengekalkan kopi panas dalam masa yang lama.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Ruang antara dua dinding', v: ['Udara', 'Vakum', 'Vakum', 'Vakum'], ok: 'Vakum', sebab: 'Tiada medium, jadi tiada konduksi dan perolakan haba.' },
+      { a: 'Permukaan dinding dalam', v: ['Berkilat', 'Gelap', 'Berkilat', 'Berkilat'], ok: 'Berkilat', sebab: 'Memantulkan sinaran haba kembali ke dalam kopi.' },
+      { a: 'Bahan penutup', v: ['Gabus (penebat)', 'Gabus (penebat)', 'Gabus (penebat)', 'Logam'], ok: 'Gabus (penebat)', sebab: 'Konduktor haba yang lemah, kurangkan kehilangan haba melalui konduksi.' },
+      { a: 'Bahan bekas dalam', v: ['Kaca', 'Kaca', 'Kaca', 'Aluminium'], ok: 'Kaca', sebab: 'Konduktor haba yang lemah dan tidak bertindak balas dengan minuman.' }
+    ],
+    jawapan: 2
+  },
+  kuizTambah: [
+    { q: 'Mengapakah tuala kertas basah yang dibalut pada tin minuman dapat menyejukkan minuman pada hari panas?', o: ['Air pada tuala menyerap haba pendam pengewapan daripada tin semasa menyejat', 'Tuala kertas ialah penebat haba', 'Air mempunyai muatan haba tentu yang rendah', 'Tuala memantulkan sinaran Matahari'], a: 0, e: 'Penyejatan memerlukan haba pendam. Haba itu diambil daripada tin, jadi suhu minuman turun.' },
+    { q: 'Sebatang termometer dimasukkan ke dalam mulut pesakit. Bacaan termometer boleh diambil apabila', o: ['termometer mula menyerap haba', 'kadar pemindahan haba bersih antara badan dan termometer menjadi sifar', 'merkuri berhenti mengembang sebaik sahaja dimasukkan', 'suhu termometer melebihi suhu badan'], a: 1, e: 'Apabila keseimbangan terma tercapai, suhu termometer sama dengan suhu badan dan kadar pemindahan haba bersih sifar.' },
+    { q: 'Pada lengkung pemanasan, bahagian mana yang digunakan untuk menghitung haba pendam tentu?', o: ['Bahagian condong ke atas', 'Bahagian mengufuk', 'Titik permulaan', 'Bahagian terakhir sahaja'], a: 1, e: 'Bahagian mengufuk menunjukkan perubahan fasa pada suhu tetap. Gunakan $Pt = ml$.' }
+  ]
+});
+
+SPM('t4-b5', {
+  sub: [
+    { n: '5.1', t: 'Asas Gelombang', ingat: '$v = fλ$. Frekuensi ditentukan oleh SUMBER.', isi: [
+      '!Gelombang memindahkan **tenaga** tanpa memindahkan jirim.',
+      '!**Melintang**: zarah bergetar **serenjang** dengan arah perambatan (air, cahaya). **Membujur**: zarah bergetar **selari** dengan arah perambatan, ada mampatan & regangan (bunyi).',
+      '!Amplitud $A$ (sesaran maksimum), tempoh $T$, frekuensi $f = {1}/{T}$, panjang gelombang $λ$. **$v = fλ$**.',
+      'Graf sesaran–masa → $A$ dan $T$. Graf sesaran–jarak → $A$ dan $λ$.'
+    ] },
+    { n: '5.2', t: 'Pelembapan dan Resonans', ingat: 'Pelembapan: amplitud berkurang, frekuensi tetap.', isi: [
+      '!**Pelembapan**: amplitud ayunan berkurang kerana tenaga hilang (rintangan udara, geseran). Frekuensi tidak berubah.',
+      'Untuk terus berayun: kenakan **daya luar berkala** pada frekuensi asli sistem.',
+      '!**Resonans**: sistem dipaksa berayun pada **frekuensi aslinya** → amplitud maksimum. Contoh: bandul Barton (bandul sama panjang dengan bandul pemacu berayun paling kuat), penalaan radio, jambatan Tacoma.'
+    ] },
+    { n: '5.3–5.4', t: 'Pantulan dan Pembiasan', ingat: 'Dalam → cetek: v ↓, λ ↓, f tetap, dibiaskan mendekati normal.', isi: [
+      'Pantulan: sudut tuju = sudut pantulan; $f$, $λ$, $v$ tidak berubah. Aplikasi: sonar, ultrabunyi, radar.',
+      '!**Pembiasan**: perubahan arah gelombang kerana **laju berubah** apabila kedalaman berubah.',
+      '!Air dalam → cetek: **laju berkurang, panjang gelombang berkurang, frekuensi tetap**, dibiaskan **mendekati garis normal**.',
+      '!Hubungan: kedalaman ↑ → $λ$ ↑ → $v$ ↑. Kira dengan ${v_1}/{λ_1} = {v_2}/{λ_2}$ (kerana $f$ sama).',
+      'Fenomena: ombak di pantai sentiasa selari dengan pantai; bunyi lebih jelas pada waktu malam.'
+    ] },
+    { n: '5.5', t: 'Pembelauan', ingat: 'Celah kecil (≈ λ) → pembelauan lebih ketara.', isi: [
+      '!**Pembelauan**: gelombang menyebar apabila melalui celah atau tepi penghalang.',
+      '!$f$, $λ$, $v$ tidak berubah; **amplitud berkurang** kerana tenaga tersebar.',
+      '!Lebih ketara apabila **saiz celah kecil** atau **panjang gelombang besar**. Bunyi (λ besar) terbelau lebih ketara → boleh didengar di sebalik dinding.'
+    ] },
+    { n: '5.6', t: 'Interferens', ingat: '$λ = {ax}/{D}$ — tukar mm ke m.', isi: [
+      '!**Prinsip superposisi**: sesaran paduan = hasil tambah sesaran gelombang individu.',
+      'Sumber **koheren**: frekuensi sama, beza fasa tetap.',
+      '!**Membina** (puncak + puncak) → antinod, bunyi kuat / pinggir cerah. **Memusnah** (puncak + lembangan) → nod, bunyi lemah / pinggir gelap.',
+      '!$λ = {ax}/{D}$: $a$ jarak antara sumber, $x$ jarak antara dua antinod berturutan, $D$ jarak sumber ke skrin.'
+    ] },
+    { n: '5.7', t: 'Gelombang Elektromagnet', isi: [
+      '!Gelombang melintang, tidak perlu medium, laju $3.0 × 10^8 "m s"^{-1}$ dalam vakum.',
+      '!Tertib (frekuensi naik): radio → mikro → inframerah → cahaya nampak → ultraungu → sinar-X → gama.',
+      '!Aplikasi kerap ditanya: gelombang mikro (satelit, komunikasi, ketuhar), inframerah (alat kawalan jauh, kamera terma), ultraungu (pensterilan), sinar-X (imej tulang), gama (rawatan kanser).'
+    ] }
+  ],
+  contoh: [
+    { t: 'Pembiasan gelombang air', q: 'Gelombang air di kawasan cetek: $λ = 2 "cm"$, $v = 6 "cm s"^{-1}$. Di kawasan dalam, lajunya $9 "cm s"^{-1}$. Hitung panjang gelombang di kawasan dalam.', l: [
+      'Frekuensi tidak berubah: $f = {v}/{λ} = {6}/{2} = 3 "Hz"$.',
+      'Di kawasan dalam: $λ = {v}/{f} = {9}/{3}$.'
+    ], j: '$λ = 3 "cm"$' },
+    { t: 'Interferens (dwicelah Young)', q: 'Jarak antara dua celah $a = 0.4 "mm"$, skrin pada $D = 2.0 "m"$, jarak antara pinggir cerah berturutan $x = 3.0 "mm"$. Hitung panjang gelombang cahaya.', l: [
+      'Tukar unit: $a = 0.4 × 10^{-3} "m"$, $x = 3.0 × 10^{-3} "m"$.',
+      '$λ = {ax}/{D} = {(0.4 × 10^{-3})(3.0 × 10^{-3})}/{2.0}$.'
+    ], j: '$λ = 6.0 × 10^{-7} "m"$ (600 nm)' }
+  ],
+  fokus: {
+    topik: [['Pembiasan gelombang air (dalam ↔ cetek)', 3], ['Gelombang elektromagnet & aplikasi', 3], ['Pembelauan & saiz celah', 2], ['Pelembapan & resonans', 2], ['Interferens $λ = {ax}/{D}$', 2], ['Reka bentuk: antena / sistem pemancar isyarat', 2]],
+    takrif: [
+      ['Gelombang melintang', 'Gelombang yang zarah mediumnya bergetar serenjang dengan arah perambatan gelombang.'],
+      ['Gelombang membujur', 'Gelombang yang zarah mediumnya bergetar selari dengan arah perambatan gelombang.'],
+      ['Frekuensi', 'Bilangan ayunan lengkap dalam satu saat.'],
+      ['Pelembapan', 'Pengurangan amplitud sistem ayunan akibat kehilangan tenaga.'],
+      ['Resonans', 'Keadaan sistem dipaksa berayun pada frekuensi aslinya oleh daya luar berkala, menyebabkan amplitud maksimum.'],
+      ['Pembiasan gelombang', 'Perubahan arah perambatan gelombang akibat perubahan laju gelombang apabila merambat dari satu medium ke medium lain.'],
+      ['Pembelauan gelombang', 'Penyebaran gelombang apabila merambat melalui celah atau tepi penghalang.'],
+      ['Prinsip superposisi', 'Sesaran paduan apabila dua gelombang bertindih ialah hasil tambah sesaran setiap gelombang.']
+    ],
+    corak: [
+      'Rajah tangki riak dalam → cetek → bandingkan kedalaman, λ, laju → hubung kait → lukis garis normal & arah gelombang.',
+      'Nyatakan kuantiti yang malar semasa pembiasan (frekuensi).',
+      'Rajah dua celah berlainan saiz → bandingkan corak pembelauan → hubungan saiz celah dengan pembelauan.',
+      'Bandul Barton → namakan resonans, bandul mana berayun dengan amplitud maksimum, terangkan.',
+      'Ultrasonik untuk mengukur kedalaman laut → kira jarak ($s = {vt}/{2}$) atau panjang gelombang.',
+      'Reka bentuk: antena satelit / pemancar isyarat (jenis gelombang, ketinggian, diameter piring).'
+    ],
+    ciri: [
+      ['Komunikasi satelit', 'Gelombang mikro', 'Frekuensi tinggi, tenaga tinggi, boleh menembusi atmosfera'],
+      ['Antena / pemancar', 'Diletakkan tinggi, kawasan lapang', 'Tiada halangan, kurang pantulan dan pembelauan'],
+      ['Piring penerima', 'Diameter besar, berbentuk parabola', 'Terima dan fokuskan lebih banyak isyarat'],
+      ['Mengukur kedalaman laut', 'Ultrasonik', 'Frekuensi tinggi, kurang pembelauan, tenaga tinggi'],
+      ['Pelabuhan tenang', 'Benteng dengan celah sempit', 'Pembelauan → amplitud ombak berkurang']
+    ]
+  },
+  reka: {
+    s: 'Pilih **sistem pemancar isyarat** yang paling sesuai untuk meningkatkan liputan internet satelit di kawasan pedalaman.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Jenis gelombang', v: ['Gelombang mikro', 'Gelombang radio frekuensi rendah', 'Gelombang mikro', 'Gelombang mikro'], ok: 'Gelombang mikro', sebab: 'Frekuensi tinggi, tenaga tinggi dan boleh menembusi atmosfera ke satelit.' },
+      { a: 'Ketinggian antena', v: ['Tinggi', 'Tinggi', 'Rendah', 'Tinggi'], ok: 'Tinggi', sebab: 'Tiada halangan; isyarat tidak dipantul atau dibelau oleh bangunan dan pokok.' },
+      { a: 'Diameter piring', v: ['Besar', 'Besar', 'Besar', 'Kecil'], ok: 'Besar', sebab: 'Menerima lebih banyak isyarat dan memfokuskannya ke penerima.' },
+      { a: 'Bentuk piring', v: ['Parabola', 'Parabola', 'Parabola', 'Parabola'], ok: 'Parabola', sebab: 'Memantulkan isyarat ke titik fokus.' }
+    ],
+    jawapan: 0
+  },
+  kuizTambah: [
+    { q: 'Gelombang air merambat dari kawasan cetek ke kawasan dalam. Apakah yang berlaku?', o: ['Laju bertambah, panjang gelombang bertambah', 'Laju berkurang, panjang gelombang berkurang', 'Frekuensi bertambah', 'Laju bertambah, frekuensi berkurang'], a: 0, e: 'Kawasan dalam: laju dan panjang gelombang bertambah, frekuensi kekal, gelombang dibiaskan menjauhi normal.' },
+    { q: 'Dalam bandul Barton, bandul manakah berayun dengan amplitud paling besar?', o: ['Bandul paling pendek', 'Bandul paling panjang', 'Bandul yang sama panjang dengan bandul pemacu', 'Semua berayun dengan amplitud sama'], a: 2, e: 'Bandul yang sama panjang mempunyai frekuensi asli yang sama dengan bandul pemacu, maka berlaku resonans.' },
+    { q: 'Mengapakah bunyi dapat didengar di sebalik dinding tetapi cahaya tidak?', o: ['Bunyi lebih laju daripada cahaya', 'Panjang gelombang bunyi lebih besar, jadi pembelauan lebih ketara', 'Cahaya tidak boleh dipantulkan', 'Bunyi ialah gelombang melintang'], a: 1, e: 'Pembelauan lebih ketara apabila panjang gelombang hampir sama dengan saiz bukaan atau penghalang.' }
+  ]
+});
+
+SPM('t4-b6', {
+  sub: [
+    { n: '6.1', t: 'Pembiasan Cahaya', ingat: 'Masuk medium lebih tumpat → mendekati normal.', isi: [
+      '!Cahaya dibiaskan kerana **laju cahaya berubah** apabila melalui medium berlainan ketumpatan optik.',
+      '!Udara → air/kaca: dibiaskan **mendekati** normal. Air/kaca → udara: **menjauhi** normal.',
+      '!Indeks biasan: $n = {sin i}/{sin r}$ dan $n = {c}/{v}$.',
+      '!**Dalam ketara**: objek dalam air (ikan, syiling, rod bengkok) kelihatan lebih cetek. $n = {"dalam nyata"}/{"dalam ketara"}$. Untuk menombak ikan, bidik **lebih ke bawah** daripada imej.'
+    ] },
+    { n: '6.2', t: 'Pantulan Dalam Penuh', ingat: 'Dua syarat: lebih tumpat → kurang tumpat, dan i > c.', isi: [
+      '!**Sudut genting** $c$: sudut tuju dalam medium lebih tumpat apabila sudut biasan = 90°. $n = {1}/{sin c}$.',
+      '!Syarat pantulan dalam penuh: (1) cahaya dari medium **lebih tumpat ke kurang tumpat**; (2) **sudut tuju > sudut genting**.',
+      'Contoh: logamaya, kilauan berlian, gentian optik (teras $n$ tinggi, penyalut $n$ rendah), periskop prisma.'
+    ] },
+    { n: '6.3–6.4', t: 'Kanta dan Formula Kanta Nipis', ingat: 'Kanta cembung: “RID / RIS / RIM / VUM” mengikut kedudukan objek.', isi: [
+      '!**Panjang fokus** $f$: jarak di antara pusat optik dengan titik fokus.',
+      '!Kanta lebih tebal / jejari kelengkungan lebih kecil → **panjang fokus lebih pendek** → lebih kuat menumpu.',
+      '!Ciri imej kanta cembung: $u > 2f$ nyata, songsang, dikecilkan (**RID**); $u = 2f$ sama saiz (**RIS**); $f < u < 2f$ diperbesar (**RIM**); $u < f$ maya, tegak, diperbesar (**VUM**, kanta pembesar).',
+      '!Kanta cekung: sentiasa **maya, tegak, dikecilkan**.',
+      '!${1}/{f} = {1}/{u} + {1}/{v}$. Tanda: kanta cekung $f$ negatif; imej maya $v$ negatif. Pembesaran $m = {v}/{u}$.',
+      'Kuasa kanta $P = {1}/{f}$ ($f$ dalam meter, unit diopter, D).'
+    ] },
+    { n: '6.5', t: 'Peralatan Optik', isi: [
+      '!**Kanta pembesar**: kanta cembung, objek di antara F dan kanta. Panjang fokus pendek → pembesaran tinggi.',
+      '!**Teleskop astronomi**: kanta objek $f_o$ panjang, kanta mata $f_m$ pendek; jarak kanta $= f_o + f_m$; pembesaran $M = {f_o}/{f_m}$. Diameter kanta objek besar → imej lebih terang.',
+      '**Mikroskop majmuk**: dua kanta cembung berpanjang fokus pendek, $f_o < f_m$.',
+      'Kamera CCTV di ruang sempit: kanta berpanjang fokus pendek (sudut pandangan luas).'
+    ] },
+    { n: '6.6', t: 'Cermin Sfera', ingat: 'Cermin cembung = maya, tegak, kecil, pandangan luas.', isi: [
+      '!**Cermin cekung**: menumpukan cahaya. Mentol di F → pancaran cahaya selari (lampu suluh, lampu kereta, dapur solar).',
+      '!**Cermin cembung**: imej maya, tegak, dikecilkan; **medan penglihatan luas** → cermin selekoh, cermin sisi kereta, cermin keselamatan kedai.',
+      'Jejari kelengkungan $r = 2f$.'
+    ] }
+  ],
+  contoh: [
+    { t: 'Formula kanta nipis (kanta cekung)', q: 'Objek diletakkan 30 cm dari kanta cekung berpanjang fokus 15 cm. Tentukan kedudukan dan ciri imej.', l: [
+      'Kanta cekung: $f = −15 "cm"$, $u = 30 "cm"$.',
+      '${1}/{v} = {1}/{f} − {1}/{u} = −{1}/{15} − {1}/{30} = −{3}/{30}$.',
+      '$v = −10 "cm"$ (negatif → maya, sebelah objek).',
+      'Pembesaran $m = {10}/{30} = 0.33$.'
+    ], j: 'Imej 10 cm dari kanta, sebelah objek; maya, tegak, dikecilkan.' },
+    { t: 'Indeks biasan', q: 'Cahaya memasuki kaca ($n = 1.50$) dengan sudut tuju 30°. Hitung sudut biasan dan sudut genting kaca.', l: [
+      '$sin r = {sin 30°}/{1.50} = {0.5}/{1.50} = 0.333$ → $r = 19.5°$.',
+      '$sin c = {1}/{1.50} = 0.667$ → $c = 41.8°$.'
+    ], j: '$r = 19.5°$, $c = 41.8°$' }
+  ],
+  fokus: {
+    topik: [['Pembiasan cahaya: dalam ketara, menombak ikan', 3], ['Takrif panjang fokus', 3], ['Kanta: rajah sinar & ciri imej', 3], ['Cermin cekung & cembung (aplikasi)', 2], ['Peralatan optik: kanta pembesar, teleskop, CCTV', 2], ['Formula kanta & pembesaran', 2]],
+    takrif: [
+      ['Pembiasan cahaya', 'Perubahan arah perambatan cahaya akibat perubahan laju cahaya apabila merambat melalui medium berlainan ketumpatan optik.'],
+      ['Indeks biasan', 'Nisbah laju cahaya dalam vakum kepada laju cahaya dalam medium.'],
+      ['Sudut genting', 'Sudut tuju dalam medium lebih tumpat apabila sudut biasan dalam medium kurang tumpat ialah 90°.'],
+      ['Pantulan dalam penuh', 'Pantulan semua cahaya ke dalam medium lebih tumpat apabila sudut tuju melebihi sudut genting.'],
+      ['Panjang fokus', 'Jarak di antara pusat optik dengan titik fokus kanta (atau cermin).'],
+      ['Pembesaran linear', 'Nisbah ketinggian imej kepada ketinggian objek, $m = {v}/{u}$.']
+    ],
+    corak: [
+      'Rod kelihatan bengkok / lelaki menombak ikan → namakan pembiasan, terangkan, lukis sinar, cadang cara membidik.',
+      'Nyatakan maksud panjang fokus (sangat kerap, 1 markah).',
+      'Dua kanta berlainan ketebalan → bandingkan jejari kelengkungan, ketebalan, panjang fokus → hubung kait.',
+      'Lengkapkan rajah sinar dan nyatakan ciri imej.',
+      'Lampu suluh / dapur solar → jenis cermin, kedudukan mentol/periuk di titik fokus.',
+      'Reka bentuk: kanta pembesar, teleskop astronomi, kanta CCTV.'
+    ],
+    ciri: [
+      ['Kanta pembesar', 'Kanta cembung, panjang fokus pendek', 'Pembesaran tinggi'],
+      ['Kanta pembesar', 'Diameter besar', 'Medan penglihatan luas'],
+      ['Teleskop astronomi', 'Kanta objek $f_o$ panjang, kanta mata $f_m$ pendek', 'Pembesaran $M = {f_o}/{f_m}$ besar'],
+      ['Teleskop astronomi', 'Diameter kanta objek besar', 'Kumpul lebih banyak cahaya, imej terang'],
+      ['Teleskop astronomi', 'Jarak antara kanta $= f_o + f_m$', 'Pelarasan normal, imej akhir di infiniti'],
+      ['Lampu suluh / dapur solar', 'Cermin cekung, mentol/periuk di titik fokus', 'Cahaya dipantul selari / tertumpu'],
+      ['Cermin selekoh', 'Cermin cembung', 'Medan penglihatan luas'],
+      ['Gentian optik', 'Teras indeks biasan tinggi, penyalut rendah', 'Pantulan dalam penuh berlaku']
+    ]
+  },
+  reka: {
+    s: 'Pilih reka bentuk **teleskop astronomi** yang menghasilkan imej yang besar dan terang.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Panjang fokus kanta objek', v: ['Panjang (100 cm)', 'Panjang (100 cm)', 'Pendek (5 cm)', 'Panjang (100 cm)'], ok: 'Panjang (100 cm)', sebab: 'Pembesaran $M = {f_o}/{f_m}$ besar.' },
+      { a: 'Panjang fokus kanta mata', v: ['Pendek (5 cm)', 'Panjang (50 cm)', 'Pendek (5 cm)', 'Pendek (5 cm)'], ok: 'Pendek (5 cm)', sebab: 'Pembesaran besar.' },
+      { a: 'Diameter kanta objek', v: ['Besar', 'Besar', 'Besar', 'Kecil'], ok: 'Besar', sebab: 'Lebih banyak cahaya dikumpul, imej lebih terang.' },
+      { a: 'Jarak antara dua kanta', v: ['$f_o + f_m$', '$f_o + f_m$', '$f_o + f_m$', '$f_o − f_m$'], ok: '$f_o + f_m$', sebab: 'Pelarasan normal; imej akhir di infiniti.' }
+    ],
+    jawapan: 0
+  },
+  kuizTambah: [
+    { q: 'Seorang lelaki ingin menombak ikan di dalam sungai. Ke manakah dia patut membidik?', o: ['Tepat pada imej ikan yang dilihat', 'Lebih ke bawah daripada imej ikan', 'Lebih ke atas daripada imej ikan', 'Ke sebelah kiri imej ikan'], a: 1, e: 'Akibat pembiasan, imej ikan kelihatan lebih cetek daripada kedudukan sebenar. Ikan sebenar berada di bawah imej.' },
+    { q: 'Kanta cembung yang lebih tebal mempunyai', o: ['panjang fokus lebih panjang', 'panjang fokus lebih pendek', 'panjang fokus sama', 'tiada titik fokus'], a: 1, e: 'Kanta tebal mempunyai jejari kelengkungan lebih kecil dan lebih kuat membiaskan cahaya, jadi panjang fokusnya lebih pendek.' },
+    { q: 'Mengapakah mentol lampu suluh diletakkan di titik fokus cermin cekung?', o: ['Supaya imej diperbesar', 'Supaya cahaya dipantulkan sebagai alur selari', 'Supaya cahaya tertumpu pada satu titik', 'Supaya imej maya terbentuk'], a: 1, e: 'Sinar dari titik fokus dipantulkan selari dengan paksi utama, menghasilkan alur cahaya yang kuat dan jauh.' }
+  ]
+});
+
+'use strict';
+/* ===== Kandungan fokus SPM Tingkatan 5 (format sama seperti spm-t4.js) ===== */
+
+SPM('t5-b1', {
+  sub: [
+    { n: '1.1', t: 'Daya Paduan', ingat: 'Daya paduan sifar → pegun ATAU halaju seragam.', isi: [
+      '!**Daya paduan**: daya tunggal yang mewakili hasil tambah vektor dua atau lebih daya.',
+      'Searah: tambah. Bertentangan: tolak. Berserenjang: $F = sqrt{F_1^2 + F_2^2}$. Sudut lain: lukisan berskala (segi empat selari / segi tiga daya).',
+      '!Daya paduan = 0 → objek pegun atau bergerak dengan **halaju seragam**. Daya paduan ≠ 0 → memecut, $F = ma$.',
+      'Daya paduan = daya tarikan − daya geseran. Geseran bertambah → daya paduan berkurang → pecutan berkurang.',
+      '!Lif: bacaan penimbang $R$. Pegun/halaju seragam: $R = mg$. Memecut ke atas: $R = mg + ma$. Memecut ke bawah: $R = mg − ma$.'
+    ] },
+    { n: '1.2', t: 'Leraian Daya', ingat: 'Komponen bersebelahan sudut guna kos; bertentangan sudut guna sin.', isi: [
+      '!**Leraian daya**: meleraikan satu daya kepada dua komponen berserenjang.',
+      '!$F_x = F kos θ$ (mengufuk), $F_y = F sin θ$ (menegak), dengan $θ$ diukur dari garis ufuk.',
+      '!Mesin rumput: komponen mengufuk menggerakkan ke hadapan; komponen menegak menekan ke bawah. Pemegang lebih condong (sudut kecil) → daya ke hadapan lebih besar.',
+      'Satah condong: $W sin θ$ selari dengan satah (menarik ke bawah), $W kos θ$ serenjang dengan satah.'
+    ] },
+    { n: '1.3', t: 'Keseimbangan Daya', isi: [
+      '!**Keseimbangan daya**: daya paduan yang bertindak ke atas objek ialah sifar.',
+      '!Tiga daya dalam keseimbangan membentuk **segi tiga daya tertutup** (lukis hujung ke pangkal).',
+      '!Objek tergantung pada dua tali: $2T kos θ = W$ ($θ$ dari garis tegak). Sudut tali dengan garis tegak bertambah → **tegangan bertambah** → tali mudah putus.'
+    ] },
+    { n: '1.4', t: 'Kekenyalan', ingat: 'k besar = spring keras = pemanjangan kecil.', isi: [
+      '!**Kekenyalan**: sifat bahan untuk kembali ke bentuk dan saiz asal selepas daya dialihkan.',
+      '!**Hukum Hooke**: pemanjangan spring berkadar terus dengan daya, jika tidak melebihi had kenyal. $F = kx$.',
+      '!Pemalar spring $k$ = kecerunan graf $F$–$x$. “$k = 20 "N cm"^{-1}$” bermaksud daya 20 N menghasilkan pemanjangan 1 cm.',
+      '!Tenaga keupayaan kenyal = luas di bawah graf $F$–$x$: $E_P = {1}/{2}Fx = {1}/{2}kx^2$.',
+      '!Faktor $k$: dawai lebih **tebal**, diameter gegelung lebih **kecil**, spring lebih **pendek**, bahan lebih keras → $k$ lebih besar.',
+      '!Susunan **selari**: beban dikongsi → pemanjangan kecil → sistem lebih keras. **Sesiri**: pemanjangan bertambah → sistem lebih lembut.'
+    ] }
+  ],
+  contoh: [
+    { t: 'Tegangan tali (keseimbangan daya)', q: 'Papan kenyataan 20 kg tergantung pada dua kabel serupa, setiap kabel membuat sudut 30° dengan garis tegak. Hitung tegangan setiap kabel.', l: [
+      'Berat: $W = mg = 20 × 9.81 = 196.2 "N"$.',
+      'Komponen menegak dua tegangan mengimbangi berat: $2T kos 30° = 196.2$.',
+      '$T = {196.2}/{2 × 0.866}$.'
+    ], j: '$T = 113 "N"$' },
+    { t: 'Pemalar spring', q: 'Panjang asal spring ialah 8 cm. Apabila beban 10 N digantung, panjangnya menjadi 12 cm. Hitung pemalar spring dan tenaga keupayaan kenyal.', l: [
+      'Pemanjangan: $x = 12 − 8 = 4 "cm" = 0.04 "m"$.',
+      '$k = {F}/{x} = {10}/{4} = 2.5 "N cm"^{-1}$ (= $250 "N m"^{-1}$).',
+      '$E_P = {1}/{2}Fx = {1}/{2}(10)(0.04)$.'
+    ], j: '$k = 2.5 "N cm"^{-1}$, $E_P = 0.2 "J"$' }
+  ],
+  fokus: {
+    topik: [['Kekenyalan & Hukum Hooke (bandingkan spring)', 3], ['Keseimbangan daya & segi tiga daya (tegangan tali)', 3], ['Leraian daya (mesin rumput)', 2], ['Daya paduan & geseran', 2], ['Tenaga keupayaan kenyal', 2]],
+    takrif: [
+      ['Daya paduan', 'Daya tunggal yang mewakili jumlah secara vektor dua atau lebih daya yang bertindak ke atas objek.'],
+      ['Leraian daya', 'Proses meleraikan satu daya kepada dua komponen yang berserenjang.'],
+      ['Keseimbangan daya', 'Keadaan apabila daya-daya yang bertindak ke atas objek menghasilkan daya paduan sifar.'],
+      ['Kekenyalan', 'Sifat bahan yang membolehkan objek kembali kepada bentuk dan saiz asal selepas daya yang dikenakan dialihkan.'],
+      ['Hukum Hooke', 'Pemanjangan spring berkadar terus dengan daya yang dikenakan jika had kenyal tidak dilebihi.'],
+      ['Pemalar spring', 'Daya yang diperlukan untuk menghasilkan seunit pemanjangan spring ($k = {F}/{x}$).']
+    ],
+    corak: [
+      'Dua spring berlainan diameter/ketebalan → bandingkan pemanjangan, pemalar spring → nyatakan hubungan & Hukum Hooke.',
+      'Bilangan spring disusun selari → bandingkan mampatan → hubung kait dengan pemalar spring sistem.',
+      'Bingkai gambar / papan tanda pada dua tali → bandingkan sudut & tegangan; hitung tegangan.',
+      'Lukis segi tiga daya bagi objek dalam keseimbangan (durian, kereta di cerun).',
+      'Mesin rumput → takrif leraian daya, hitung $F_x$, kaedah paling berkesan (menolak dengan sudut kecil).'
+    ],
+    ciri: [
+      ['Spring menanggung beban berat', 'Dawai tebal, diameter gegelung kecil', 'Pemalar spring tinggi, tidak melebihi had kenyal'],
+      ['Spring menanggung beban berat', 'Susunan selari', 'Beban dikongsi, sistem lebih keras'],
+      ['Spring', 'Bahan keluli', 'Kuat, kenyal, tahan lama'],
+      ['Gantung objek pada dua tali', 'Sudut kecil antara tali dengan garis tegak', 'Tegangan tali lebih kecil, tidak mudah putus'],
+      ['Mesin rumput', 'Tolak dengan pemegang bersudut kecil dengan ufuk', 'Komponen mengufuk lebih besar'],
+      ['Basikal / kereta laju', 'Bahan kerangka berketumpatan rendah dan kuat', 'Jisim kecil → pecutan besar']
+    ]
+  },
+  reka: {
+    s: 'Pilih sistem spring yang paling sesuai untuk **penyerap hentak lori** yang membawa muatan berat.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Ketebalan dawai spring', v: ['Nipis', 'Tebal', 'Tebal', 'Tebal'], ok: 'Tebal', sebab: 'Pemalar spring tinggi, tahan beban berat.' },
+      { a: 'Diameter gegelung', v: ['Kecil', 'Kecil', 'Besar', 'Kecil'], ok: 'Kecil', sebab: 'Spring lebih keras (pemalar spring tinggi).' },
+      { a: 'Susunan spring', v: ['Selari', 'Selari', 'Selari', 'Sesiri'], ok: 'Selari', sebab: 'Beban dikongsi; pemanjangan setiap spring kecil, tidak melebihi had kenyal.' },
+      { a: 'Bahan spring', v: ['Keluli', 'Keluli', 'Keluli', 'Keluli'], ok: 'Keluli', sebab: 'Kuat, kenyal dan tahan lama.' }
+    ],
+    jawapan: 1
+  },
+  kuizTambah: [
+    { q: 'Sebuah bingkai gambar digantung dengan dua tali. Apabila sudut antara setiap tali dengan garis tegak ditambah, tegangan tali', o: ['berkurang', 'bertambah', 'tidak berubah', 'menjadi sifar'], a: 1, e: '$2T kos θ = W$. Apabila $θ$ bertambah, $kos θ$ berkurang, maka $T$ mesti bertambah.' },
+    { q: 'Maksud pemalar spring $20 "N cm"^{-1}$ ialah', o: ['spring memanjang 20 cm apabila daya 1 N dikenakan', 'daya 20 N menghasilkan pemanjangan 1 cm', 'spring boleh menanggung 20 N sahaja', 'tenaga keupayaan kenyal ialah 20 J'], a: 1, e: '$k = {F}/{x}$: 20 N diperlukan untuk setiap 1 cm pemanjangan.' },
+    { q: 'Sebuah lif bergerak ke bawah dengan pecutan. Bacaan penimbang di dalam lif berbanding berat sebenar murid ialah', o: ['lebih besar', 'lebih kecil', 'sama', 'sifar'], a: 1, e: '$R = mg − ma$, jadi bacaan penimbang lebih kecil daripada berat sebenar.' }
+  ]
+});
+
+SPM('t5-b2', {
+  sub: [
+    { n: '2.1', t: 'Tekanan Cecair', ingat: 'P = hρg — bukan bergantung pada bentuk bekas.', isi: [
+      '!**Tekanan** = daya per unit luas: $P = {F}/{A}$.',
+      '!Tekanan cecair $P = hρg$: bertambah dengan **kedalaman** dan **ketumpatan**. Tidak bergantung pada bentuk bekas atau luas.',
+      'Titik pada aras yang sama dalam cecair pegun → tekanan sama.',
+      'Aplikasi: empangan lebih tebal di dasar; tangki air di tempat tinggi; kapal selam perlu dinding kuat.'
+    ] },
+    { n: '2.2–2.3', t: 'Tekanan Atmosfera dan Tekanan Gas', ingat: '1 atm = 76 cm Hg = 10 m air ≈ $1.01 × 10^5$ Pa.', isi: [
+      '!**Tekanan atmosfera**: tekanan akibat berat lapisan udara di atas permukaan Bumi.',
+      '!Barometer merkuri: tinggi turus merkuri = tekanan atmosfera (76 cm Hg di aras laut). Merkuri digunakan kerana **sangat tumpat** (tiub pendek) dan kadar penyejatan rendah.',
+      '!Di puncak gunung: tekanan atmosfera berkurang → turus merkuri lebih rendah (udara lebih nipis).',
+      '!**Manometer**: $P_"gas" = P_"atm" + h$ (jika aras di lengan terbuka lebih tinggi). Air berwarna diganti merkuri → $h$ lebih kecil (merkuri lebih tumpat).',
+      'Tukar cm Hg ke Pa: $P = hρg$ dengan $ρ = 13 600 "kg m"^{-3}$.'
+    ] },
+    { n: '2.4', t: 'Prinsip Pascal', ingat: '${F_1}/{A_1} = {F_2}/{A_2}$; faktor penggandaan $= {A_2}/{A_1}$.', isi: [
+      '!**Prinsip Pascal**: tekanan yang dikenakan ke atas bendalir tertutup dipindahkan secara **seragam ke semua arah**.',
+      '!Jek/brek hidraulik: daya kecil pada omboh kecil → tekanan sama dipindahkan → daya besar pada omboh besar. ${F_1}/{A_1} = {F_2}/{A_2}$.',
+      '!Faktor penggandaan $= {A_2}/{A_1}$. Isi padu sama: $A_1d_1 = A_2d_2$ (omboh besar bergerak sedikit).',
+      '!Ciri bendalir hidraulik: **minyak** (tidak boleh dimampat, takat didih tinggi, tidak menghakis, melincir). **Tiada gelembung udara** (udara boleh dimampat).'
+    ] },
+    { n: '2.5', t: 'Prinsip Archimedes', ingat: 'Daya apungan = berat bendalir yang disesarkan.', isi: [
+      '!**Prinsip Archimedes**: objek yang direndam sebahagian atau sepenuhnya mengalami **daya apungan** sama dengan **berat bendalir yang disesarkan**. $F_B = ρVg$.',
+      '!Terapung pegun: berat objek = daya apungan. Daya apungan > berat → naik; < berat → tenggelam.',
+      '!Kapal selam: tangki balast diisi air → berat bertambah → tenggelam; air dipam keluar (udara masuk) → berat berkurang → timbul.',
+      'Belon udara panas: udara panas kurang tumpat → daya apungan > berat → naik. Hidrometer: tenggelam lebih dalam dalam cecair kurang tumpat.'
+    ] },
+    { n: '2.6', t: 'Prinsip Bernoulli', ingat: 'Halaju tinggi → tekanan rendah.', isi: [
+      '!**Prinsip Bernoulli**: apabila halaju bendalir bertambah, tekanannya berkurang.',
+      '!Aerofoil: udara di atas sayap lebih laju (tekanan rendah), di bawah lebih perlahan (tekanan tinggi) → perbezaan tekanan menghasilkan **daya angkat**.',
+      'Aplikasi: nebulizer / penyembur (udara laju di hujung tiub → tekanan rendah → cecair disedut naik), penunu Bunsen, spoiler kereta lumba (daya ke bawah).'
+    ] }
+  ],
+  contoh: [
+    { t: 'Jek hidraulik', q: 'Luas omboh X = $0.004 "m"^2$, omboh Y = $0.2 "m"^2$. Daya 60 N dikenakan pada X. Hitung (a) jisim beban yang boleh diangkat, (b) jarak Y bergerak jika X ditolak 0.5 m.', l: [
+      '${F_1}/{A_1} = {F_2}/{A_2}$ → $F_2 = 60 × {0.2}/{0.004} = 3 000 "N"$.',
+      '(a) $m = {F_2}/{g} = {3 000}/{9.81}$ = 306 kg.',
+      '(b) $A_1d_1 = A_2d_2$ → $d_2 = {0.004 × 0.5}/{0.2}$.'
+    ], j: '(a) 306 kg  (b) 0.01 m (1 cm)' },
+    { t: 'Daya apungan', q: 'Blok logam 0.050 kg mempunyai berat ketara 0.20 N dalam air. Hitung daya apungan dan isi padu blok.', l: [
+      'Berat sebenar: $W = 0.050 × 9.81 = 0.49 "N"$.',
+      'Daya apungan = kehilangan berat ketara $= 0.49 − 0.20 = 0.29 "N"$.',
+      '$F_B = ρVg$ → $V = {0.29}/{1 000 × 9.81}$.'
+    ], j: '$F_B = 0.29 "N"$, $V = 2.96 × 10^{-5} "m"^3$' }
+  ],
+  fokus: {
+    topik: [['Prinsip Pascal: jek & brek hidraulik', 3], ['Soalan reka bentuk: jek, brek, jengkaut, kapal selam, nebulizer', 3], ['Barometer & tekanan atmosfera', 2], ['Prinsip Bernoulli (nebulizer, aerofoil)', 2], ['Archimedes: kapal selam, belon', 2], ['Manometer & tekanan gas', 1]],
+    takrif: [
+      ['Tekanan', 'Daya yang bertindak secara normal per unit luas permukaan.'],
+      ['Tekanan atmosfera', 'Tekanan yang disebabkan oleh berat lapisan udara yang bertindak ke atas permukaan Bumi.'],
+      ['Prinsip Pascal', 'Tekanan yang dikenakan ke atas bendalir dalam bekas tertutup dipindahkan secara seragam ke semua arah dalam bendalir itu.'],
+      ['Prinsip Archimedes', 'Objek yang direndam sebahagian atau sepenuhnya dalam bendalir mengalami daya apungan yang sama dengan berat bendalir yang disesarkan.'],
+      ['Daya apungan', 'Daya ke atas yang dikenakan oleh bendalir ke atas objek yang direndam di dalamnya.'],
+      ['Prinsip Bernoulli', 'Apabila halaju suatu bendalir bertambah, tekanan dalam bendalir itu berkurang.']
+    ],
+    corak: [
+      'Jek / brek hidraulik → nyatakan Prinsip Pascal, terangkan cara berfungsi (4 markah), hitung faktor penggandaan & daya output.',
+      'Cadangkan pengubahsuaian brek: jenis cecair, luas omboh induk, bahan paip.',
+      'Barometer → sebab guna merkuri, perubahan $h$ di puncak gunung, hitung tekanan dalam Pa.',
+      'Nebulizer / penyembur → nyatakan Prinsip Bernoulli, kawasan halaju tinggi & tekanan rendah, hitung daya $F = ΔP × A$.',
+      'Kapal selam → takrif daya apungan, fungsi tangki balast.'
+    ],
+    ciri: [
+      ['Sistem hidraulik', 'Minyak sebagai bendalir', 'Tidak boleh dimampat, tidak menghakis, takat didih tinggi'],
+      ['Sistem hidraulik', 'Omboh input kecil, omboh output besar', 'Faktor penggandaan ${A_2}/{A_1}$ besar'],
+      ['Sistem hidraulik', 'Paip keluli', 'Kuat, tahan tekanan tinggi, tidak bocor'],
+      ['Sistem hidraulik', 'Tiada gelembung udara', 'Udara boleh dimampat, tekanan tidak dipindahkan sepenuhnya'],
+      ['Kapal selam', 'Badan keluli tebal, berbentuk larus', 'Tahan tekanan air dalam; kurang rintangan air'],
+      ['Kapal selam', 'Tangki balast besar', 'Kawal berat untuk tenggelam/timbul'],
+      ['Nebulizer / penyembur', 'Muncung (tiub) sempit', 'Halaju udara tinggi → tekanan rendah']
+    ]
+  },
+  reka: {
+    s: 'Pilih **sistem brek hidraulik** yang paling berkesan untuk sebuah kereta.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Jenis cecair brek', v: ['Air', 'Minyak brek', 'Minyak brek', 'Minyak brek'], ok: 'Minyak brek', sebab: 'Tidak boleh dimampat, takat didih tinggi, tidak menghakis.' },
+      { a: 'Luas keratan rentas omboh induk', v: ['Kecil', 'Besar', 'Kecil', 'Kecil'], ok: 'Kecil', sebab: 'Tekanan besar dihasilkan oleh daya kaki yang kecil.' },
+      { a: 'Luas keratan rentas omboh roda', v: ['Besar', 'Besar', 'Besar', 'Kecil'], ok: 'Besar', sebab: 'Daya membrek besar (faktor penggandaan tinggi).' },
+      { a: 'Bahan paip', v: ['Keluli', 'Keluli', 'Keluli', 'Getah nipis'], ok: 'Keluli', sebab: 'Kuat dan tahan tekanan tinggi, tidak mengembang.' }
+    ],
+    jawapan: 2
+  },
+  kuizTambah: [
+    { q: 'Mengapakah gelembung udara di dalam sistem brek hidraulik mengurangkan keberkesanan brek?', o: ['Udara menambah geseran', 'Udara boleh dimampatkan, jadi tekanan tidak dipindahkan sepenuhnya', 'Udara meningkatkan ketumpatan minyak', 'Udara menyebabkan minyak mendidih'], a: 1, e: 'Sebahagian daya digunakan untuk memampatkan udara, jadi tekanan pada omboh roda berkurang.' },
+    { q: 'Sebuah barometer merkuri dibawa ke puncak gunung. Ketinggian turus merkuri', o: ['bertambah', 'berkurang', 'tidak berubah', 'menjadi sifar'], a: 1, e: 'Tekanan atmosfera berkurang dengan altitud kerana lapisan udara di atas lebih nipis.' },
+    { q: 'Dalam nebulizer, cecair ubat naik melalui tiub kerana', o: ['udara laju di atas tiub menghasilkan tekanan rendah', 'cecair dipanaskan', 'daya apungan bertindak pada cecair', 'tekanan atmosfera berkurang di dalam botol'], a: 0, e: 'Prinsip Bernoulli: udara laju di hujung tiub bertekanan rendah, tekanan lebih tinggi di permukaan cecair menolak cecair naik.' }
+  ]
+});
+
+SPM('t5-b3', {
+  sub: [
+    { n: '3.1', t: 'Arus dan Beza Keupayaan', isi: [
+      '!**Medan elektrik**: kawasan di sekitar cas di mana cas lain mengalami daya elektrik. Antara dua plat: $E = {V}/{d}$.',
+      'Bola bersalut konduktor di antara dua plat berayun: voltan ↑ atau jarak plat ↓ → medan ↑ → frekuensi ayunan ↑.',
+      '!**Arus** = kadar pengaliran cas: $I = {Q}/{t}$. $Q = ne$.',
+      '!**Beza keupayaan** = kerja untuk menggerakkan 1 C cas antara dua titik: $V = {W}/{Q}$.'
+    ] },
+    { n: '3.2', t: 'Rintangan', ingat: '$R = {ρl}/{A}$: panjang ↑ R ↑; luas ↑ R ↓.', isi: [
+      '!**Hukum Ohm**: $V ∝ I$ jika suhu malar. $V = IR$.',
+      '!Faktor rintangan: **panjang** (↑), **luas keratan rentas** (↓), **kerintangan bahan** dan **suhu** (↑). $R = {ρl}/{A}$.',
+      '!**Kerintangan**: ukuran keupayaan bahan menentang arus. Dawai penyambung = **kuprum** (kerintangan rendah). Unsur pemanas = **nikrom** (kerintangan tinggi, takat lebur tinggi, tidak teroksida).',
+      'Sesiri: $R = R_1 + R_2$, arus sama. Selari: ${1}/{R} = {1}/{R_1} + {1}/{R_2}$, voltan sama.',
+      '!Lampu rumah disambung **selari**: setiap lampu dapat voltan penuh; satu rosak, yang lain masih menyala.'
+    ] },
+    { n: '3.3', t: 'D.g.e. dan Rintangan Dalam', ingat: 'ε = V + Ir. Suis terbuka: voltmeter baca ε.', isi: [
+      '!**D.g.e.**: tenaga yang dibekalkan oleh sumber untuk menggerakkan 1 C cas dalam litar lengkap. Diukur apabila **litar terbuka**.',
+      '!**Rintangan dalam** menyebabkan voltan hilang $Ir$. $ε = V + Ir = I(R + r)$.',
+      'Graf $V$–$I$: pintasan paksi $V$ = ε; kecerunan = $−r$.'
+    ] },
+    { n: '3.4', t: 'Tenaga dan Kuasa Elektrik', ingat: '“240 V, 1 100 W” = guna 1 100 J sesaat pada 240 V.', isi: [
+      '!**Kuasa** = kadar penggunaan tenaga. $P = VI = I^2R = {V^2}/{R}$. Tenaga $E = Pt$.',
+      '!Maksud label “240 V, 800 W”: perkakas menggunakan **800 J tenaga sesaat** apabila disambung kepada bekalan 240 V.',
+      '!Pilih **fius** dengan kadaran sedikit lebih tinggi daripada arus kerja ($I = {P}/{V}$).',
+      'Kos: tenaga (kWj) = kuasa (kW) × masa (j); kos = kWj × tarif.',
+      'Penjimatan: guna lampu LED, padam suis apabila tidak digunakan, pilih perkakas berlabel cekap tenaga (5 bintang).'
+    ] }
+  ],
+  contoh: [
+    { t: 'Kuasa, tenaga dan fius', q: 'Pengering rambut “240 V, 1 100 W” digunakan selama 12 minit. Hitung (a) tenaga, (b) arus. (c) Adakah fius 5 A sesuai?', l: [
+      '(a) $E = Pt = 1 100 × (12 × 60) = 7.92 × 10^5 "J"$.',
+      '(b) $I = {P}/{V} = {1 100}/{240} = 4.58 "A"$.',
+      '(c) Fius mesti sedikit lebih tinggi daripada arus kerja: 5 A > 4.58 A.'
+    ], j: '(a) $7.92 × 10^5 "J"$  (b) 4.58 A  (c) Sesuai, kerana kadarannya sedikit lebih tinggi daripada 4.58 A.' },
+    { t: 'Litar dengan rintangan dalam', q: 'Sel 9 V, rintangan dalam 1 Ω, disambung kepada perintang 4 Ω sesiri dengan gabungan selari 6 Ω dan 3 Ω. Hitung arus dan voltan terminal.', l: [
+      'Selari: ${1}/{R} = {1}/{6} + {1}/{3}$ → 2 Ω. Rintangan luar $= 4 + 2 = 6 "Ω"$.',
+      '$I = {ε}/{R + r} = {9}/{6 + 1} = 1.29 "A"$.',
+      '$V = ε − Ir = 9 − 1.29 × 1$.'
+    ], j: '$I = 1.29 "A"$, $V = 7.71 "V"$' }
+  ],
+  fokus: {
+    topik: [['Kuasa & tenaga elektrik (maksud label, $I = {P}/{V}$)', 3], ['Rintangan, kerintangan & bahan unsur pemanas', 3], ['d.g.e. & rintangan dalam', 2], ['Fius', 2], ['Soalan reka bentuk: penggoreng, pemanggang, komuter', 2], ['Medan elektrik & kos tenaga', 1]],
+    takrif: [
+      ['Medan elektrik', 'Kawasan di sekitar zarah bercas di mana cas elektrik lain akan mengalami daya elektrik.'],
+      ['Arus', 'Kadar pengaliran cas.'],
+      ['Beza keupayaan', 'Kerja yang dilakukan untuk menggerakkan satu coulomb cas di antara dua titik.'],
+      ['Hukum Ohm', 'Beza keupayaan merentasi konduktor berkadar terus dengan arus yang mengalir jika suhu dan keadaan fizikal malar.'],
+      ['Kerintangan', 'Ukuran keupayaan suatu bahan untuk menentang pengaliran arus elektrik.'],
+      ['Daya gerak elektrik', 'Tenaga yang dibekalkan oleh sumber untuk menggerakkan satu coulomb cas dalam litar lengkap.'],
+      ['Kuasa elektrik', 'Kadar penggunaan tenaga elektrik.']
+    ],
+    corak: [
+      'Maksud label “240 V, 1 100 W” atau “P = 3 000 W” (sangat kerap, 1 markah).',
+      'Hitung tenaga, arus dan pilih fius; terangkan sama ada fius sesuai.',
+      'Dua cerek berlainan kuasa → bandingkan kuasa, arus, kadar penggunaan tenaga → hubung kait.',
+      'Terangkan mengapa wayar penyambung guna kuprum tetapi unsur pemanas guna nikrom.',
+      'Hitung arus apabila suis dibuka dan ditutup (litar sesiri/selari).',
+      'Reka bentuk: unsur pemanas penggoreng / pemanggang / pembuat bebola, keretapi elektrik.'
+    ],
+    ciri: [
+      ['Unsur pemanas', 'Nikrom', 'Kerintangan tinggi, takat lebur tinggi, tidak mudah teroksida'],
+      ['Unsur pemanas', 'Dawai bergegelung', 'Panjang dalam ruang kecil, haba tertumpu'],
+      ['Wayar penyambung', 'Kuprum, tebal', 'Kerintangan rendah, kurang tenaga hilang sebagai haba'],
+      ['Perkakas pemanas', 'Badan luar penebat haba (plastik)', 'Selamat disentuh'],
+      ['Penggoreng kering', 'Kipas', 'Sebarkan udara panas dengan sekata'],
+      ['Keselamatan', 'Fius kadaran sedikit lebih tinggi daripada arus kerja', 'Putuskan litar apabila arus berlebihan'],
+      ['Lampu rumah', 'Sambungan selari', 'Voltan penuh pada setiap lampu; satu rosak, lain menyala']
+    ]
+  },
+  reka: {
+    s: 'Pilih **pemanggang elektrik** yang dapat memanggang dengan cepat dan selamat.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Bahan unsur pemanas', v: ['Kuprum', 'Nikrom', 'Nikrom', 'Nikrom'], ok: 'Nikrom', sebab: 'Kerintangan tinggi, takat lebur tinggi, tidak mudah teroksida.' },
+      { a: 'Kuasa', v: ['3 000 W', '3 000 W', '800 W', '3 000 W'], ok: '3 000 W', sebab: 'Lebih banyak tenaga haba sesaat, memanggang lebih cepat.' },
+      { a: 'Kadaran fius (arus kerja 12.5 A)', v: ['13 A', '13 A', '13 A', '5 A'], ok: '13 A', sebab: 'Sedikit lebih tinggi daripada arus kerja; fius 5 A akan putus dalam penggunaan biasa.' },
+      { a: 'Bahan pemegang', v: ['Plastik penebat', 'Plastik penebat', 'Plastik penebat', 'Logam'], ok: 'Plastik penebat', sebab: 'Penebat haba dan elektrik, selamat dipegang.' }
+    ],
+    jawapan: 1
+  },
+  kuizTambah: [
+    { q: 'Apakah maksud label “240 V, 800 W” pada sebuah cerek elektrik?', o: ['Cerek menghasilkan 800 V apabila disambung kepada 240 W', 'Cerek menggunakan 800 J tenaga sesaat apabila disambung kepada bekalan 240 V', 'Cerek membawa arus 800 A', 'Cerek mempunyai rintangan 800 Ω'], a: 1, e: 'Kuasa 800 W = 800 J sesaat pada voltan operasi 240 V.' },
+    { q: 'Mengapakah unsur pemanas diperbuat daripada nikrom dan bukan kuprum?', o: ['Nikrom mempunyai kerintangan rendah', 'Nikrom mempunyai kerintangan tinggi dan takat lebur tinggi', 'Nikrom ialah penebat', 'Nikrom lebih murah'], a: 1, e: 'Kerintangan tinggi menghasilkan haba yang banyak; takat lebur tinggi supaya tidak melebur pada suhu tinggi.' },
+    { q: 'Suis sebuah litar dibuka. Bacaan voltmeter yang disambung merentasi terminal sel ialah', o: ['sifar', 'd.g.e. sel', 'voltan hilang', 'separuh d.g.e.'], a: 1, e: 'Tiada arus mengalir, jadi tiada voltan hilang ($Ir = 0$). Voltmeter membaca d.g.e.' }
+  ]
+});
+
+SPM('t5-b4', {
+  sub: [
+    { n: '4.1', t: 'Daya ke atas Konduktor Pembawa Arus', ingat: 'Tangan KIRI = motor (daya). Tangan KANAN = penjana (arus aruhan).', isi: [
+      '!**Medan lastik**: medan magnet paduan daripada interaksi medan magnet konduktor pembawa arus dengan medan magnet kekal.',
+      '!**Petua Tangan Kiri Fleming**: jari telunjuk = medan (U → S), jari tengah = arus, ibu jari = daya/gerakan.',
+      '!Daya bertambah apabila **arus** bertambah atau **magnet lebih kuat**. Arus lebih besar → sesaran rod lebih besar.',
+      '!**Motor arus terus**: gegelung dalam medan magnet mengalami pasangan daya → berputar. **Komutator** menyongsangkan arus setiap separuh putaran supaya arah putaran sama. Tenaga elektrik → tenaga kinetik.',
+      'Laju putaran motor ↑: tambah arus/voltan, tambah bilangan lilitan, guna magnet lebih kuat (magnet melengkung).'
+    ] },
+    { n: '4.2', t: 'Aruhan Elektromagnet', ingat: 'Tiada gerakan relatif = tiada arus aruhan.', isi: [
+      '!**Aruhan elektromagnet**: d.g.e. diaruh apabila konduktor **memotong fluks magnet** (ada gerakan relatif).',
+      '!**Hukum Faraday**: d.g.e. aruhan berkadar terus dengan **kadar pemotongan fluks magnet**. Gerak magnet lebih laju, lebih banyak lilitan, magnet lebih kuat → pesongan galvanometer lebih besar.',
+      '!**Hukum Lenz**: arus aruhan menentang perubahan yang menghasilkannya. Magnet utara mendekati → hujung solenoid menjadi kutub utara (menolak).'
+    ] },
+    { n: '4.3', t: 'Transformer', ingat: '${V_S}/{V_P} = {N_S}/{N_P}$ dan $η = {V_SI_S}/{V_PI_P} × 100%$.', isi: [
+      '!Transformer hanya berfungsi dengan **arus ulang-alik**: a.u. menghasilkan medan magnet **berubah-ubah** yang mengaruhkan d.g.e. dalam gegelung sekunder. Arus terus menghasilkan medan malar → tiada aruhan.',
+      '!${V_S}/{V_P} = {N_S}/{N_P}$. Injak naik: $N_S > N_P$. Injak turun: $N_S < N_P$.',
+      '!**Transformer unggul**: kecekapan 100 %, $V_PI_P = V_SI_S$ (kuasa input = kuasa output).',
+      '!Kecekapan < 100 % kerana: rintangan gegelung (guna **dawai kuprum tebal**), arus pusar (**teras berlamina**), histeresis (**teras besi lembut**), kebocoran fluks (lilit sekunder di atas primer).',
+      'Penghantaran tenaga: voltan sangat tinggi → arus kecil → kehilangan kuasa $I^2R$ dalam kabel kecil.',
+      'Dapur aruhan: arus a.u. → medan berubah → **arus pusar** dalam dasar periuk (logam feromagnet) → periuk panas.'
+    ] }
+  ],
+  contoh: [
+    { t: 'Transformer dengan kecekapan', q: 'Transformer 240 V menyalakan mentol “12 V, 36 W” dengan normal. Kecekapan 80 %. Hitung (a) nisbah $N_P : N_S$, (b) arus sekunder, (c) arus primer.', l: [
+      '(a) ${N_P}/{N_S} = {V_P}/{V_S} = {240}/{12} = 20$, jadi 20 : 1.',
+      '(b) $I_S = {P}/{V} = {36}/{12} = 3 "A"$.',
+      '(c) Kuasa input $= {36}/{0.80} = 45 "W"$. $I_P = {45}/{240}$.'
+    ], j: '(a) 20 : 1  (b) 3 A  (c) 0.19 A' },
+    { t: 'Transformer unggul', q: 'Transformer unggul: $V_P = 240 "V"$, $I_P = 0.18 "A"$, $V_S = 6 "V"$. Hitung arus sekunder.', l: [
+      'Unggul: $V_PI_P = V_SI_S$.',
+      '$I_S = {240 × 0.18}/{6}$.'
+    ], j: '$I_S = 7.2 "A"$' }
+  ],
+  fokus: {
+    topik: [['Transformer: nisbah, kecekapan, unggul, sebab tidak 100 %', 3], ['Motor arus terus & medan lastik', 3], ['Reka bentuk: motor, dapur aruhan, transformer, penghantaran', 3], ['Petua tangan kiri Fleming', 2], ['Aruhan: Faraday & Lenz', 2]],
+    takrif: [
+      ['Medan lastik', 'Medan magnet paduan yang terhasil daripada interaksi antara medan magnet konduktor pembawa arus dengan medan magnet kekal.'],
+      ['Aruhan elektromagnet', 'Penghasilan d.g.e. aruhan dalam konduktor apabila terdapat gerakan relatif antara konduktor dengan medan magnet.'],
+      ['Hukum Faraday', 'Magnitud d.g.e. aruhan berkadar terus dengan kadar pemotongan fluks magnet.'],
+      ['Hukum Lenz', 'Arah arus aruhan sentiasa menentang perubahan fluks magnet yang menghasilkannya.'],
+      ['Transformer unggul', 'Transformer yang tiada kehilangan tenaga; kecekapannya 100 % (kuasa input = kuasa output).']
+    ],
+    corak: [
+      'Rod kuprum dalam medan magnet → takrif medan lastik, lukis medan lastik, bandingkan arus & sesaran → hubung kait.',
+      'Motor arus terus / kipas mainan → petua tangan kiri, perubahan tenaga, cara tambah laju putaran.',
+      'Transformer → jenis, nisbah lilitan, arus sekunder/primer, kecekapan; mengapa tidak berfungsi dengan a.t.',
+      'Magnet dijatuhkan ke dalam gegelung → bandingkan bilangan lilitan & pesongan galvanometer → Hukum Faraday.',
+      'Reka bentuk: transformer cekap (bahan & struktur teras, dawai), dapur aruhan, sistem penghantaran.'
+    ],
+    ciri: [
+      ['Transformer cekap', 'Teras besi lembut', 'Mudah dimagnet dan dinyahmagnet, kurang histeresis'],
+      ['Transformer cekap', 'Teras berlamina', 'Kurangkan arus pusar'],
+      ['Transformer cekap', 'Dawai kuprum tebal', 'Rintangan rendah, kurang haba'],
+      ['Transformer cekap', 'Gegelung sekunder dililit atas primer', 'Kurangkan kebocoran fluks'],
+      ['Motor laju', 'Banyak lilitan, voltan/arus tinggi, magnet kuat', 'Daya putaran lebih besar'],
+      ['Penghantaran tenaga', 'Voltan sangat tinggi, kabel aluminium tebal', 'Arus kecil, kehilangan $I^2R$ kecil; ringan'],
+      ['Dapur aruhan', 'Bekalan a.u., periuk logam feromagnet, permukaan seramik kaca', 'Medan berubah aruh arus pusar; permukaan penebat']
+    ]
+  },
+  reka: {
+    s: 'Pilih **transformer** yang paling cekap untuk ketuhar gelombang mikro.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Bahan teras', v: ['Besi lembut', 'Keluli', 'Besi lembut', 'Besi lembut'], ok: 'Besi lembut', sebab: 'Mudah dimagnet dan dinyahmagnet, kurangkan kehilangan histeresis.' },
+      { a: 'Struktur teras', v: ['Berlamina', 'Berlamina', 'Pepejal', 'Berlamina'], ok: 'Berlamina', sebab: 'Kurangkan arus pusar dalam teras.' },
+      { a: 'Dawai gegelung', v: ['Kuprum tebal', 'Kuprum tebal', 'Kuprum tebal', 'Nikrom nipis'], ok: 'Kuprum tebal', sebab: 'Rintangan rendah, kurang tenaga hilang sebagai haba.' },
+      { a: 'Susunan gegelung', v: ['Sekunder dililit atas primer', 'Berasingan', 'Sekunder dililit atas primer', 'Sekunder dililit atas primer'], ok: 'Sekunder dililit atas primer', sebab: 'Semua fluks primer memaut sekunder, kurang kebocoran fluks.' }
+    ],
+    jawapan: 0
+  },
+  kuizTambah: [
+    { q: 'Mengapakah transformer tidak berfungsi apabila disambungkan kepada bekalan arus terus?', o: ['Arus terus terlalu besar', 'Medan magnet yang dihasilkan tidak berubah, jadi tiada d.g.e. diaruh', 'Teras besi menjadi panas', 'Gegelung sekunder terputus'], a: 1, e: 'Aruhan memerlukan perubahan fluks magnet. Arus terus menghasilkan fluks malar.' },
+    { q: 'Rod kuprum dalam medan magnet tersesar lebih jauh apabila', o: ['arus dikurangkan', 'arus ditambah', 'magnet dialihkan', 'rod digantikan dengan rod plastik'], a: 1, e: 'Daya ke atas konduktor bertambah dengan arus; sesaran rod bertambah.' },
+    { q: 'Tenaga elektrik dihantar pada voltan tinggi supaya', o: ['arus dalam kabel besar', 'arus dalam kabel kecil, kehilangan kuasa $I^2R$ berkurang', 'kabel menjadi lebih panas', 'rintangan kabel bertambah'], a: 1, e: 'Untuk kuasa yang sama, voltan tinggi bermaksud arus kecil, jadi kehilangan $I^2R$ kecil.' }
+  ]
+});
+
+SPM('t5-b5', {
+  sub: [
+    { n: '5.1', t: 'Elektron', ingat: '$eV = {1}/{2}mv^2$.', isi: [
+      '!**Pancaran termion**: pemancaran elektron daripada permukaan logam yang dipanaskan.',
+      '!**Sinar katod** = alur elektron berhalaju tinggi dalam tiub vakum. Vakum supaya elektron tidak berlanggar dengan molekul udara.',
+      '!Tiub Palang Maltese: **bayang palang** terbentuk kerana sinar katod bergerak lurus dan dihalang; **cahaya hijau** di skrin kerana elektron menghentam skrin berpendarfluor. Sinar katod dipesong oleh medan magnet dan medan elektrik.',
+      '!Tenaga keupayaan elektrik → tenaga kinetik: $eV = {1}/{2}mv^2$.'
+    ] },
+    { n: '5.2', t: 'Diod Semikonduktor', ingat: 'Pincang depan: lapisan susutan nipis, arus mengalir.', isi: [
+      '!**Diod** membenarkan arus mengalir dalam **satu arah sahaja**.',
+      '!**Pincang depan** (anod ke +): lapisan susutan **nipis**, rintangan rendah, arus mengalir, mentol menyala. **Pincang songsang**: lapisan susutan **tebal**, tiada arus, mentol tidak menyala.',
+      '!**Rektifikasi**: menukar arus ulang-alik kepada arus terus. **Separuh gelombang** = 1 diod. **Gelombang penuh** = 4 diod (tetimbang).',
+      '!**Kapasitor** disambung **selari dengan beban** sebagai perata: dicas apabila voltan naik, menyahcas apabila voltan turun → output lebih licin.'
+    ] },
+    { n: '5.3', t: 'Transistor', ingat: 'Tiada $I_B$ → tiada $I_C$.', isi: [
+      '!Tiga terminal: **tapak (B)**, **pengumpul (C)**, **pengeluar (E)**. $I_E = I_B + I_C$. Jenis npn dan pnp.',
+      '!**Amplifier arus**: $I_B$ kecil mengawal $I_C$ besar ($I_C$ ≫ $I_B$).',
+      '!**Suis automatik**: transistor hidup apabila voltan tapak cukup tinggi. Pembahagi voltan: $V = {R_2}/{R_1 + R_2} × V_T$.',
+      '!**LDR**: rintangan tinggi dalam gelap. Lampu automatik malam: LDR di antara tapak dan pengeluar. **Termistor**: rintangan turun apabila suhu naik → penggera kebakaran.'
+    ] }
+  ],
+  contoh: [
+    { t: 'Halaju elektron', q: 'Satu elektron menerima tenaga keupayaan elektrik $4.8 × 10^{-16} "J"$. Hitung halaju maksimumnya. [$m = 9.11 × 10^{-31} "kg"$]', l: [
+      'Tenaga keupayaan = tenaga kinetik: ${1}/{2}mv^2 = 4.8 × 10^{-16}$.',
+      '$v = sqrt{{2 × 4.8 × 10^{-16}}/{9.11 × 10^{-31}}}$.'
+    ], j: '$v = 3.25 × 10^7 "m s"^{-1}$' },
+    { t: 'Pembahagi voltan LDR', q: 'LDR (1 kΩ pada waktu malam) disambung sesiri dengan perintang 0.5 kΩ merentasi bekalan 6 V. Hitung beza keupayaan merentasi LDR.', l: [
+      '$V_"LDR" = {R_"LDR"}/{R_"LDR" + R} × V_T$.',
+      '$V_"LDR" = {1}/{1 + 0.5} × 6$.'
+    ], j: '$V_"LDR" = 4 "V"$ (cukup untuk menghidupkan transistor)' }
+  ],
+  fokus: {
+    topik: [['Rektifikasi & kapasitor perata (lukis surihan OSK)', 3], ['Diod: pincang depan / songsang, lapisan susutan', 3], ['Sinar katod & tiub Palang Maltese', 2], ['Transistor sebagai suis (LDR, termistor)', 2], ['Pembahagi voltan', 2]],
+    takrif: [
+      ['Pancaran termion', 'Pemancaran elektron daripada permukaan logam yang dipanaskan.'],
+      ['Sinar katod', 'Alur elektron yang bergerak dengan halaju tinggi di dalam tiub vakum.'],
+      ['Diod semikonduktor', 'Komponen elektronik yang membenarkan arus mengalir dalam satu arah sahaja.'],
+      ['Rektifikasi', 'Proses menukarkan arus ulang-alik kepada arus terus.'],
+      ['Pendopan', 'Proses menambah bendasing ke dalam kekisi hablur semikonduktor untuk meningkatkan kekonduksiannya.']
+    ],
+    corak: [
+      'Namakan komponen X (diod) dan Y (kapasitor); nyatakan jenis rektifikasi.',
+      'Lukis surihan output pada skrin OSK (separuh / penuh / dengan kapasitor).',
+      'Lengkapkan litar tetimbang dengan melukis diod; lukis sambungan kapasitor yang betul (selari dengan beban).',
+      'Terangkan bagaimana kapasitor meratakan arus output.',
+      'Dua litar diod → bandingkan sambungan sel, keadaan mentol, lapisan susutan → hubung kait.',
+      'Tiub Palang Maltese → sebab bayang dan cahaya hijau; arah pesongan dalam medan magnet; hitung halaju elektron.'
+    ],
+    ciri: [
+      ['Pengecas telefon', 'Rektifikasi gelombang penuh', 'Kedua-dua separuh kitar digunakan, output lebih licin'],
+      ['Pengecas telefon', 'Kapasitor perata (kapasitans besar)', 'Output arus terus lebih stabil'],
+      ['Pengecas telefon', 'Transformer injak turun', 'Turunkan 240 V kepada voltan rendah'],
+      ['Lampu automatik malam', 'LDR di antara tapak dan pengeluar', 'Gelap → rintangan LDR tinggi → voltan tapak tinggi → transistor hidup'],
+      ['Penggera kebakaran', 'Termistor di bahagian atas pembahagi voltan', 'Panas → rintangan termistor rendah → voltan tapak tinggi'],
+      ['Litar transistor', 'Perintang pada tapak', 'Hadkan arus tapak, lindungi transistor']
+    ]
+  },
+  reka: {
+    s: 'Pilih **pengecas telefon bimbit** yang mengecas dengan cepat dan stabil.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Jenis rektifikasi', v: ['Gelombang separuh', 'Gelombang penuh', 'Gelombang penuh', 'Gelombang penuh'], ok: 'Gelombang penuh', sebab: 'Kedua-dua separuh kitar digunakan, kuasa output lebih besar.' },
+      { a: 'Kapasitor', v: ['Ada, selari dengan beban', 'Tiada', 'Ada, selari dengan beban', 'Ada, selari dengan beban'], ok: 'Ada, selari dengan beban', sebab: 'Meratakan output menjadi arus terus yang stabil.' },
+      { a: 'Jenis transformer', v: ['Injak turun', 'Injak turun', 'Injak turun', 'Injak naik'], ok: 'Injak turun', sebab: 'Bateri telefon memerlukan voltan rendah (5 V).' },
+      { a: 'Kuasa output', v: ['Tinggi', 'Tinggi', 'Tinggi', 'Tinggi'], ok: 'Tinggi', sebab: 'Lebih banyak tenaga sesaat, mengecas lebih cepat.' }
+    ],
+    jawapan: 2
+  },
+  kuizTambah: [
+    { q: 'Dalam keadaan pincang songsang, lapisan susutan diod', o: ['menjadi lebih nipis dan arus mengalir', 'menjadi lebih tebal dan arus tidak mengalir', 'hilang sepenuhnya', 'tidak berubah'], a: 1, e: 'Pincang songsang menebalkan lapisan susutan, rintangan menjadi sangat tinggi.' },
+    { q: 'Bagaimanakah kapasitor perata disambungkan dalam litar rektifikasi?', o: ['Sesiri dengan diod', 'Selari dengan perintang beban', 'Sesiri dengan bekalan a.u.', 'Di antara dua diod'], a: 1, e: 'Kapasitor selari dengan beban supaya dapat menyahcas melalui beban apabila voltan menurun.' },
+    { q: 'Dalam tiub Palang Maltese, bayang palang terbentuk pada skrin kerana', o: ['sinar katod bercas positif', 'sinar katod bergerak dalam garis lurus dan dihalang oleh palang', 'skrin menyerap cahaya', 'palang memancarkan elektron'], a: 1, e: 'Elektron yang bergerak lurus dihalang oleh palang, jadi kawasan di belakangnya tidak bercahaya.' }
+  ]
+});
+
+SPM('t5-b6', {
+  sub: [
+    { n: '6.1', t: 'Reputan Radioaktif', ingat: 'Alfa: A − 4, Z − 2. Beta: A tetap, Z + 1.', isi: [
+      '!**Reputan radioaktif**: proses **rawak dan spontan** apabila nukleus tidak stabil memancarkan sinaran untuk menjadi lebih stabil.',
+      '!Alfa ($nuk{4}{2}{He}$): $A − 4$, $Z − 2$. Beta ($nuk{0}{−1}{e}$): $A$ tetap, $Z + 1$. Gama: tiada perubahan $A$ dan $Z$.',
+      '!Cari bilangan zarah: guna nombor nukleon untuk alfa dahulu, kemudian nombor proton untuk beta.',
+      '!**Separuh hayat** $T_{{1}/{2}}$: masa untuk separuh daripada nukleus asal mereput. $N = N_0({1}/{2})^n$, $n = {t}/{T_{{1}/{2}}}$.',
+      'Baca separuh hayat daripada graf: cari masa apabila keaktifan menjadi separuh nilai asal. Separuh hayat pendek → kadar reputan tinggi.'
+    ] },
+    { n: '6.2', t: 'Tenaga Nuklear', ingat: 'Cacat jisim (u.j.a.) → kg → $E = mc^2$.', isi: [
+      '!**Pembelahan nukleus**: nukleus berat (U-235) dibedil neutron → dua nukleus lebih ringan + neutron + tenaga.',
+      '!**Tindak balas berantai**: neutron yang dibebaskan membedil nukleus U-235 lain secara berterusan.',
+      '!**Pelakuran nukleus**: dua nukleus ringan bercantum (dalam Matahari) pada suhu sangat tinggi.',
+      '!**Cacat jisim** = jumlah jisim sebelum − jumlah jisim selepas. $E = mc^2$ (tukar u.j.a. → kg: × $1.66 × 10^{-27}$).',
+      '!Reaktor: **rod pengawal** (boron/kadmium) menyerap neutron berlebihan → kawal kadar tindak balas; **moderator** (grafit/air) memperlahankan neutron; **agen penyejuk** (air) memindahkan haba; **dinding konkrit tebal** menghalang sinaran.',
+      'Perubahan tenaga stesen jana kuasa nuklear: nuklear → haba → kinetik (turbin) → elektrik.'
+    ] }
+  ],
+  contoh: [
+    { t: 'Separuh hayat', q: 'Natrium-24 mempunyai separuh hayat 15 jam. Jisim asal 64 g. Berapakah jisim yang tinggal selepas 45 jam?', l: [
+      'Bilangan separuh hayat: $n = {45}/{15} = 3$.',
+      '$64 → 32 → 16 → 8$.'
+    ], j: '8 g' },
+    { t: 'Tenaga daripada cacat jisim', q: 'Cacat jisim pembelahan satu nukleus U-235 ialah 0.186 u.j.a. Hitung tenaga yang dibebaskan.', l: [
+      'Tukar ke kg: $0.186 × 1.66 × 10^{-27} = 3.09 × 10^{-28} "kg"$.',
+      '$E = mc^2 = (3.09 × 10^{-28})(3.0 × 10^8)^2$.'
+    ], j: '$E = 2.78 × 10^{-11} "J"$' }
+  ],
+  fokus: {
+    topik: [['Reaktor nuklear: rod pengawal, moderator, perubahan tenaga', 3], ['Cacat jisim & $E = mc^2$', 3], ['Separuh hayat (graf & pengiraan)', 2], ['Takrif reputan radioaktif', 2], ['Persamaan reputan (cari A dan Z)', 2]],
+    takrif: [
+      ['Reputan radioaktif', 'Proses rawak dan spontan apabila nukleus tidak stabil memancarkan sinaran radioaktif untuk menjadi nukleus yang lebih stabil.'],
+      ['Separuh hayat', 'Masa yang diambil oleh separuh daripada bilangan nukleus asal suatu sampel radioaktif untuk mereput.'],
+      ['Pembelahan nukleus', 'Tindak balas nuklear apabila satu nukleus berat terbelah menjadi dua nukleus yang lebih ringan sambil membebaskan tenaga yang besar.'],
+      ['Pelakuran nukleus', 'Tindak balas nuklear apabila dua nukleus ringan bercantum membentuk nukleus yang lebih berat sambil membebaskan tenaga yang besar.'],
+      ['Cacat jisim', 'Perbezaan antara jumlah jisim sebelum dengan jumlah jisim selepas tindak balas nuklear.'],
+      ['Tindak balas berantai', 'Tindak balas pembelahan yang berterusan apabila neutron yang dibebaskan membedil nukleus lain.']
+    ],
+    corak: [
+      'Rajah reaktor → jenis tindak balas, dua komponen pengawal kadar tindak balas, perubahan tenaga.',
+      'Jadual jisim sebelum/selepas → hitung cacat jisim (kg) dan tenaga.',
+      'Graf keaktifan–masa → tentukan separuh hayat; keaktifan selepas 3 separuh hayat.',
+      'Dua graf separuh hayat → bandingkan keaktifan awal, separuh hayat, kadar reputan → hubung kait.',
+      'Persamaan reputan → tentukan nilai A dan Z.'
+    ],
+    ciri: [
+      ['Reaktor nuklear', 'Rod pengawal boron/kadmium', 'Serap neutron berlebihan, kawal kadar tindak balas'],
+      ['Reaktor nuklear', 'Moderator grafit/air', 'Perlahankan neutron supaya mudah diserap U-235'],
+      ['Reaktor nuklear', 'Agen penyejuk air (muatan haba tentu tinggi)', 'Serap banyak haba dari teras'],
+      ['Reaktor nuklear', 'Dinding konkrit tebal', 'Halang sinaran terlepas'],
+      ['Lokasi stesen', 'Berhampiran laut/sungai, jauh dari penempatan', 'Sumber air penyejuk; keselamatan penduduk'],
+      ['Sisa radioaktif', 'Ditanam jauh di dalam tanah dalam bekas plumbum/konkrit', 'Halang pencemaran sinaran']
+    ]
+  },
+  reka: {
+    s: 'Pilih reka bentuk **reaktor nuklear** yang paling selamat dan cekap.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Rod pengawal', v: ['Boron', 'Boron', 'Aluminium', 'Boron'], ok: 'Boron', sebab: 'Menyerap neutron berlebihan untuk mengawal kadar tindak balas berantai.' },
+      { a: 'Moderator', v: ['Grafit', 'Plumbum', 'Grafit', 'Grafit'], ok: 'Grafit', sebab: 'Memperlahankan neutron supaya pembelahan berterusan.' },
+      { a: 'Agen penyejuk', v: ['Air', 'Air', 'Air', 'Udara'], ok: 'Air', sebab: 'Muatan haba tentu tinggi, menyerap banyak haba.' },
+      { a: 'Dinding bangunan reaktor', v: ['Konkrit tebal', 'Konkrit tebal', 'Konkrit tebal', 'Konkrit tebal'], ok: 'Konkrit tebal', sebab: 'Menghalang sinaran radioaktif terlepas ke persekitaran.' }
+    ],
+    jawapan: 0
+  },
+  kuizTambah: [
+    { q: 'Keaktifan suatu sampel ialah 800 bilangan per minit. Separuh hayatnya 2 hari. Berapakah keaktifan selepas 6 hari?', o: ['400', '200', '100', '50'], a: 2, e: '6 hari = 3 separuh hayat: 800 → 400 → 200 → 100.' },
+    { q: 'Perubahan tenaga dalam stesen janakuasa nuklear ialah', o: ['nuklear → elektrik → haba', 'nuklear → haba → kinetik → elektrik', 'kimia → haba → elektrik', 'haba → nuklear → elektrik'], a: 1, e: 'Tenaga nuklear menghasilkan haba, stim memutarkan turbin (kinetik), penjana menghasilkan elektrik.' }
+  ]
+});
+
+SPM('t5-b7', {
+  sub: [
+    { n: '7.1', t: 'Teori Kuantum Cahaya', ingat: '$E = hf = {hc}/{λ}$.', isi: [
+      '**Jasad hitam** menyerap semua sinaran yang jatuh padanya. Teori klasik gagal menerangkan spektrumnya; Max Planck mencadangkan **kuantum tenaga** (paket tenaga diskrit).',
+      '!**Foton**: kuantum tenaga cahaya, $E = hf = {hc}/{λ}$, $h = 6.63 × 10^{-34} "J s"$.',
+      '!Kuasa sumber cahaya: $P = nhf$ ($n$ = bilangan foton sesaat).',
+      'Kedualan gelombang–zarah: $λ = {h}/{p} = {h}/{mv}$ (de Broglie). Pembelauan elektron membuktikan elektron bersifat gelombang.'
+    ] },
+    { n: '7.2', t: 'Kesan Fotoelektrik', ingat: 'Frekuensi tentukan Kmaks. Keamatan tentukan bilangan elektron.', isi: [
+      '!**Kesan fotoelektrik**: pemancaran elektron daripada permukaan logam apabila disinari cahaya dengan **frekuensi tertentu**. Elektron itu = **fotoelektron**.',
+      '!Syarat: frekuensi cahaya **> frekuensi ambang** $f_0$. Jika tidak, tiada fotoelektron walaupun keamatan tinggi.',
+      '!Frekuensi ↑ → $K_{maks}$ ↑. **Keamatan ↑ → bilangan fotoelektron ↑ → arus fotoelektrik ↑** ($K_{maks}$ tidak berubah).',
+      'Fotoelektron dipancarkan serta-merta. Sel foto vakum supaya elektron tidak berlanggar dengan molekul udara.'
+    ] },
+    { n: '7.3', t: 'Teori Fotoelektrik Einstein', ingat: '$hf = W + K_{maks}$; $W = hf_0$.', isi: [
+      '!Persamaan Einstein: $hf = W + {1}/{2}mv_{maks}^2$.',
+      '!**Fungsi kerja** $W$: tenaga minimum untuk membebaskan elektron dari permukaan logam. $W = hf_0 = {hc}/{λ_0}$.',
+      '!Graf $K_{maks}$–$f$: **kecerunan = $h$**, pintasan paksi $f$ = $f_0$, pintasan paksi $K_{maks}$ (diekstrapolasi) = $−W$. Logam lain: garis selari, $f_0$ berbeza.',
+      'Aplikasi: sel suria, pintu automatik, kamera digital, lampu jalan automatik.'
+    ] }
+  ],
+  contoh: [
+    { t: 'Bilangan foton sesaat', q: 'Laser 10 mW memancarkan cahaya merah $λ = 6.48 × 10^{-7} "m"$. Hitung bilangan foton yang dipancarkan sesaat.', l: [
+      '$P = nhf = n{hc}/{λ}$, maka $n = {Pλ}/{hc}$.',
+      '$n = {(10 × 10^{-3})(6.48 × 10^{-7})}/{(6.63 × 10^{-34})(3.0 × 10^8)}$.'
+    ], j: '$n = 3.26 × 10^{16}$ foton sesaat' },
+    { t: 'Persamaan fotoelektrik Einstein', q: 'Natrium (fungsi kerja 2.28 eV) disinari cahaya 400 nm. Hitung tenaga kinetik maksimum fotoelektron.', l: [
+      '$W = 2.28 × 1.6 × 10^{-19} = 3.65 × 10^{-19} "J"$.',
+      '$E = {hc}/{λ} = {(6.63 × 10^{-34})(3.0 × 10^8)}/{400 × 10^{-9}} = 4.97 × 10^{-19} "J"$.',
+      '$K_{maks} = E − W$.'
+    ], j: '$K_{maks} = 1.32 × 10^{-19} "J"$' }
+  ],
+  fokus: {
+    topik: [['Takrif kesan fotoelektrik & syarat', 3], ['Frekuensi ambang & fungsi kerja', 3], ['Graf $K_{maks}$–$f$ (kecerunan, pintasan)', 3], ['Tenaga foton & bilangan foton sesaat', 2], ['Kesan keamatan cahaya', 2]],
+    takrif: [
+      ['Kesan fotoelektrik', 'Pemancaran elektron daripada permukaan logam apabila disinari oleh cahaya dengan frekuensi tertentu.'],
+      ['Frekuensi ambang', 'Frekuensi minimum cahaya yang dapat memancarkan elektron dari permukaan logam.'],
+      ['Fungsi kerja', 'Tenaga minimum yang diperlukan untuk membebaskan elektron dari permukaan logam.'],
+      ['Foton', 'Paket tenaga cahaya yang diskrit, dengan tenaga $E = hf$.'],
+      ['Jasad hitam', 'Jasad unggul yang menyerap semua sinaran elektromagnet yang jatuh padanya.'],
+      ['Kuantum tenaga', 'Paket tenaga yang diskrit dan bukan selanjar.']
+    ],
+    corak: [
+      'Takrif kesan fotoelektrik (sangat kerap) dan namakan elektron yang terbebas (fotoelektron).',
+      'Satu syarat untuk fotoelektron dibebaskan (frekuensi cahaya > frekuensi ambang).',
+      'Kesan menambah keamatan cahaya kepada bacaan mikroammeter (bertambah).',
+      'Graf $K_{maks}$ melawan $f$: kuantiti diwakili pintasan-y dan kecerunan; lakar graf logam lain.',
+      'Hitung tenaga foton dan bilangan foton sesaat daripada kuasa lampu.'
+    ],
+    ciri: [
+      ['Katod sel foto', 'Logam fungsi kerja rendah (sesium)', 'Mudah membebaskan elektron dengan cahaya nampak'],
+      ['Sel foto', 'Tiub vakum', 'Elektron tidak berlanggar dengan molekul udara'],
+      ['Sumber cahaya', 'Frekuensi tinggi (biru/UV), melebihi $f_0$', 'Foton bertenaga cukup'],
+      ['Sumber cahaya', 'Keamatan tinggi', 'Lebih banyak fotoelektron, arus lebih besar'],
+      ['Katod', 'Luas permukaan besar', 'Menerima lebih banyak foton']
+    ]
+  },
+  reka: {
+    s: 'Pilih **sel foto** yang paling sesuai untuk pintu automatik yang menggunakan cahaya nampak.',
+    opsyen: ['P', 'Q', 'R', 'S'],
+    aspek: [
+      { a: 'Logam katod', v: ['Zink (W tinggi)', 'Sesium (W rendah)', 'Sesium (W rendah)', 'Sesium (W rendah)'], ok: 'Sesium (W rendah)', sebab: 'Fungsi kerja rendah; cahaya nampak mencukupi untuk membebaskan elektron.' },
+      { a: 'Kandungan tiub', v: ['Vakum', 'Udara', 'Vakum', 'Vakum'], ok: 'Vakum', sebab: 'Fotoelektron tidak berlanggar dengan molekul udara.' },
+      { a: 'Luas permukaan katod', v: ['Besar', 'Besar', 'Kecil', 'Besar'], ok: 'Besar', sebab: 'Menerima lebih banyak foton, lebih banyak fotoelektron.' },
+      { a: 'Keamatan sumber cahaya', v: ['Tinggi', 'Tinggi', 'Tinggi', 'Tinggi'], ok: 'Tinggi', sebab: 'Lebih banyak foton sesaat, arus fotoelektrik lebih besar.' }
+    ],
+    jawapan: 3
+  },
+  kuizTambah: [
+    { q: 'Apakah yang diwakili oleh kecerunan graf $K_{maks}$ melawan frekuensi?', o: ['Fungsi kerja', 'Frekuensi ambang', 'Pemalar Planck', 'Laju cahaya'], a: 2, e: '$K_{maks} = hf − W$, jadi kecerunan ialah $h$.' },
+    { q: 'Bilangan foton yang menyinari katod bertambah tetapi frekuensi sama. Bacaan mikroammeter', o: ['bertambah', 'berkurang', 'tidak berubah', 'menjadi sifar'], a: 0, e: 'Lebih banyak foton → lebih banyak fotoelektron sesaat → arus bertambah.' }
   ]
 });
 
