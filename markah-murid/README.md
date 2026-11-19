@@ -26,7 +26,7 @@ Bila ada murid baru, jalankan semula `sediakanSenaraiMurid` (No. KP yang sudah d
 | 4 SAINS | F (Total Kuiz 1) | R (All Round PPSA) | AE (Akhir Tahun) |
 | 5 SAINS | F (Total Kuiz 1) | O (PPSA) | W (Trials) |
 
-Perincian Akhir Tahun turut dipaparkan untuk **4 SAINS** (K1, K2, K3, Total, Markah Presentation + King, 5%) dan **3 ALAMANDA** (UASA, Present, Buku Kerja, Full Total, Gred). TP tidak dipaparkan.
+Perincian Akhir Tahun turut dipaparkan untuk **4 SAINS** (K1, K2, K3, Jumlah K1+K2+K3 ÷155 ×100, + Markah Presentation + King, + Guru Muda 5% = Jumlah Keseluruhan) dan **3 ALAMANDA** (UASA, Present, Buku Kerja, Full Total, Gred). TP tidak dipaparkan.
 
 Jika susunan lajur berubah, ubah nombor dalam `PETA_KELAS` di atas `Code.gs`. Gred diambil dari sheet; jika tiada lajur gred, ia dikira dengan skala A+ 90 … G 0–39.
 

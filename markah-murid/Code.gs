@@ -49,9 +49,9 @@ const PETA_KELAS = {
         { label: 'K1',                        col: 24, max: 40 },   // Y
         { label: 'K2',                        col: 25, max: 100 },  // Z
         { label: 'K3',                        col: 26, max: 15 },   // AA
-        { label: 'Total (K1+K2+K3)',          col: 27, max: 100 },  // AB
-        { label: 'Markah Presentation + King', col: 28 },           // AC
-        { label: '5%',                        col: 29 }             // AD
+        { label: 'Jumlah K1+K2+K3 (÷155 × 100)', col: 27, max: 100, garis: true }, // AB
+        { label: '+ Markah Presentation + King', col: 28 },        // AC
+        { label: '+ Guru Muda (5%)',          col: 29 }             // AD
       ]
     }
   },
@@ -129,7 +129,7 @@ function semakMarkah(noKp) {
       gred: markah.nilai === null ? '' : (gredSah(gredSheet) ? gredSheet : kiraGred(markah.nilai)),
       perincian: (p.perincian || []).map(d => {
         const v = bacaMarkah(row[d.col]);
-        return { label: d.label, nilai: v.nilai, status: v.status, max: d.max || null };
+        return { label: d.label, nilai: v.nilai, status: v.status, max: d.max || null, garis: !!d.garis };
       })
     };
   });

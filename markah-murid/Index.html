@@ -93,6 +93,7 @@ button[disabled] { opacity: .6; cursor: wait; }
 .detail td { padding: 8px 12px; border-top: 1px solid var(--line); font-size: 14px; }
 .detail td:last-child { text-align: right; font-weight: 600; white-space: nowrap; }
 .detail td small { color: var(--muted); font-weight: 400; }
+.detail tr.sub td { border-top: 1.5px solid var(--muted); font-weight: 600; }
 .detail tr.sum td { background: var(--accent-soft); font-weight: 700; }
 .btn-out { background: var(--paper); color: var(--accent); border: 1.5px solid var(--accent); }
 .btn-out:hover { background: var(--accent-soft); filter: none; }
@@ -166,8 +167,8 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
 
   // Data rekaan untuk paparan contoh sahaja (bukan murid sebenar)
   var DEMO = {
-    '080512101234': { nama: 'NUR AISYAH BINTI AHMAD', kelas: '4 SAINS', a: [78, 'A-'], t: [85, 'A'], k: [81.25, 'A'],
-      d: [['K1', 31, 40], ['K2', 82, 100], ['K3', 11, 15], ['Total (K1+K2+K3)', 80, 100], ['Markah Presentation + King', 4.25], ['5%', 1]] },
+    '080512101234': { nama: 'NUR AISYAH BINTI AHMAD', kelas: '4 SAINS', a: [78, 'A-'], t: [85, 'A'], k: [85.25, 'A'],
+      d: [['K1', 31, 40], ['K2', 82, 100], ['K3', 11, 15], ['Jumlah K1+K2+K3 (÷155 × 100)', 80, 100, 1], ['+ Markah Presentation + King', 4.25], ['+ Guru Muda (5%)', 1]] },
     '100304145678': { nama: 'MUHAMMAD HAZIQ BIN ROSLAN', kelas: '3 DAISY', a: [47, 'D'], t: [null, 'TH'], k: [38, 'G'] },
     '070815061357': { nama: 'SITI NUR IMAN BINTI ZAKARIA', kelas: '3 ALAMANDA', a: [57, 'C+'], t: [45, 'D'], k: [39.84, 'G'],
       d: [['UASA', 22], ['Present', 7.84], ['Buku Kerja', 10]] },
@@ -183,7 +184,7 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
       done({ ok: true, murid: { nama: d.nama, kelas: d.kelas, ic: c.slice(0, 6) + '-••-' + c.slice(8) },
         peperiksaan: [d.a, d.t, d.k].map(function (x, i) {
           return { nama: n[i], markah: x[0], status: x[0] === null ? x[1] : '', gred: x[0] === null ? '' : x[1],
-            perincian: i === 2 && d.d ? d.d.map(function (q) { return { label: q[0], nilai: q[1], status: '', max: q[2] || null }; }) : [] };
+            perincian: i === 2 && d.d ? d.d.map(function (q) { return { label: q[0], nilai: q[1], status: '', max: q[2] || null, garis: !!q[3] }; }) : [] };
         }) });
     }, 350);
   }
@@ -260,11 +261,11 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
       var v = d.nilai === null || d.nilai === undefined
         ? (d.status === 'TH' ? 'TH' : '–')
         : nombor(d.nilai) + (d.max ? ' <small>/ ' + d.max + '</small>' : '');
-      return '<tr><td>' + esc(d.label) + '</td><td>' + v + '</td></tr>';
+      return '<tr' + (d.garis ? ' class="sub"' : '') + '><td>' + esc(d.label) + '</td><td>' + v + '</td></tr>';
     }).join('');
     var jumlah = p.markah === null || p.markah === undefined ? '–' : nombor(p.markah);
     return '<div class="detail"><div class="cap">Perincian markah</div><table>' + rows +
-      '<tr class="sum"><td>Markah Akhir' + (p.gred ? ' · Gred ' + esc(p.gred) : '') + '</td><td>' + jumlah + '</td></tr></table></div>';
+      '<tr class="sum"><td>Jumlah Keseluruhan' + (p.gred ? ' · Gred ' + esc(p.gred) : '') + '</td><td>' + jumlah + '</td></tr></table></div>';
   }
 })();
 </script>
