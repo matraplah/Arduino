@@ -16,34 +16,49 @@ const SHEET_MURID = 'SENARAI MURID';
  * Lajur bagi setiap kelas (dikira dari 0: A=0, B=1, C=2 ... Z=25, AA=26 ...).
  *   m  = lajur markah total
  *   g  = lajur gred (jika tiada, gred dikira automatik dari markah)
- *   tp = lajur TP
+ *   perincian = (pilihan) pecahan markah yang dipaparkan kepada murid
  * Jika susunan lajur dalam sheet berubah, ubah nombor di sini sahaja.
  */
 const PETA_KELAS = {
   '3 DAISY': {
-    awal:   { m: 5,  tp: 6 },            // F  TOTAL KUIZ 1
-    tengah: { m: 10, tp: 11 },           // K  TOTAL PPSA
-    akhir:  { m: 18, g: 19, tp: 20 }     // S  FULL TOTAL UASA
+    awal:   { m: 5 },            // F  TOTAL KUIZ 1
+    tengah: { m: 10 },           // K  TOTAL PPSA
+    akhir:  { m: 18, g: 19 }     // S  FULL TOTAL UASA
   },
   '3 JASMIN': {
-    awal:   { m: 5,  tp: 6 },            // F
-    tengah: { m: 10, tp: 11 },           // K
-    akhir:  { m: 18, g: 19, tp: 20 }     // S
+    awal:   { m: 5 },            // F
+    tengah: { m: 10 },           // K
+    akhir:  { m: 18, g: 19 }     // S
   },
   '3 ALAMANDA': {
-    awal:   { m: 6,  tp: 7 },            // G  KUIZ 1 TOTAL
-    tengah: { m: 11, g: 13, tp: 12 },    // L  TOTAL UPSA
-    akhir:  { m: 21, g: 22, tp: 23 }     // V  FULL TOTAL
+    awal:   { m: 6 },                    // G  KUIZ 1 TOTAL
+    tengah: { m: 11, g: 13 },            // L  TOTAL UPSA
+    akhir:  { m: 21, g: 22,              // V  FULL TOTAL
+      perincian: [
+        { label: 'UASA',       col: 18 },   // S
+        { label: 'Present',    col: 19 },   // T
+        { label: 'Buku Kerja', col: 20 }    // U
+      ]
+    }
   },
   '4 SAINS': {
-    awal:   { m: 5,  tp: 6 },            // F  TOTAL KUIZ 1
-    tengah: { m: 17, g: 15, tp: 18 },    // R  ALL ROUND (PPSA)
-    akhir:  { m: 30, g: 31, tp: 32 }     // AE AKHIR TAHUN
+    awal:   { m: 5 },                    // F  TOTAL KUIZ 1
+    tengah: { m: 17, g: 15 },            // R  ALL ROUND (PPSA)
+    akhir:  { m: 30, g: 31,              // AE AKHIR TAHUN
+      perincian: [
+        { label: 'K1',                        col: 24, max: 40 },   // Y
+        { label: 'K2',                        col: 25, max: 100 },  // Z
+        { label: 'K3',                        col: 26, max: 15 },   // AA
+        { label: 'Total (K1+K2+K3)',          col: 27, max: 100 },  // AB
+        { label: 'Markah Presentation + King', col: 28 },           // AC
+        { label: '5%',                        col: 29 }             // AD
+      ]
+    }
   },
   '5 SAINS ': {                          // nama sheet ada ruang di hujung
-    awal:   { m: 5,  tp: 6 },            // F  TOTAL KUIZ 1
-    tengah: { m: 14, g: 12, tp: 15 },    // O  PPSA
-    akhir:  { m: 22, g: 23, tp: 24 }     // W  TRIALS
+    awal:   { m: 5 },            // F  TOTAL KUIZ 1
+    tengah: { m: 14, g: 12 },    // O  PPSA
+    akhir:  { m: 22, g: 23 }     // W  TRIALS
   }
 };
 
@@ -112,7 +127,10 @@ function semakMarkah(noKp) {
       markah: markah.nilai,        // nombor atau null
       status: markah.status,       // '', 'TH', 'MC', 'TIADA'
       gred: markah.nilai === null ? '' : (gredSah(gredSheet) ? gredSheet : kiraGred(markah.nilai)),
-      tp: /^TP\d$/i.test(bersih(row[p.tp])) ? bersih(row[p.tp]).toUpperCase() : ''
+      perincian: (p.perincian || []).map(d => {
+        const v = bacaMarkah(row[d.col]);
+        return { label: d.label, nilai: v.nilai, status: v.status, max: d.max || null };
+      })
     };
   });
 

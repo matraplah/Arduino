@@ -1,6 +1,6 @@
 # Semakan Markah Sains 2026 (SMK Seri Pagi)
 
-Web app ringkas: murid masukkan No. KP, nampak markah **Awal Tahun, Pertengahan Tahun, Akhir Tahun** (markah total, gred, TP) mereka sendiri sahaja. Data dibaca terus dari Google Sheets "MARKAH PEPERIKSAAN TAHUN 2026 SMKSP".
+Web app ringkas: murid masukkan No. KP, nampak markah **Awal Tahun, Pertengahan Tahun, Akhir Tahun** (markah total dan gred) mereka sendiri sahaja. Data dibaca terus dari Google Sheets "MARKAH PEPERIKSAAN TAHUN 2026 SMKSP".
 
 ## Cara pasang (lebih kurang 10 minit)
 
@@ -25,6 +25,8 @@ Bila ada murid baru, jalankan semula `sediakanSenaraiMurid` (No. KP yang sudah d
 | 3 ALAMANDA | G (Kuiz 1 Total) | L (Total UPSA) | V (Full Total) |
 | 4 SAINS | F (Total Kuiz 1) | R (All Round PPSA) | AE (Akhir Tahun) |
 | 5 SAINS | F (Total Kuiz 1) | O (PPSA) | W (Trials) |
+
+Perincian Akhir Tahun turut dipaparkan untuk **4 SAINS** (K1, K2, K3, Total, Markah Presentation + King, 5%) dan **3 ALAMANDA** (UASA, Present, Buku Kerja, Full Total, Gred). TP tidak dipaparkan.
 
 Jika susunan lajur berubah, ubah nombor dalam `PETA_KELAS` di atas `Code.gs`. Gred diambil dari sheet; jika tiada lajur gred, ia dikira dengan skala A+ 90 … G 0–39.
 

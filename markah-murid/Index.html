@@ -72,7 +72,7 @@ button {
   padding: 13px 18px; width: 100%; background: var(--accent); color: var(--accent-ink);
 }
 button:hover { filter: brightness(1.08); }
-button:focus-visible, .link:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+button:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
 button[disabled] { opacity: .6; cursor: wait; }
 .error { background: var(--err-bg); color: var(--err); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; margin-top: 14px; }
 .demo { font-size: 12.5px; color: var(--muted); border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; }
@@ -83,13 +83,20 @@ button[disabled] { opacity: .6; cursor: wait; }
 .who h2 { font: 800 19px/1.3 var(--font-head); margin: 0; text-wrap: balance; min-width: 0; }
 .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
 .pill { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: var(--accent-soft); color: var(--ink); font-variant-numeric: tabular-nums; }
-.link { background: none; color: var(--accent); width: auto; padding: 4px 0; font-size: 13.5px; }
 .exams { display: flex; flex-direction: column; }
 .exam { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; padding: 18px 0; border-top: 1px solid var(--line); }
 .exam:first-child { border-top: 0; padding-top: 4px; }
 .exam .name { font: 700 15px var(--font-head); }
-.exam .tp { font-size: 12.5px; color: var(--muted); }
-.score { grid-row: span 2; display: flex; align-items: center; gap: 12px; }
+.detail { grid-column: 1 / -1; margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.detail .cap { font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; background: var(--bg); }
+.detail table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.detail td { padding: 8px 12px; border-top: 1px solid var(--line); font-size: 14px; }
+.detail td:last-child { text-align: right; font-weight: 600; white-space: nowrap; }
+.detail td small { color: var(--muted); font-weight: 400; }
+.detail tr.sum td { background: var(--accent-soft); font-weight: 700; }
+.btn-out { background: var(--paper); color: var(--accent); border: 1.5px solid var(--accent); }
+.btn-out:hover { background: var(--accent-soft); filter: none; }
+.score { display: flex; align-items: center; gap: 12px; }
 .num { font: 800 28px/1 var(--font-head); font-variant-numeric: tabular-nums; text-align: right; }
 .num small { font: 500 12px var(--font-body); color: var(--muted); display: block; margin-top: 3px; }
 .gred { min-width: 46px; text-align: center; font: 800 18px/1 var(--font-head); padding: 10px 6px; border-radius: 10px; }
@@ -127,7 +134,7 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
   </section>
 
   <div id="demo" class="demo" hidden>
-    Paparan contoh dengan data rekaan. Cuba No. KP: <code>080512-10-1234</code>, <code>100304-14-5678</code> atau <code>090921-08-2468</code>.
+    Paparan contoh dengan data rekaan. Cuba No. KP: <code>080512-10-1234</code> (4 Sains), <code>070815-06-1357</code> (3 Alamanda), <code>100304-14-5678</code> (3 Daisy) atau <code>090921-08-2468</code> (5 Sains).
   </div>
 
   <!-- RESULT -->
@@ -137,10 +144,11 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
         <h2 id="r-nama"></h2>
         <div class="meta"><span class="pill" id="r-kelas"></span><span class="pill" id="r-ic"></span></div>
       </div>
-      <button class="link" id="logout" type="button">Log keluar</button>
     </div>
     <div class="exams" id="r-exams" style="margin-top:18px"></div>
   </section>
+
+  <button class="btn-out" id="logout" type="button" hidden>Log Keluar</button>
 
   <p class="scale" id="scale" hidden>
     Skala gred: <b>A+</b> 90–100 · <b>A</b> 80–89 · <b>A-</b> 70–79 · <b>B+</b> 65–69 · <b>B</b> 60–64 ·
@@ -158,9 +166,12 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
 
   // Data rekaan untuk paparan contoh sahaja (bukan murid sebenar)
   var DEMO = {
-    '080512101234': { nama: 'NUR AISYAH BINTI AHMAD', kelas: '4 SAINS', a: [78, 'A-', 'TP4'], t: [85, 'A', 'TP5'], k: [91.5, 'A+', 'TP6'] },
-    '100304145678': { nama: 'MUHAMMAD HAZIQ BIN ROSLAN', kelas: '3 DAISY', a: [47, 'D', 'TP3'], t: [null, 'TH', ''], k: [38, 'G', 'TP2'] },
-    '090921082468': { nama: 'TAN WEI LING', kelas: '5 SAINS', a: [63, 'B', 'TP3'], t: [57, 'C+', 'TP4'], k: [72, 'A-', 'TP5'] }
+    '080512101234': { nama: 'NUR AISYAH BINTI AHMAD', kelas: '4 SAINS', a: [78, 'A-'], t: [85, 'A'], k: [81.25, 'A'],
+      d: [['K1', 31, 40], ['K2', 82, 100], ['K3', 11, 15], ['Total (K1+K2+K3)', 80, 100], ['Markah Presentation + King', 4.25], ['5%', 1]] },
+    '100304145678': { nama: 'MUHAMMAD HAZIQ BIN ROSLAN', kelas: '3 DAISY', a: [47, 'D'], t: [null, 'TH'], k: [38, 'G'] },
+    '070815061357': { nama: 'SITI NUR IMAN BINTI ZAKARIA', kelas: '3 ALAMANDA', a: [57, 'C+'], t: [45, 'D'], k: [39.84, 'G'],
+      d: [['UASA', 22], ['Present', 7.84], ['Buku Kerja', 10]] },
+    '090921082468': { nama: 'TAN WEI LING', kelas: '5 SAINS', a: [63, 'B'], t: [57, 'C+'], k: [72, 'A-'] }
   };
   function demoLookup(ic, done) {
     var d = DEMO[ic.replace(/\D/g, '')];
@@ -171,7 +182,8 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
       var c = ic.replace(/\D/g, '');
       done({ ok: true, murid: { nama: d.nama, kelas: d.kelas, ic: c.slice(0, 6) + '-••-' + c.slice(8) },
         peperiksaan: [d.a, d.t, d.k].map(function (x, i) {
-          return { nama: n[i], markah: x[0], status: x[0] === null ? x[1] : '', gred: x[0] === null ? '' : x[1], tp: x[2] };
+          return { nama: n[i], markah: x[0], status: x[0] === null ? x[1] : '', gred: x[0] === null ? '' : x[1],
+            perincian: i === 2 && d.d ? d.d.map(function (q) { return { label: q[0], nilai: q[1], status: '', max: q[2] || null }; }) : [] };
         }) });
     }, 350);
   }
@@ -204,7 +216,8 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
   });
 
   $('logout').addEventListener('click', function () {
-    $('result').hidden = true; $('scale').hidden = true; $('login').hidden = false;
+    $('result').hidden = true; $('scale').hidden = true; $('logout').hidden = true; $('login').hidden = false;
+    $('r-exams').innerHTML = ''; $('err').hidden = true;
     $('ic').value = ''; $('ic').focus();
   });
 
@@ -224,7 +237,7 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
     $('r-ic').textContent = res.murid.ic;
     $('r-exams').innerHTML = res.peperiksaan.map(function (p) {
       var ada = p.markah !== null && p.markah !== undefined;
-      var m = ada ? (Math.round(p.markah * 10) / 10) : null;
+      var m = ada ? (Math.round(p.markah * 100) / 100) : null;
       return '<div class="exam">' +
         '<div class="name">' + esc(p.nama) + '</div>' +
         '<div class="score">' +
@@ -232,11 +245,26 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
                : '<div class="status">' + esc(STATUS[p.status] || 'Belum ada markah') + '</div>') +
           '<div class="gred ' + kelasGred(p.gred) + '">' + (p.gred ? esc(p.gred) : (p.status === 'TH' ? 'TH' : '–')) + '</div>' +
         '</div>' +
-        '<div class="tp">' + (p.tp ? 'Tahap Penguasaan: ' + esc(p.tp) : '&nbsp;') + '</div>' +
         '<div class="bar"><i style="width:' + (ada ? Math.max(0, Math.min(100, m)) : 0) + '%"></i></div>' +
+        perincian(p) +
       '</div>';
     }).join('');
-    $('login').hidden = true; $('result').hidden = false; $('scale').hidden = false;
+    $('login').hidden = true; $('result').hidden = false; $('scale').hidden = false; $('logout').hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  function nombor(v) { return Math.round(v * 100) / 100; }
+  function perincian(p) {
+    if (!p.perincian || !p.perincian.length) return '';
+    var rows = p.perincian.map(function (d) {
+      var v = d.nilai === null || d.nilai === undefined
+        ? (d.status === 'TH' ? 'TH' : '–')
+        : nombor(d.nilai) + (d.max ? ' <small>/ ' + d.max + '</small>' : '');
+      return '<tr><td>' + esc(d.label) + '</td><td>' + v + '</td></tr>';
+    }).join('');
+    var jumlah = p.markah === null || p.markah === undefined ? '–' : nombor(p.markah);
+    return '<div class="detail"><div class="cap">Perincian markah</div><table>' + rows +
+      '<tr class="sum"><td>Markah Akhir' + (p.gred ? ' · Gred ' + esc(p.gred) : '') + '</td><td>' + jumlah + '</td></tr></table></div>';
   }
 })();
 </script>
