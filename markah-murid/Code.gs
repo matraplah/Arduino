@@ -147,7 +147,10 @@ function semakMarkah(noKp) {
 
 /* ---------------------------- pembantu ---------------------------- */
 
-function bersihkanIc(v) { return String(v || '').replace(/\D/g, ''); }
+function bersihkanIc(v) {
+  const d = String(v || '').replace(/\D/g, '');
+  return d.length === 11 ? '0' + d : d; // No. KP lahir 2000-2009 kadang-kadang hilang sifar di depan
+}
 function bersih(v) { return String(v == null ? '' : v).trim(); }
 function normalNama(v) { return bersih(v).toUpperCase().replace(/\s+/g, ' '); }
 
