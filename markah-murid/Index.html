@@ -1,0 +1,242 @@
+<title>Semakan Markah Sains 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: one narrow column, a school report slip; login card first, then three exam rows in order */
+:root {
+  --bg: #eef3f1;
+  --paper: #ffffff;
+  --ink: #142421;
+  --muted: #5d6f6b;
+  --line: #d6e1de;
+  --accent: #0e6b5a;
+  --accent-ink: #ffffff;
+  --accent-soft: #dcefe9;
+  --g-top: #0e7a4f;   --g-top-bg: #d9f2e5;
+  --g-mid: #1d5f99;   --g-mid-bg: #dde9f6;
+  --g-low: #9a5a07;   --g-low-bg: #fbecd3;
+  --g-fail: #b3261e;  --g-fail-bg: #fbe1df;
+  --err-bg: #fbe1df;  --err: #8c1d17;
+  --font-head: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1614; --paper: #15211e; --ink: #e5eeeb; --muted: #94a8a3; --line: #263632;
+    --accent: #3fbf9f; --accent-ink: #062019; --accent-soft: #173a32;
+    --g-top: #5fd39c; --g-top-bg: #143728; --g-mid: #82b6ec; --g-mid-bg: #172c42;
+    --g-low: #f0b45a; --g-low-bg: #3a2a10; --g-fail: #f2877f; --g-fail-bg: #3d1a18;
+    --err-bg: #3d1a18; --err: #f6b0aa;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1614; --paper: #15211e; --ink: #e5eeeb; --muted: #94a8a3; --line: #263632;
+  --accent: #3fbf9f; --accent-ink: #062019; --accent-soft: #173a32;
+  --g-top: #5fd39c; --g-top-bg: #143728; --g-mid: #82b6ec; --g-mid-bg: #172c42;
+  --g-low: #f0b45a; --g-low-bg: #3a2a10; --g-fail: #f2877f; --g-fail-bg: #3d1a18;
+  --err-bg: #3d1a18; --err: #f6b0aa;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.55 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 48px;
+}
+.wrap { max-width: 460px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.crest {
+  width: 44px; height: 44px; border-radius: 12px; flex: none;
+  background: var(--accent); color: var(--accent-ink);
+  display: grid; place-items: center; font: 800 15px var(--font-head); letter-spacing: .02em;
+}
+.brand small { display: block; color: var(--muted); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.brand strong { font: 700 16px var(--font-head); }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+h1 { font: 800 24px/1.2 var(--font-head); margin: 0 0 6px; text-wrap: balance; }
+.lead { margin: 0 0 20px; color: var(--muted); }
+label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; }
+input {
+  width: 100%; font: 600 20px var(--font-body); letter-spacing: .06em;
+  font-variant-numeric: tabular-nums; padding: 12px 14px; border-radius: 10px;
+  border: 1.5px solid var(--line); background: var(--bg); color: var(--ink);
+}
+input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.hint { font-size: 12.5px; color: var(--muted); margin: 6px 0 18px; }
+button {
+  font: 700 15px var(--font-head); border: 0; border-radius: 10px; cursor: pointer;
+  padding: 13px 18px; width: 100%; background: var(--accent); color: var(--accent-ink);
+}
+button:hover { filter: brightness(1.08); }
+button:focus-visible, .link:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+button[disabled] { opacity: .6; cursor: wait; }
+.error { background: var(--err-bg); color: var(--err); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; margin-top: 14px; }
+.demo { font-size: 12.5px; color: var(--muted); border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; }
+.demo code { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 600; }
+
+/* result */
+.who { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.who h2 { font: 800 19px/1.3 var(--font-head); margin: 0; text-wrap: balance; min-width: 0; }
+.meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.pill { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: var(--accent-soft); color: var(--ink); font-variant-numeric: tabular-nums; }
+.link { background: none; color: var(--accent); width: auto; padding: 4px 0; font-size: 13.5px; }
+.exams { display: flex; flex-direction: column; }
+.exam { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; padding: 18px 0; border-top: 1px solid var(--line); }
+.exam:first-child { border-top: 0; padding-top: 4px; }
+.exam .name { font: 700 15px var(--font-head); }
+.exam .tp { font-size: 12.5px; color: var(--muted); }
+.score { grid-row: span 2; display: flex; align-items: center; gap: 12px; }
+.num { font: 800 28px/1 var(--font-head); font-variant-numeric: tabular-nums; text-align: right; }
+.num small { font: 500 12px var(--font-body); color: var(--muted); display: block; margin-top: 3px; }
+.gred { min-width: 46px; text-align: center; font: 800 18px/1 var(--font-head); padding: 10px 6px; border-radius: 10px; }
+.gred.top { background: var(--g-top-bg); color: var(--g-top); }
+.gred.mid { background: var(--g-mid-bg); color: var(--g-mid); }
+.gred.low { background: var(--g-low-bg); color: var(--g-low); }
+.gred.fail { background: var(--g-fail-bg); color: var(--g-fail); }
+.gred.none { background: var(--bg); color: var(--muted); font-size: 13px; }
+.bar { grid-column: 1 / -1; height: 6px; border-radius: 99px; background: var(--bg); overflow: hidden; margin-top: 8px; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+.status { font-size: 13px; font-weight: 600; color: var(--muted); }
+.scale { font-size: 12px; color: var(--muted); line-height: 1.7; }
+.scale b { color: var(--ink); font-weight: 600; }
+footer { text-align: center; font-size: 12px; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { .bar i { transition: width .6s ease; } }
+</style>
+
+<div class="wrap">
+  <div class="brand">
+    <div class="crest">SP</div>
+    <div><small>SMK Seri Pagi · 2026</small><strong>Semakan Markah Sains</strong></div>
+  </div>
+
+  <!-- LOGIN -->
+  <section id="login" class="card">
+    <h1>Semak markah anda</h1>
+    <p class="lead">Masukkan No. Kad Pengenalan anda untuk melihat markah Awal, Pertengahan dan Akhir Tahun.</p>
+    <form id="form" novalidate>
+      <label for="ic">No. Kad Pengenalan</label>
+      <input id="ic" inputmode="numeric" autocomplete="off" placeholder="080512-10-1234" maxlength="14">
+      <p class="hint">12 digit. Sempang (-) tidak wajib.</p>
+      <button id="btn" type="submit">Semak Markah</button>
+      <div id="err" class="error" hidden></div>
+    </form>
+  </section>
+
+  <div id="demo" class="demo" hidden>
+    Paparan contoh dengan data rekaan. Cuba No. KP: <code>080512-10-1234</code>, <code>100304-14-5678</code> atau <code>090921-08-2468</code>.
+  </div>
+
+  <!-- RESULT -->
+  <section id="result" class="card" hidden>
+    <div class="who">
+      <div>
+        <h2 id="r-nama"></h2>
+        <div class="meta"><span class="pill" id="r-kelas"></span><span class="pill" id="r-ic"></span></div>
+      </div>
+      <button class="link" id="logout" type="button">Log keluar</button>
+    </div>
+    <div class="exams" id="r-exams" style="margin-top:18px"></div>
+  </section>
+
+  <p class="scale" id="scale" hidden>
+    Skala gred: <b>A+</b> 90–100 · <b>A</b> 80–89 · <b>A-</b> 70–79 · <b>B+</b> 65–69 · <b>B</b> 60–64 ·
+    <b>C+</b> 55–59 · <b>C</b> 50–54 · <b>D</b> 45–49 · <b>E</b> 40–44 · <b>G</b> 0–39.
+    TH = tidak hadir.
+  </p>
+
+  <footer>Sebarang pertanyaan tentang markah, sila hubungi guru mata pelajaran.</footer>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var LIVE = typeof google !== 'undefined' && google.script && google.script.run;
+
+  // Data rekaan untuk paparan contoh sahaja (bukan murid sebenar)
+  var DEMO = {
+    '080512101234': { nama: 'NUR AISYAH BINTI AHMAD', kelas: '4 SAINS', a: [78, 'A-', 'TP4'], t: [85, 'A', 'TP5'], k: [91.5, 'A+', 'TP6'] },
+    '100304145678': { nama: 'MUHAMMAD HAZIQ BIN ROSLAN', kelas: '3 DAISY', a: [47, 'D', 'TP3'], t: [null, 'TH', ''], k: [38, 'G', 'TP2'] },
+    '090921082468': { nama: 'TAN WEI LING', kelas: '5 SAINS', a: [63, 'B', 'TP3'], t: [57, 'C+', 'TP4'], k: [72, 'A-', 'TP5'] }
+  };
+  function demoLookup(ic, done) {
+    var d = DEMO[ic.replace(/\D/g, '')];
+    setTimeout(function () {
+      if (ic.replace(/\D/g, '').length !== 12) return done({ ok: false, mesej: 'No. Kad Pengenalan mesti 12 digit.' });
+      if (!d) return done({ ok: false, mesej: 'No. Kad Pengenalan tidak dijumpai. Semak semula atau hubungi guru kelas.' });
+      var n = ['Awal Tahun', 'Pertengahan Tahun', 'Akhir Tahun'];
+      var c = ic.replace(/\D/g, '');
+      done({ ok: true, murid: { nama: d.nama, kelas: d.kelas, ic: c.slice(0, 6) + '-••-' + c.slice(8) },
+        peperiksaan: [d.a, d.t, d.k].map(function (x, i) {
+          return { nama: n[i], markah: x[0], status: x[0] === null ? x[1] : '', gred: x[0] === null ? '' : x[1], tp: x[2] };
+        }) });
+    }, 350);
+  }
+
+  if (!LIVE) $('demo').hidden = false;
+
+  // format 080512-10-1234 semasa menaip
+  $('ic').addEventListener('input', function (e) {
+    var v = e.target.value.replace(/\D/g, '').slice(0, 12);
+    if (v.length > 8) v = v.slice(0, 6) + '-' + v.slice(6, 8) + '-' + v.slice(8);
+    else if (v.length > 6) v = v.slice(0, 6) + '-' + v.slice(6);
+    e.target.value = v;
+  });
+
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var ic = $('ic').value;
+    $('err').hidden = true;
+    $('btn').disabled = true; $('btn').textContent = 'Menyemak…';
+    var done = function (res) {
+      $('btn').disabled = false; $('btn').textContent = 'Semak Markah';
+      if (!res || !res.ok) { $('err').textContent = (res && res.mesej) || 'Ralat. Cuba lagi.'; $('err').hidden = false; return; }
+      tunjuk(res);
+    };
+    if (LIVE) {
+      google.script.run.withSuccessHandler(done)
+        .withFailureHandler(function () { done({ ok: false, mesej: 'Sambungan gagal. Cuba lagi sebentar.' }); })
+        .semakMarkah(ic);
+    } else demoLookup(ic, done);
+  });
+
+  $('logout').addEventListener('click', function () {
+    $('result').hidden = true; $('scale').hidden = true; $('login').hidden = false;
+    $('ic').value = ''; $('ic').focus();
+  });
+
+  function kelasGred(g) {
+    if (!g) return 'none';
+    if (g.charAt(0) === 'A') return 'top';
+    if (g.charAt(0) === 'B' || g.charAt(0) === 'C') return 'mid';
+    if (g === 'D' || g === 'E') return 'low';
+    return 'fail';
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var STATUS = { TH: 'Tidak hadir', MC: 'Cuti sakit (MC)', TIADA: 'Belum ada markah' };
+
+  function tunjuk(res) {
+    $('r-nama').textContent = res.murid.nama;
+    $('r-kelas').textContent = 'Tingkatan ' + res.murid.kelas;
+    $('r-ic').textContent = res.murid.ic;
+    $('r-exams').innerHTML = res.peperiksaan.map(function (p) {
+      var ada = p.markah !== null && p.markah !== undefined;
+      var m = ada ? (Math.round(p.markah * 10) / 10) : null;
+      return '<div class="exam">' +
+        '<div class="name">' + esc(p.nama) + '</div>' +
+        '<div class="score">' +
+          (ada ? '<div class="num">' + m + '<small>/ 100</small></div>'
+               : '<div class="status">' + esc(STATUS[p.status] || 'Belum ada markah') + '</div>') +
+          '<div class="gred ' + kelasGred(p.gred) + '">' + (p.gred ? esc(p.gred) : (p.status === 'TH' ? 'TH' : '–')) + '</div>' +
+        '</div>' +
+        '<div class="tp">' + (p.tp ? 'Tahap Penguasaan: ' + esc(p.tp) : '&nbsp;') + '</div>' +
+        '<div class="bar"><i style="width:' + (ada ? Math.max(0, Math.min(100, m)) : 0) + '%"></i></div>' +
+      '</div>';
+    }).join('');
+    $('login').hidden = true; $('result').hidden = false; $('scale').hidden = false;
+  }
+})();
+</script>
