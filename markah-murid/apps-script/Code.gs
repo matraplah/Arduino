@@ -1,10 +1,10 @@
 /**
  * SEMAKAN MARKAH SAINS 2026 - SMK SERI PAGI
- * Google Apps Script web app.
+ * "Enjin" carian (Google Apps Script). Halaman web murid berada di Netlify.
  *
- * Murid log masuk dengan No. Kad Pengenalan dan hanya nampak markah sendiri.
- * Carian dibuat di server (Apps Script), jadi data murid lain TIDAK dihantar
- * ke telefon / komputer murid.
+ * Halaman Netlify menghantar No. KP ke sini; skrip ini mencari dalam Google Sheet
+ * dan memulangkan markah murid itu SAHAJA. Data murid lain tidak pernah keluar
+ * dari Google Sheet.
  */
 
 const SPREADSHEET_ID = '1vwQgwPeT9XmVuIXO2H1zUSBmcBuWVZI6NPjV2emim3c';
@@ -50,8 +50,8 @@ const PETA_KELAS = {
         { label: 'K2',                        col: 25, max: 100 },  // Z
         { label: 'K3',                        col: 26, max: 15 },   // AA
         { label: 'Jumlah K1+K2+K3 (÷155 × 100)', col: 27, max: 100, garis: true }, // AB
-        { label: '+ Markah Presentation + King', col: 28 },        // AC
-        { label: '+ Guru Muda (5%)',          col: 29 }             // AD
+        { label: '+ Markah Presentation (5%)', col: 28 },          // AC
+        { label: '+ King + Guru Muda (5%)',   col: 29 }             // AD
       ]
     }
   },
@@ -95,10 +95,24 @@ const PEMENANG_PRESENTATION = [
 
 /* ------------------------------------------------------------------ */
 
+/** Halaman Netlify memanggil ini dengan { "ic": "..." }. */
+function doPost(e) {
+  let ic = '';
+  try { ic = JSON.parse(e.postData.contents).ic; } catch (err) { /* abaikan */ }
+  let hasil;
+  try { hasil = semakMarkah(ic); }
+  catch (err) { hasil = { ok: false, mesej: 'Ralat sistem. Sila cuba lagi atau hubungi guru.' }; }
+  return keJson(hasil);
+}
+
+/** Buka URL web app dalam browser untuk semak ia berfungsi. */
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('Semakan Markah Sains 2026')
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  return keJson({ ok: true, mesej: 'Enjin Semakan Markah aktif.' });
+}
+
+function keJson(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 /** Dipanggil dari halaman login. Pulangkan markah murid itu sahaja. */

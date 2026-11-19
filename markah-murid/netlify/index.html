@@ -1,5 +1,9 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
 <title>Semakan Markah Sains 2026</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Inter:wght@400;500;600&display=swap">
 <style>
@@ -124,6 +128,8 @@ button[disabled] { opacity: .6; cursor: wait; }
 footer { text-align: center; font-size: 12px; color: var(--muted); }
 @media (prefers-reduced-motion: no-preference) { .bar i { transition: width .6s ease; } }
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <div class="brand">
@@ -184,13 +190,16 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var LIVE = typeof google !== 'undefined' && google.script && google.script.run;
+  // ===== TAMPAL URL WEB APP APPS SCRIPT DI SINI (bermula https://script.google.com/macros/s/...) =====
+  var API_URL = '';
+  // Jika kosong, halaman ini guna data contoh (rekaan) sahaja.
+  var LIVE = /^https:\/\/script\.google\.com\//.test(API_URL);
 
   // Data rekaan untuk paparan contoh sahaja (bukan murid sebenar)
   var DEMO = {
     '080512101234': { nama: 'NUR AISYAH BINTI AHMAD', kelas: '4 SAINS', a: [78, 'A-'], t: [85, 'A'], k: [85.25, 'A'],
       w: { tempat: 1, hadiah: 'RM100', tajuk: '2.3 Gerakan Jatuh Bebas' },
-      d: [['K1', 31, 40], ['K2', 82, 100], ['K3', 11, 15], ['Jumlah K1+K2+K3 (÷155 × 100)', 80, 100, 1], ['+ Markah Presentation + King', 4.25], ['+ Guru Muda (5%)', 1]] },
+      d: [['K1', 31, 40], ['K2', 82, 100], ['K3', 11, 15], ['Jumlah K1+K2+K3 (÷155 × 100)', 80, 100, 1], ['+ Markah Presentation (5%)', 4.25], ['+ King + Guru Muda (5%)', 1]] },
     '100304145678': { nama: 'MUHAMMAD HAZIQ BIN ROSLAN', kelas: '3 DAISY', a: [47, 'D'], t: [null, 'TH'], k: [38, 'G'] },
     '070815061357': { nama: 'SITI NUR IMAN BINTI ZAKARIA', kelas: '3 ALAMANDA', a: [57, 'C+'], t: [45, 'D'], k: [39.84, 'G'],
       w: { tempat: 3, hadiah: 'RM50', tajuk: '' },
@@ -233,9 +242,10 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
       tunjuk(res);
     };
     if (LIVE) {
-      google.script.run.withSuccessHandler(done)
-        .withFailureHandler(function () { done({ ok: false, mesej: 'Sambungan gagal. Cuba lagi sebentar.' }); })
-        .semakMarkah(ic);
+      fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ic: ic }) })
+        .then(function (r) { return r.json(); })
+        .then(done)
+        .catch(function () { done({ ok: false, mesej: 'Sambungan gagal. Semak internet dan cuba lagi.' }); });
     } else demoLookup(ic, done);
   });
 
@@ -309,3 +319,6 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
   }
 })();
 </script>
+
+</body>
+</html>
