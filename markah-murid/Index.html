@@ -18,6 +18,7 @@
   --g-low: #9a5a07;   --g-low-bg: #fbecd3;
   --g-fail: #b3261e;  --g-fail-bg: #fbe1df;
   --err-bg: #fbe1df;  --err: #8c1d17;
+  --gold: #8a5a00; --gold-bg: #fdf3d8; --gold-line: #ecd08a;
   --font-head: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
   --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
 }
@@ -28,6 +29,7 @@
     --g-top: #5fd39c; --g-top-bg: #143728; --g-mid: #82b6ec; --g-mid-bg: #172c42;
     --g-low: #f0b45a; --g-low-bg: #3a2a10; --g-fail: #f2877f; --g-fail-bg: #3d1a18;
     --err-bg: #3d1a18; --err: #f6b0aa;
+    --gold: #f2c96a; --gold-bg: #33280f; --gold-line: #5e4a1a;
     color-scheme: dark;
   }
 }
@@ -37,6 +39,7 @@
   --g-top: #5fd39c; --g-top-bg: #143728; --g-mid: #82b6ec; --g-mid-bg: #172c42;
   --g-low: #f0b45a; --g-low-bg: #3a2a10; --g-fail: #f2877f; --g-fail-bg: #3d1a18;
   --err-bg: #3d1a18; --err: #f6b0aa;
+  --gold: #f2c96a; --gold-bg: #33280f; --gold-line: #5e4a1a;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -95,6 +98,13 @@ button[disabled] { opacity: .6; cursor: wait; }
 .detail td small { color: var(--muted); font-weight: 400; }
 .detail tr.sub td { border-top: 1.5px solid var(--muted); font-weight: 600; }
 .detail tr.sum td { background: var(--accent-soft); font-weight: 700; }
+.prize { display: flex; gap: 16px; align-items: flex-start; background: var(--gold-bg); border: 1.5px solid var(--gold-line); border-radius: 16px; padding: 20px; }
+.medal { flex: none; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--gold-bg); font: 800 24px/1 var(--font-head); }
+.prize h3 { margin: 0 0 4px; font: 800 18px/1.3 var(--font-head); color: var(--gold); text-wrap: balance; }
+.prize p { margin: 0; }
+.prize .meta { margin-top: 10px; }
+.prize .pill { background: var(--paper); }
+.prize .tebus { margin-top: 12px; font-size: 13.5px; font-weight: 600; }
 .btn-out { background: var(--paper); color: var(--accent); border: 1.5px solid var(--accent); }
 .btn-out:hover { background: var(--accent-soft); filter: none; }
 .score { display: flex; align-items: center; gap: 12px; }
@@ -138,6 +148,17 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
     Paparan contoh dengan data rekaan. Cuba No. KP: <code>080512-10-1234</code> (4 Sains), <code>070815-06-1357</code> (3 Alamanda), <code>100304-14-5678</code> (3 Daisy) atau <code>090921-08-2468</code> (5 Sains).
   </div>
 
+  <!-- TAHNIAH -->
+  <section id="prize" class="prize" hidden>
+    <div class="medal" id="p-no"></div>
+    <div style="min-width:0">
+      <h3 id="p-tajuk"></h3>
+      <p id="p-teks"></p>
+      <div class="meta"><span class="pill" id="p-hadiah"></span><span class="pill" id="p-topik" hidden></span></div>
+      <p class="tebus">Ketua kumpulan, sila chat cikgu untuk menebus hadiah.</p>
+    </div>
+  </section>
+
   <!-- RESULT -->
   <section id="result" class="card" hidden>
     <div class="who">
@@ -168,9 +189,11 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
   // Data rekaan untuk paparan contoh sahaja (bukan murid sebenar)
   var DEMO = {
     '080512101234': { nama: 'NUR AISYAH BINTI AHMAD', kelas: '4 SAINS', a: [78, 'A-'], t: [85, 'A'], k: [85.25, 'A'],
+      w: { tempat: 1, hadiah: 'RM100', tajuk: '2.3 Gerakan Jatuh Bebas' },
       d: [['K1', 31, 40], ['K2', 82, 100], ['K3', 11, 15], ['Jumlah K1+K2+K3 (÷155 × 100)', 80, 100, 1], ['+ Markah Presentation + King', 4.25], ['+ Guru Muda (5%)', 1]] },
     '100304145678': { nama: 'MUHAMMAD HAZIQ BIN ROSLAN', kelas: '3 DAISY', a: [47, 'D'], t: [null, 'TH'], k: [38, 'G'] },
     '070815061357': { nama: 'SITI NUR IMAN BINTI ZAKARIA', kelas: '3 ALAMANDA', a: [57, 'C+'], t: [45, 'D'], k: [39.84, 'G'],
+      w: { tempat: 3, hadiah: 'RM50', tajuk: '' },
       d: [['UASA', 22], ['Present', 7.84], ['Buku Kerja', 10]] },
     '090921082468': { nama: 'TAN WEI LING', kelas: '5 SAINS', a: [63, 'B'], t: [57, 'C+'], k: [72, 'A-'] }
   };
@@ -181,7 +204,7 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
       if (!d) return done({ ok: false, mesej: 'No. Kad Pengenalan tidak dijumpai. Semak semula atau hubungi guru kelas.' });
       var n = ['Awal Tahun', 'Pertengahan Tahun', 'Akhir Tahun'];
       var c = ic.replace(/\D/g, '');
-      done({ ok: true, murid: { nama: d.nama, kelas: d.kelas, ic: c.slice(0, 6) + '-••-' + c.slice(8) },
+      done({ ok: true, tahniah: d.w || null, murid: { nama: d.nama, kelas: d.kelas, ic: c.slice(0, 6) + '-••-' + c.slice(8) },
         peperiksaan: [d.a, d.t, d.k].map(function (x, i) {
           return { nama: n[i], markah: x[0], status: x[0] === null ? x[1] : '', gred: x[0] === null ? '' : x[1],
             perincian: i === 2 && d.d ? d.d.map(function (q) { return { label: q[0], nilai: q[1], status: '', max: q[2] || null, garis: !!q[3] }; }) : [] };
@@ -217,7 +240,7 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
   });
 
   $('logout').addEventListener('click', function () {
-    $('result').hidden = true; $('scale').hidden = true; $('logout').hidden = true; $('login').hidden = false;
+    $('result').hidden = true; $('scale').hidden = true; $('logout').hidden = true; $('prize').hidden = true; $('login').hidden = false;
     $('r-exams').innerHTML = ''; $('err').hidden = true;
     $('ic').value = ''; $('ic').focus();
   });
@@ -250,8 +273,25 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
         perincian(p) +
       '</div>';
     }).join('');
+    tunjukTahniah(res.tahniah, res.murid.nama);
     $('login').hidden = true; $('result').hidden = false; $('scale').hidden = false; $('logout').hidden = false;
     window.scrollTo(0, 0);
+  }
+
+  var TEMPAT = { 1: 'tempat pertama (Johan)', 2: 'tempat kedua (Naib Johan)', 3: 'tempat ketiga', 4: 'tempat keempat', 5: 'tempat kelima' };
+  function namaPanggilan(n) {
+    var s = String(n).split(/\s+(?:BIN|BINTI|A\/L|A\/P)\s+/i)[0];
+    return s.toLowerCase().replace(/(^|[\s'-])(\S)/g, function (m, a, b) { return a + b.toUpperCase(); });
+  }
+  function tunjukTahniah(t, nama) {
+    if (!t) { $('prize').hidden = true; return; }
+    $('p-no').textContent = t.tempat;
+    $('p-tajuk').textContent = 'Tahniah, ' + namaPanggilan(nama) + '!';
+    $('p-teks').textContent = 'Anda mendapat ' + (TEMPAT[t.tempat] || 'tempat ke-' + t.tempat) + ' untuk sesi presentation.';
+    $('p-hadiah').textContent = 'Hadiah kumpulan: ' + t.hadiah;
+    $('p-topik').textContent = t.tajuk || '';
+    $('p-topik').hidden = !t.tajuk;
+    $('prize').hidden = false;
   }
 
   function nombor(v) { return Math.round(v * 100) / 100; }

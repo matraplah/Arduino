@@ -68,6 +68,31 @@ const LABEL_PEPERIKSAAN = {
   akhir: 'Akhir Tahun'
 };
 
+/**
+ * PEMENANG SESI PRESENTATION.
+ * Murid yang namanya ada di sini akan nampak mesej tahniah selepas log masuk.
+ * Nama mesti sama seperti dalam sheet kelas. Kosongkan senarai untuk buang mesej.
+ */
+const PEMENANG_PRESENTATION = [
+  // ---- 3 ALAMANDA ----
+  { kelas: '3 ALAMANDA', tempat: 1, hadiah: 'RM100', ahli: ['AKMAL HARITH BIN MOHD AMRI', 'MUHAMMAD AKID BIN MOHD KHAIRUL HISHAM'] },
+  { kelas: '3 ALAMANDA', tempat: 2, hadiah: 'RM70',  ahli: ['MUHAMMAD ADAM CHOY BIN ISWAN CHOY', 'AIMAN HAFIZ BIN FADZLY SANI'] },
+  { kelas: '3 ALAMANDA', tempat: 3, hadiah: 'RM50',  ahli: ['NOR FARHANIZAN BATRISYA BINTI AZIZAN', 'NOREEN JESSENIA YONG BINTI NOR AZMAN YONG'] },
+  { kelas: '3 ALAMANDA', tempat: 4, hadiah: 'RM30',  ahli: ['NURSYARAFANA AFIFAH BINTI SYAHRUL AMRI', 'NURSYARAFANA AFIQAH BINTI SYAHRUL AMRI'] },
+  { kelas: '3 ALAMANDA', tempat: 5, hadiah: 'RM20',  ahli: ['KHAIRUL ZAKWAN BIN MOHD ROHADY', 'AARON RIZQIN BIN MOHD SAIFUL HAZLANI'] },
+  // ---- 4 SAINS ----
+  { kelas: '4 SAINS', tempat: 1, hadiah: 'RM100', tajuk: '2.3 Gerakan Jatuh Bebas',
+    ahli: ['MUHAMMAD IRSYAD IZZ BIN ANUAR', 'AMIR BIN KHAIRUL HISHAM'] },
+  { kelas: '4 SAINS', tempat: 2, hadiah: 'RM70',  tajuk: '2.7 Impuls dan Daya Impuls',
+    ahli: ['AMIRAH HAFIZAH BINTI MOHD HAIDI', 'MAISARAH BINTI SHAIFUL HAFIZ', 'WAN NUR HUMAIRA BINTI WAN AZFARUDDIN'] },
+  { kelas: '4 SAINS', tempat: 3, hadiah: 'RM50',  tajuk: '3.3 Satelit Buatan Manusia',
+    ahli: ['AHMAD FAIZ MURTADZA BIN BADRUDDIN', 'AHMAD IZZUL IMAN BIN AMIRRUDIN'] },
+  { kelas: '4 SAINS', tempat: 4, hadiah: 'RM30',  tajuk: '2.1 Gerakan Linear',
+    ahli: ['NUR DAMIA NAZIFA BINTI AHMAD FAZLI', 'BATRISYA UMAIRAH BINTI MOHD AZIZUL HAKIM'] },
+  { kelas: '4 SAINS', tempat: 5, hadiah: 'RM20',  tajuk: '4.1 Keseimbangan Terma',
+    ahli: ['ANIS SUMAYYAH BINTI SHAMSUDIN', 'DAMIA HAFIYAH BINTI ZUHARILLAH'] }
+];
+
 /* ------------------------------------------------------------------ */
 
 function doGet() {
@@ -141,8 +166,15 @@ function semakMarkah(noKp) {
       kelas: namaSheet.trim(),
       ic: ic.slice(0, 6) + '-••-' + ic.slice(8)
     },
-    peperiksaan: peperiksaan
+    peperiksaan: peperiksaan,
+    tahniah: cariPemenang(namaSheet, murid.nama)
   };
+}
+
+function cariPemenang(namaSheet, nama) {
+  const k = normalNama(namaSheet), n = normalNama(nama);
+  const g = PEMENANG_PRESENTATION.find(p => normalNama(p.kelas) === k && p.ahli.some(a => normalNama(a) === n));
+  return g ? { tempat: g.tempat, hadiah: g.hadiah, tajuk: g.tajuk || '' } : null;
 }
 
 /* ---------------------------- pembantu ---------------------------- */
