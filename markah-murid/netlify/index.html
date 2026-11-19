@@ -47,6 +47,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   margin: 0; background: var(--bg); color: var(--ink);
   font: 15px/1.55 var(--font-body);
@@ -243,9 +244,12 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
     };
     if (LIVE) {
       fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ic: ic }) })
-        .then(function (r) { return r.json(); })
-        .then(done)
-        .catch(function () { done({ ok: false, mesej: 'Sambungan gagal. Semak internet dan cuba lagi.' }); });
+        .then(function (r) { return r.text(); })
+        .then(function (t) {
+          try { done(JSON.parse(t)); }
+          catch (err) { done({ ok: false, mesej: 'Enjin Apps Script tidak memberi jawapan yang betul (kod 2). Pastikan Code.gs terkini sudah di-Deploy sebagai "New version".' }); }
+        })
+        .catch(function () { done({ ok: false, mesej: 'Tidak dapat berhubung dengan enjin Apps Script (kod 1). Semak internet, atau pastikan "Who has access" = Anyone dan URL berakhir dengan /exec.' }); });
     } else demoLookup(ic, done);
   });
 
