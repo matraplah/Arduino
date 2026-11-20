@@ -12,6 +12,9 @@ const SPREADSHEET_ID = '1vwQgwPeT9XmVuIXO2H1zUSBmcBuWVZI6NPjV2emim3c';
 // Sheet yang mengandungi senarai No. KP murid: lajur A = NO KP, B = NAMA, C = KELAS
 const SHEET_MURID = 'SENARAI MURID';
 
+// Sheet buletin untuk semua murid: A = TARIKH, B = TAJUK, C = MESEJ, D = PAPAR (YA/TIDAK)
+const SHEET_BULETIN = 'BULETIN';
+
 /**
  * Lajur bagi setiap kelas (dikira dari 0: A=0, B=1, C=2 ... Z=25, AA=26 ...).
  *   m  = lajur markah total
@@ -107,7 +110,20 @@ function doPost(e) {
 
 /** Buka URL web app dalam browser untuk semak ia berfungsi. */
 function doGet() {
-  return keJson({ ok: true, mesej: 'Enjin Semakan Markah aktif.' });
+  let buletin = [];
+  try { buletin = bacaBuletin(); } catch (err) { /* abaikan */ }
+  return keJson({ ok: true, mesej: 'Enjin Semakan Markah aktif.', buletin: buletin });
+}
+
+/** Mesej buletin yang PAPAR = YA (atau kosong). Baris paling bawah dipaparkan dahulu. */
+function bacaBuletin() {
+  const sh = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_BULETIN);
+  if (!sh) return [];
+  return sh.getDataRange().getDisplayValues().slice(1)
+    .filter(r => bersih(r[2]) && bersih(r[3]).toUpperCase() !== 'TIDAK')
+    .map(r => ({ tarikh: bersih(r[0]), tajuk: bersih(r[1]), mesej: bersih(r[2]) }))
+    .reverse()
+    .slice(0, 20);
 }
 
 function keJson(obj) {

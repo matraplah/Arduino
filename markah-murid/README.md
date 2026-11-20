@@ -47,6 +47,19 @@ Simpan. Selagi `API_URL` kosong, halaman hanya tunjuk data contoh.
 3. Netlify beri link (contoh `https://nama-rawak.netlify.app`). Boleh tukar nama di **Site configuration → Change site name**.
 4. Kongsi link itu dengan murid.
 
+## Buletin untuk semua murid
+
+Tab **BULETIN** dalam spreadsheet markah:
+
+| TARIKH | TAJUK | MESEJ | PAPAR (YA/TIDAK) |
+|---|---|---|---|
+| 20/11/2026 | Semakan markah dibuka | Assalamualaikum... | YA |
+
+- Tambah mesej baru di **baris paling bawah**. Mesej terbaru dipaparkan paling atas.
+- **PAPAR = TIDAK** untuk sembunyikan mesej tanpa memadamnya.
+- Link (https://...) dalam MESEJ boleh diklik oleh murid.
+- Murid nampak buletin sebaik sahaja halaman dibuka (muat semula halaman untuk melihat mesej terbaru).
+
 ## Selepas siap
 
 - **Edit markah dalam Google Sheet** → murid terus nampak markah baru. Tiada langkah lain.

@@ -110,6 +110,15 @@ button[disabled] { opacity: .6; cursor: wait; }
 .prize .meta { margin-top: 10px; }
 .prize .pill { background: var(--paper); }
 .prize .tebus { margin-top: 12px; font-size: 13.5px; font-weight: 600; }
+.bulletin h2 { font: 800 17px/1.3 var(--font-head); margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+.bulletin h2 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.bulletin .sub { margin: 0 0 8px; font-size: 12.5px; color: var(--muted); }
+.notice { padding: 14px 0; border-top: 1px solid var(--line); }
+.notice:first-of-type { border-top: 0; }
+.notice .date { font-size: 12px; font-weight: 600; letter-spacing: .04em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.notice h3 { margin: 2px 0 4px; font: 700 15px/1.35 var(--font-head); }
+.notice p { margin: 0; white-space: pre-line; overflow-wrap: anywhere; }
+.notice a { color: var(--accent); }
 .btn-out { background: var(--paper); color: var(--accent); border: 1.5px solid var(--accent); }
 .btn-out:hover { background: var(--accent-soft); filter: none; }
 .score { display: flex; align-items: center; gap: 12px; }
@@ -179,6 +188,13 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
 
   <button class="btn-out" id="logout" type="button" hidden>Log Keluar</button>
 
+  <!-- BULETIN: dibaca dari tab BULETIN dalam Google Sheet -->
+  <section id="buletin" class="card bulletin" hidden>
+    <h2><span class="dot"></span>Buletin Cikgu</h2>
+    <p class="sub">Makluman terkini untuk semua murid.</p>
+    <div id="b-list"></div>
+  </section>
+
   <p class="scale" id="scale" hidden>
     Skala gred: <b>A+</b> 90–100 · <b>A</b> 80–89 · <b>A-</b> 70–79 · <b>B+</b> 65–69 · <b>B</b> 60–64 ·
     <b>C+</b> 55–59 · <b>C</b> 50–54 · <b>D</b> 45–49 · <b>E</b> 40–44 · <b>G</b> 0–39.
@@ -223,6 +239,31 @@ footer { text-align: center; font-size: 12px; color: var(--muted); }
   }
 
   if (!LIVE) $('demo').hidden = false;
+
+  // ---- Buletin ----
+  function pautan(t) {
+    return esc(t).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  }
+  function tunjukBuletin(list) {
+    if (!list || !list.length) { $('buletin').hidden = true; return; }
+    $('b-list').innerHTML = list.map(function (b) {
+      return '<article class="notice">' +
+        (b.tarikh ? '<div class="date">' + esc(b.tarikh) + '</div>' : '') +
+        (b.tajuk ? '<h3>' + esc(b.tajuk) + '</h3>' : '') +
+        '<p>' + pautan(b.mesej) + '</p></article>';
+    }).join('');
+    $('buletin').hidden = false;
+  }
+  if (LIVE) {
+    fetch(API_URL).then(function (r) { return r.json(); })
+      .then(function (d) { tunjukBuletin(d && d.buletin); })
+      .catch(function () { /* buletin tidak wajib */ });
+  } else {
+    tunjukBuletin([
+      { tarikh: '20/11/2026', tajuk: 'Semakan markah dibuka', mesej: 'Assalamualaikum dan salam sejahtera. Semakan markah Sains 2026 kini dibuka. Sebarang pertanyaan, sila hubungi cikgu.' },
+      { tarikh: '18/11/2026', tajuk: 'Contoh makluman', mesej: 'Ini contoh buletin. Mesej sebenar dibaca dari tab BULETIN dalam Google Sheet.' }
+    ]);
+  }
 
   // format 080512-10-1234 semasa menaip
   $('ic').addEventListener('input', function (e) {
