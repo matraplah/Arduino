@@ -23,45 +23,85 @@ const SHEET_BULETIN = 'BULETIN';
  * Jika susunan lajur dalam sheet berubah, ubah nombor di sini sahaja.
  */
 const PETA_KELAS = {
+  // Lajur dikira dari 0: A=0 B=1 C=2 D=3 E=4 F=5 G=6 H=7 I=8 J=9 K=10 L=11 M=12 N=13 O=14
+  // P=15 Q=16 R=17 S=18 T=19 U=20 V=21 W=22 X=23 Y=24 Z=25 AA=26 AB=27 AC=28 AD=29 AE=30
+  // perincian: { label, col, max } = baca lajur; { label, kira: [lajur...], bahagi } = (jumlah ÷ bahagi × 100)
   '3 DAISY': {
-    awal:   { m: 5 },            // F  TOTAL KUIZ 1
-    tengah: { m: 10 },           // K  TOTAL PPSA
-    akhir:  { m: 18, g: 19 }     // S  FULL TOTAL UASA
+    awal:   { m: 5, perincian: [                                   // F TOTAL KUIZ 1
+      { label: 'Kuiz 1', col: 2, max: 30 },                        // C
+      { label: 'Kuiz 1 (÷30 × 100)', col: 3, max: 100, garis: true }, // D
+      { label: '+ Markah Buku Kerja', col: 4 } ] },                // E
+    tengah: { m: 10, perincian: [                                  // K TOTAL PPSA
+      { label: 'PPSA', col: 9 },                                   // J
+      { label: '+ Markah Buku Tulis', col: 8 } ] },                // I
+    akhir:  { m: 18, g: 19, perincian: [                           // S FULL TOTAL
+      { label: 'UASA', col: 16 },                                  // Q
+      { label: '+ Markah Buku Kerja', col: 17 } ] }                // R
   },
   '3 JASMIN': {
-    awal:   { m: 5 },            // F
-    tengah: { m: 10 },           // K
-    akhir:  { m: 18, g: 19 }     // S
+    awal:   { m: 5, perincian: [                                   // F TOTAL KUIZ 1
+      { label: 'Kuiz 1', col: 2, max: 30 },                        // C
+      { label: 'Kuiz 1 (÷30 × 100)', col: 3, max: 100, garis: true }, // D
+      { label: '+ Markah Buku Tulis', col: 4 } ] },                // E
+    tengah: { m: 10, perincian: [                                  // K TOTAL
+      { label: 'PPSA', col: 7 },                                   // H
+      { label: '+ Markah Buku Kerja', col: 8 },                     // I
+      { label: '+ Markah Tambahan', col: 9 } ] },                  // J
+    akhir:  { m: 18, g: 19, perincian: [                           // S TOTAL
+      { label: 'UASA', col: 16 },                                  // Q
+      { label: '+ Markah Buku Kerja', col: 17 } ] }                // R
   },
   '3 ALAMANDA': {
-    awal:   { m: 6 },                    // G  KUIZ 1 TOTAL
-    tengah: { m: 11, g: 13 },            // L  TOTAL UPSA
-    akhir:  { m: 21, g: 22,              // V  FULL TOTAL
-      perincian: [
-        { label: 'UASA',       col: 18 },   // S
-        { label: 'Present',    col: 19 },   // T
-        { label: 'Buku Kerja', col: 20 }    // U
-      ]
-    }
+    awal:   { m: 6, perincian: [                                   // G KUIZ 1 TOTAL
+      { label: 'Kuiz 1', col: 3, max: 30 },                        // D
+      { label: 'Kuiz 1 (÷30 × 100)', col: 4, max: 100, garis: true }, // E
+      { label: '+ Markah Buku Tulis', col: 5 } ] },                // F
+    tengah: { m: 11, g: 13, perincian: [                           // L TOTAL UPSA
+      { label: 'PPSA', col: 9 },                                   // J
+      { label: '+ Markah Buku Kerja', col: 8 },                     // I
+      { label: '+ Markah Tambahan', col: 10 } ] },                 // K
+    akhir:  { m: 21, g: 22, perincian: [                           // V FULL TOTAL
+      { label: 'UASA', col: 18 },                                  // S
+      { label: '+ Present', col: 19 },                             // T
+      { label: '+ Buku Kerja', col: 20 } ] }                       // U
   },
   '4 SAINS': {
-    awal:   { m: 5 },                    // F  TOTAL KUIZ 1
-    tengah: { m: 17, g: 15 },            // R  ALL ROUND (PPSA)
-    akhir:  { m: 30, g: 31,              // AE AKHIR TAHUN
-      perincian: [
-        { label: 'K1',                        col: 24, max: 40 },   // Y
-        { label: 'K2',                        col: 25, max: 100 },  // Z
-        { label: 'K3',                        col: 26, max: 15 },   // AA
-        { label: 'Jumlah K1+K2+K3 (÷155 × 100)', col: 27, max: 100, garis: true }, // AB
-        { label: '+ Markah Presentation (5%)', col: 28 },          // AC
-        { label: '+ King + Guru Muda (5%)',   col: 29 }             // AD
-      ]
-    }
+    awal:   { m: 5, perincian: [                                   // F TOTAL KUIZ 1
+      { label: 'Kuiz 1', col: 2, max: 30 },                        // C
+      { label: 'Kuiz 1 (÷30 × 100)', col: 3, max: 100, garis: true }, // D
+      { label: '+ Markah Presentation', col: 4 } ] },              // E
+    tengah: { m: 17, g: 15, perincian: [                           // R ALL ROUND
+      { label: 'K1', col: 10 },                                    // K
+      { label: 'K2', col: 11 },                                    // L
+      { label: 'K3', col: 14 },                                    // O
+      { label: 'Jumlah K1+K2+K3 (÷140 × 100)', kira: [10, 11, 14], bahagi: 140, max: 100, garis: true },
+      { label: '+ Markah Presentation', col: 9 } ] },              // J
+    akhir:  { m: 30, g: 31, perincian: [                           // AE AKHIR TAHUN
+      { label: 'K1', col: 24, max: 40 },                           // Y
+      { label: 'K2', col: 25, max: 100 },                          // Z
+      { label: 'K3', col: 26, max: 15 },                           // AA
+      { label: 'Jumlah K1+K2+K3 (÷155 × 100)', col: 27, max: 100, garis: true }, // AB
+      { label: '+ Markah Presentation (5%)', col: 28 },            // AC
+      { label: '+ King + Guru Muda (5%)', col: 29 } ] }            // AD
   },
-  '5 SAINS ': {                          // nama sheet ada ruang di hujung
-    awal:   { m: 5 },            // F  TOTAL KUIZ 1
-    tengah: { m: 14, g: 12 },    // O  PPSA
-    akhir:  { m: 22, g: 23 }     // W  TRIALS
+  '5 SAINS ': {                                                    // nama sheet ada ruang di hujung
+    awal:   { m: 5, perincian: [                                   // F TOTAL KUIZ 1
+      { label: 'Kuiz 1', col: 2, max: 30 },                        // C
+      { label: 'Kuiz 1 (÷30 × 100)', col: 3, max: 100, garis: true }, // D
+      { label: '+ Markah Presentation', col: 4 } ] },              // E
+    tengah: { m: 14, g: 12, perincian: [                           // O PPSA
+      { label: 'K1', col: 7, max: 40 },                            // H
+      { label: 'K2', col: 8, max: 100 },                           // I
+      { label: 'K3', col: 9, max: 15 },                            // J
+      { label: 'Markah Tambahan', col: 10 },                       // K
+      { label: 'Jumlah (÷155 × 100)', kira: [7, 8, 9, 10], bahagi: 155, max: 100, garis: true },
+      { label: '+ Markah Presentation', col: 11 } ] },             // L
+    akhir:  { m: 22, g: 23, perincian: [                           // W TRIALS
+      { label: 'K1', col: 17, max: 40 },                           // R
+      { label: 'K2', col: 18, max: 100 },                          // S
+      { label: 'K3', col: 19, max: 15 },                           // T
+      { label: 'P', col: 20 },                                     // U
+      { label: 'Jumlah (÷155 × 100)', col: 21, max: 100, garis: true } ] } // V
   }
 };
 
@@ -183,7 +223,7 @@ function semakMarkah(noKp) {
       status: markah.status,       // '', 'TH', 'MC', 'TIADA'
       gred: markah.nilai === null ? '' : (gredSah(gredSheet) ? gredSheet : kiraGred(markah.nilai)),
       perincian: (p.perincian || []).map(d => {
-        const v = bacaMarkah(row[d.col]);
+        const v = d.kira ? kiraJumlah(row, d.kira, d.bahagi) : bacaMarkah(row[d.col]);
         return { label: d.label, nilai: v.nilai, status: v.status, max: d.max || null, garis: !!d.garis };
       })
     };
@@ -219,6 +259,12 @@ function normalNama(v) { return bersih(v).toUpperCase().replace(/\s+/g, ' '); }
 function cariNamaSheet(kelas) {
   const k = normalNama(kelas);
   return Object.keys(PETA_KELAS).find(n => normalNama(n) === k) || null;
+}
+
+function kiraJumlah(row, cols, bahagi) {
+  let jumlah = 0, ada = false;
+  cols.forEach(c => { const v = bacaMarkah(row[c]); if (v.nilai !== null) { jumlah += v.nilai; ada = true; } });
+  return ada ? { nilai: Math.round(jumlah / bahagi * 10000) / 100, status: '' } : { nilai: null, status: 'TIADA' };
 }
 
 function bacaMarkah(v) {
